@@ -1,6 +1,6 @@
 # Project-Heimdall
 README
-    Heimdall is an authentication platform that enables creators to verify the authenticity of their content using a dynamic, rotating verification key.
+    Heimdall is an authentication platform that enables creators to verify the authenticity of their content using a dynamic, rotating verification key. This application is intended to protect creators and users from ai duplicates. 
     
     Key Capabilities
         🔐 Dynamic Key Verification – Uses time-based or event-based changing keys to ensure each verification is unique and secure.
