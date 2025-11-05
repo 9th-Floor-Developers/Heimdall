@@ -81,14 +81,12 @@ public class NeuralNetwork {
 	}
 	
 	/**
-	 * Returns values of output layer, used to determine definitive answer.
-	 *
-	 * Essentially the "run" function.
+	 * Returns values of output layer, used to determine definitive answer. Essentially the "run" function.
 	 *
 	 * @param inputs inputs of neural network
 	 * @return values of output layer
 	 */
-	public List<Float> calculate(float[] inputs) {
+	public ArrayList<Float> calculate(float[] inputs) {
 		nodes.forEach(layer -> layer.forEach(n -> n.value = 0));  // initializes all values at 0
 		
 		for (int i = 0; i < nodes.size(); i++) {
@@ -96,15 +94,17 @@ public class NeuralNetwork {
 				for (int j = 0; j < inputs.length; j++)
 					nodes.getFirst().get(j).value += inputs[j];  // sets first layer values as input values
 			
-			if (i < nodes.size() - 1)
-				for (Node node : nodes.get(i))
-					for (int j = 0; j < node.weights.length; j++)
-						// prev node value * prev node weight
-						// repeat for all nodes in prev layer
-						nodes.get(i + 1).get(j).value += node.value * node.weights[j];
+			if (i >= nodes.size() - 1)
+				continue;
+			
+			for (Node node : nodes.get(i))
+				for (int j = 0; j < node.weights.length; j++)
+					// prev node value * prev node weight
+					// repeat for all nodes in prev layer
+					nodes.get(i + 1).get(j).value += node.value * node.weights[j];
 			
 		}
 		
-		return nodes.getLast().stream().map(n -> n.value).toList();
+		return new ArrayList<>(nodes.getLast().stream().map(n -> n.value).toList());
 	}
 }
