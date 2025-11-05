@@ -1,40 +1,10 @@
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
  * A class that represents a neural network and all the nodes within.
  */
 public class NeuralNetwork {
-	/**
-	 * A class that represents a value that can influence the next layer.
-	 */
-	private static class Node {
-		private final int layer;  // layer node is located in
-		private float[] weights;  // array of all weights from previous layer
-		private float value;  // weights * value of weight sources
-		private final NeuralNetwork network;  // network node is located in
-		
-		private Node(int layer, NeuralNetwork network) {
-			this.layer = layer;
-			this.network = network;
-		}
-		
-		/**
-		 * Initializes weights that node connects to in next node layer.
-		 */
-		private void initWeight() {
-			if (layer >= network.nodes.size() - 1)  // exit if last node layer
-				return;
-			
-			int size = network.nodes.get(layer + 1).size();
-			weights = new float[size];
-			for (int i = 0; i < size; i++)
-				weights[i] = 0;  // setting all values to 0 (default)
-			
-		}
-	}
-	
 	private final ArrayList<ArrayList<Node>> nodes;  // network consisting of nodes
 	private final int[] layers;  // array of all layers in the network
 	
@@ -51,7 +21,15 @@ public class NeuralNetwork {
 			nodes.add(layer);
 		}
 		
-		nodes.forEach(layer -> layer.forEach(Node::initWeight));  // initializing weights for all nodes
+//		nodes.forEach(layer -> layer.forEach(Node::initWeight));  // initializing weights for all nodes
+	}
+	
+	public ArrayList<ArrayList<Node>> getNodes() {
+		return nodes;
+	}
+	
+	public int[] getLayers() {
+		return layers;
 	}
 	
 	/**
@@ -69,10 +47,11 @@ public class NeuralNetwork {
 				continue;
 			
 			for (int j = 0; j < nodes.get(i).size(); j++) {
-				for (int k = 0; k < nodes.get(i).get(j).weights.length; k++) {
+				for (int k = 0; k < nodes.get(i).get(j).getWeights().length; k++) {
 					float randFloat = random.nextFloat(-scale, scale);  // new random number based on scale
 					// updating every weight of every node with new random value
-					newNetwork.nodes.get(i).get(j).weights[k] = nodes.get(i).get(j).weights[k] + randFloat;
+//					newNetwork.nodes.get(i).get(j).getWeights()[k] = nodes.get(i).get(j).getWeights()[k] + randFloat;
+					getNode(i, j).addWeight(k, randFloat);
 				}
 			}
 		}
@@ -87,24 +66,34 @@ public class NeuralNetwork {
 	 * @return values of output layer
 	 */
 	public ArrayList<Float> calculate(float[] inputs) {
-		nodes.forEach(layer -> layer.forEach(n -> n.value = 0));  // initializes all values at 0
+		nodes.forEach(layer -> layer.forEach(n -> n.setValue(0)));  // initializes all values at 0
 		
 		for (int i = 0; i < nodes.size(); i++) {
-			if (i == 0)  // checks if first layer
-				for (int j = 0; j < inputs.length; j++)
-					nodes.getFirst().get(j).value += inputs[j];  // sets first layer values as input values
+			if (i == 0) {  // checks if first layer
+				for (int j = 0; j < inputs.length; j++) {
+					getNode(0, j).addValue(inputs[j]);
+//					nodes.getFirst().get(j).addValue(inputs[j]);  // sets first layer values as input values
+				}
+			}
 			
 			if (i >= nodes.size() - 1)
 				continue;
 			
-			for (Node node : nodes.get(i))
-				for (int j = 0; j < node.weights.length; j++)
+			for (Node node : nodes.get(i)) {
+				for (int j = 0; j < node.getWeights().length; j++) {
+//					Node node1 = getNode(i + 1, j); // nodes.get(i + 1).get(j);
 					// prev node value * prev node weight
 					// repeat for all nodes in prev layer
-					nodes.get(i + 1).get(j).value += node.value * node.weights[j];
+					getNode(i + 1, j).addValue(node.getValue() * node.getWeights()[j]);
+				}
+			}
 			
 		}
 		
-		return new ArrayList<>(nodes.getLast().stream().map(n -> n.value).toList());
+		return new ArrayList<>(nodes.getLast().stream().map(Node::getValue).toList());
+	}
+	
+	private Node getNode(int layer, int number) {
+		return nodes.get(layer).get(number);
 	}
 }
