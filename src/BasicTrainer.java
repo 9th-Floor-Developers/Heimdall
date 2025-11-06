@@ -7,7 +7,8 @@ public class BasicTrainer {
 		
 		for (int i = 0; i < agents_per_round; i++)
 			agents.add(new NeuralNetwork(layers));  // new network with two layers of two nodes
-		
+
+        int max_score = outputs.length;
 		System.out.println("Starting Training");
 		
 		int best_score = -1;
@@ -21,8 +22,9 @@ public class BasicTrainer {
 					best_agent = agent;
 				}
 			}
-			
-			System.out.println("Round " + i + " Best score " + best_score);
+
+            float percent = ((float) best_score / max_score) * 100;
+			System.out.println("Round: " + i + " Best score: " + best_score + " Which is: " + percent + "%");
 			
 			agents = new ArrayList<>();
 			for (int j = 0; j < agents_per_round; j++) {
