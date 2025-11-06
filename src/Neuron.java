@@ -1,13 +1,13 @@
 /**
  * A class that represents a value that can influence the next layer.
  */
-public class Node {
+public class Neuron {
 	private final int layer;  // layer node is located in
 	private float[] weights;  // array of all weights from previous layer
 	private float value;  // weights * value of weight sources
 	private final NeuralNetwork network;  // network node is located in
 	
-	public Node(int layer, NeuralNetwork network) {
+	public Neuron(int layer, NeuralNetwork network) {
 		this.layer = layer;
 		this.network = network;
 		initWeight();
