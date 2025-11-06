@@ -20,6 +20,15 @@ public class Node {
 	public float[] getWeights() {
 		return weights;
 	}
+
+    public void logWeights(){
+        if (weights == null){
+            return;
+        }
+        for (float weight : weights) {
+            System.out.println(weight);
+        }
+    }
 	
 	public void setWeights(float[] weights) {
 		this.weights = weights;

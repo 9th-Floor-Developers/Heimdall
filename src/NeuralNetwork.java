@@ -96,4 +96,16 @@ public class NeuralNetwork {
 	private Node getNode(int layer, int number) {
 		return nodes.get(layer).get(number);
 	}
+
+    public ArrayList<Node> getAllNodes(){
+        ArrayList<Node> allNodes = new ArrayList<>();
+        nodes.forEach(allNodes::addAll);
+        return allNodes;
+    }
+
+    public void logAllWeight(){
+        for (Node node : getAllNodes()){
+            node.logWeights();
+        }
+    }
 }
