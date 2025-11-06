@@ -2,21 +2,8 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class BasicTrainer {
-	private final float[][] inputs = new float[][] {
-			{0, 0, 0, 0, 0},
-			{1, 0, 0, 0, 0},
-			{1, 1, 1, 1, 1}
-	};
-	
-	private final int[] outputs = new int[] {
-			0, 1, 1
-	};
-	
-	
-	private ArrayList<NeuralNetwork> agents = new ArrayList<>();
-	
-	
-	public void train() {
+	public void train(float[][] inputs, int[] outputs) {
+        ArrayList<NeuralNetwork> agents = new ArrayList<>();
 		int agent_per_round = 5;
 		int number_of_rounds = 25;
 		
@@ -29,7 +16,7 @@ public class BasicTrainer {
 		NeuralNetwork best_agent = agents.getFirst();
 		for (int i = 1; i <= number_of_rounds; i++) {
 			for (NeuralNetwork agent : agents) {
-				int score = eval(agent);
+				int score = eval(agent, inputs, outputs);
 				
 				if (score > best_score) {
 					best_score = score;
@@ -47,7 +34,7 @@ public class BasicTrainer {
 	}
 	
 	
-	public int eval(NeuralNetwork network) {
+	public int eval(NeuralNetwork network, float[][] inputs, int[] outputs) {
 		int score = 0;
 		for (int i = 0; i < inputs.length; i++) {
 			ArrayList<Float> calculatedOutputs = network.calculate(inputs[i]);
