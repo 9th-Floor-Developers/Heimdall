@@ -2,12 +2,10 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class BasicTrainer {
-	public void train(float[][] inputs, int[] outputs, int[] layers) {
+	public void train(float[][] inputs, int[] outputs, int[] layers, int agents_per_round, int number_of_rounds) {
         ArrayList<NeuralNetwork> agents = new ArrayList<>();
-		int agent_per_round = 5;
-		int number_of_rounds = 25;
 		
-		for (int i = 0; i < agent_per_round; i++)
+		for (int i = 0; i < agents_per_round; i++)
 			agents.add(new NeuralNetwork(layers));  // new network with two layers of two nodes
 		
 		System.out.println("Starting Training");
@@ -27,7 +25,7 @@ public class BasicTrainer {
 			System.out.println("Round " + i + " Best score " + best_score);
 			
 			agents = new ArrayList<>();
-			for (int j = 0; j < agent_per_round; j++) {
+			for (int j = 0; j < agents_per_round; j++) {
 				agents.add(best_agent.evolve(0.2f));
 			}
 		}
