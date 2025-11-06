@@ -103,7 +103,7 @@ public class NeuralNetwork {
         return allNodes;
     }
 
-    public void logAllWeight(){
+    public void logAllWeights(){
         for (Node node : getAllNodes()){
             node.logWeights();
         }
