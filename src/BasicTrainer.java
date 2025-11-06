@@ -2,13 +2,13 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 public class BasicTrainer {
-	public void train(float[][] inputs, int[] outputs) {
+	public void train(float[][] inputs, int[] outputs, int[] layers) {
         ArrayList<NeuralNetwork> agents = new ArrayList<>();
 		int agent_per_round = 5;
 		int number_of_rounds = 25;
 		
 		for (int i = 0; i < agent_per_round; i++)
-			agents.add(new NeuralNetwork(new int[] { inputs[0].length, 2 }));  // new network with two layers of two nodes
+			agents.add(new NeuralNetwork(layers));  // new network with two layers of two nodes
 		
 		System.out.println("Starting Training");
 		
