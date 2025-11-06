@@ -51,7 +51,7 @@ public class NeuralNetwork {
 					float randFloat = random.nextFloat(-scale, scale);  // new random number based on scale
 					// updating every weight of every node with new random value
 //					newNetwork.nodes.get(i).get(j).getWeights()[k] = nodes.get(i).get(j).getWeights()[k] + randFloat;
-					getNode(i, j).addWeight(k, randFloat);
+					newNetwork.getNode(i, j).addWeight(k, randFloat);;
 				}
 			}
 		}
