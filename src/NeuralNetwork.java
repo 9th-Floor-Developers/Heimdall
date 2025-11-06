@@ -20,8 +20,6 @@ public class NeuralNetwork {
 			
 			nodes.add(layer);
 		}
-		
-//		nodes.forEach(layer -> layer.forEach(Node::initWeight));  // initializing weights for all nodes
 	}
 	
 	public ArrayList<ArrayList<Node>> getNodes() {
@@ -49,9 +47,7 @@ public class NeuralNetwork {
 			for (int j = 0; j < nodes.get(i).size(); j++) {
 				for (int k = 0; k < nodes.get(i).get(j).getWeights().length; k++) {
 					float randFloat = random.nextFloat(-scale, scale);  // new random number based on scale
-					// updating every weight of every node with new random value
-//					newNetwork.nodes.get(i).get(j).getWeights()[k] = nodes.get(i).get(j).getWeights()[k] + randFloat;
-					newNetwork.getNode(i, j).addWeight(k, randFloat);;
+					newNetwork.getNode(i, j).addWeight(k, randFloat);
 				}
 			}
 		}
@@ -72,7 +68,6 @@ public class NeuralNetwork {
 			if (i == 0) {  // checks if first layer
 				for (int j = 0; j < inputs.length; j++) {
 					getNode(0, j).addValue(inputs[j]);
-//					nodes.getFirst().get(j).addValue(inputs[j]);  // sets first layer values as input values
 				}
 			}
 			
@@ -81,7 +76,6 @@ public class NeuralNetwork {
 			
 			for (Node node : nodes.get(i)) {
 				for (int j = 0; j < node.getWeights().length; j++) {
-//					Node node1 = getNode(i + 1, j); // nodes.get(i + 1).get(j);
 					// prev node value * prev node weight
 					// repeat for all nodes in prev layer
 					getNode(i + 1, j).addValue(node.getValue() * node.getWeights()[j]);
@@ -93,19 +87,19 @@ public class NeuralNetwork {
 		return new ArrayList<>(nodes.getLast().stream().map(Node::getValue).toList());
 	}
 	
-	private Node getNode(int layer, int number) {
+	public Node getNode(int layer, int number) {
 		return nodes.get(layer).get(number);
 	}
-
-    public ArrayList<Node> getAllNodes(){
-        ArrayList<Node> allNodes = new ArrayList<>();
-        nodes.forEach(allNodes::addAll);
-        return allNodes;
-    }
-
-    public void logAllWeights(){
-        for (Node node : getAllNodes()){
-            node.logWeights();
-        }
-    }
+	
+	public ArrayList<Node> getAllNodes() {
+		ArrayList<Node> allNodes = new ArrayList<>();
+		nodes.forEach(allNodes::addAll);
+		return allNodes;
+	}
+	
+	public void printAllWeights() {
+		for (Node node : getAllNodes()) {
+			node.printWeights();
+		}
+	}
 }

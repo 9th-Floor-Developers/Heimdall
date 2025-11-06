@@ -3,12 +3,12 @@ import java.util.Optional;
 
 public class BasicTrainer {
 	public void train(float[][] inputs, int[] outputs, int[] layers, int agents_per_round, int number_of_rounds) {
-        ArrayList<NeuralNetwork> agents = new ArrayList<>();
+		ArrayList<NeuralNetwork> agents = new ArrayList<>();
 		
 		for (int i = 0; i < agents_per_round; i++)
 			agents.add(new NeuralNetwork(layers));  // new network with two layers of two nodes
-
-        int max_score = outputs.length;
+		
+		int max_score = outputs.length;
 		System.out.println("Starting Training");
 		
 		int best_score = -1;
@@ -22,19 +22,18 @@ public class BasicTrainer {
 					best_agent = agent;
 				}
 			}
-
-            float percent = ((float) best_score / max_score) * 100;
+			
+			float percent = ((float) best_score / max_score) * 100;
 			System.out.println("Round: " + i + " Best score: " + best_score + " Which is: " + percent + "%");
 			
 			agents = new ArrayList<>();
-			for (int j = 0; j < agents_per_round; j++) {
+			for (int j = 0; j < agents_per_round; j++)
 				agents.add(best_agent.evolve(0.2f));
-			}
 		}
 	}
 	
 	
-	public int eval(NeuralNetwork network, float[][] inputs, int[] outputs) {
+	private int eval(NeuralNetwork network, float[][] inputs, int[] outputs) {
 		int score = 0;
 		for (int i = 0; i < inputs.length; i++) {
 			ArrayList<Float> calculatedOutputs = network.calculate(inputs[i]);

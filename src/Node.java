@@ -20,15 +20,14 @@ public class Node {
 	public float[] getWeights() {
 		return weights;
 	}
-
-    public void logWeights(){
-        if (weights == null){
-            return;
-        }
-        for (float weight : weights) {
-            System.out.println(weight);
-        }
-    }
+	
+	public void printWeights() {
+		if (weights == null)
+			return;
+		
+		for (float weight : weights)
+			System.out.println(weight);
+	}
 	
 	public void setWeights(float[] weights) {
 		this.weights = weights;
@@ -57,15 +56,11 @@ public class Node {
 	/**
 	 * Initializes weights that node connects to in next node layer.
 	 */
-	public void initWeight() {
-		if (layer >= network.getLayers().length - 1)  // exit if last node layer
+	private void initWeight() {
+		if (layer >= network.getLayers().length - 1)  // exit if last node layer (output layer)
 			return;
 		
 		int size = network.getLayers()[layer + 1];
-//		weights = new float[size];
 		setWeights(new float[size]);
-//		for (int i = 0; i < size; i++)
-//			weights[i] = 0;  // setting all values to 0 (default)
-	
 	}
 }
