@@ -19,7 +19,7 @@ public class NumberGenerator {
 	 * @throws Exception if error when reading imageFile using ImageIO
 	 */
 	private static float[][] imgToFloatArr(File imageFile) throws Exception {
-		System.out.print("\rParsing Image: " + imageFile.getName());
+		System.out.print("\rParsing Image: " + imageFile.getName() + " - " + Thread.currentThread().getName());
 		
 		BufferedImage image = ImageIO.read(imageFile);
 		int width = image.getWidth();
@@ -58,6 +58,7 @@ public class NumberGenerator {
 			throw new FileNotFoundException("Directory does not contain files.");
 		
 		ArrayList<NumberImage> arrListVals = searchDir(files);
+		System.out.println();
 		
 		NumberImage[] arrVals = new NumberImage[arrListVals.size()];
 		for (int i = 0; i < arrListVals.size(); i++)
@@ -67,16 +68,19 @@ public class NumberGenerator {
 	}
 	
 	/**
-	 * Recursively searches through all directories and creates NumberImage objects based on
+	 * Recursively and asynchronously searches through all directories and creates NumberImage objects based on
 	 * greyscale pixel values of image (pixels[][]) and actual value of image obtained from folder name (value).
+	 * <p>
+	 * Program assigns threads to subdirectories, parsing images asynchronously, speeding up the parsing process.
 	 *
-	 * @param files all files in current directory
+	 * @param files all files in current directory, origin of recursive process
 	 * @return ArrayList of NumberImage objects representing all
 	 * number images located in directory and all subdirectories
 	 * @throws Exception if a problem occurs when converting image to float array
 	 */
 	private static ArrayList<NumberImage> searchDir(File[] files) throws Exception {
 		ArrayList<NumberImage> allImgDecVals = new ArrayList<>();
+		ArrayList<Thread> threads = new ArrayList<>();
 		
 		for (File file : files) {
 			if (file.isFile()) {  // image file
@@ -92,10 +96,23 @@ public class NumberGenerator {
 					continue;
 				}
 				
-				ArrayList<NumberImage> subDirImgs = searchDir(subdirectoryFiles);
-				allImgDecVals.addAll(subDirImgs);
+				Thread thread = new Thread(() -> {
+					ArrayList<NumberImage> subDirImgs;
+					try {
+						subDirImgs = searchDir(subdirectoryFiles);
+					} catch (Exception e) {
+						throw new RuntimeException(e);
+					}
+					allImgDecVals.addAll(subDirImgs);
+				});
+				
+				thread.start();
+				threads.add(thread);
 			}
 		}
+		
+		for (Thread thread : threads)
+			thread.join();
 		
 		return allImgDecVals;
 	}
