@@ -9,10 +9,10 @@ public class BasicTrainer {
 		ArrayList<NeuralNetwork> agents = new ArrayList<>();
 		
 		for (int i = 0; i < agentsPerRound; i++)
-			agents.add(new NeuralNetwork(layers));  // new network with two layers of two nodes
+			agents.add(new NeuralNetwork(layers));  // new network with layer structure as specified in layers variable
 		
 		int maxScore = outputs.length;
-		System.out.println("Starting Training");
+		System.out.println("Training...");
 		
 		AtomicInteger bestScore = new AtomicInteger(-1);
 		AtomicReference<NeuralNetwork> bestAgent = new AtomicReference<>(agents.getFirst());
@@ -40,7 +40,7 @@ public class BasicTrainer {
 			
 			agents = new ArrayList<>();
 			for (int j = 0; j < agentsPerRound; j++)
-				agents.add(bestAgent.get().evolve(0.2f));
+				agents.add(bestAgent.get().evolve(.5f));
 		}
 	}
 	
