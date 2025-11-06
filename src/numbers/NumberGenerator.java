@@ -6,7 +6,18 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+/**
+ * Class representing all operations and processes relating to converting an image of a number into a NumberImage.
+ */
 public class NumberGenerator {
+	/**
+	 * Converts all image pixels to array of floats. Floats are calculated by
+	 * converting RBG value into a singular greyscale value.
+	 *
+	 * @param imageFile file to get pixels values
+	 * @return 2D float array representing all greyscale values for each pixel in image
+	 * @throws Exception if error when reading imageFile using ImageIO
+	 */
 	private static float[][] imgToFloatArr(File imageFile) throws Exception {
 		System.out.print("\rParsing Image: " + imageFile.getName());
 		
@@ -26,6 +37,14 @@ public class NumberGenerator {
 		return floatArray;
 	}
 	
+	/**
+	 * Verifies that dataset directory exists and is a directory, begins recursive search through directory
+	 *
+	 * @return array of NumberImages, representing all number images
+	 * located in ./src/numbers/dataset and all subdirectories
+	 * @throws Exception various errors are thrown based on file status
+	 * (i.e.: not found, is directory, empty directory, etc.)
+	 */
 	private static NumberImage[] getAllImgs() throws Exception {
 		File dir = new File("./src/numbers/dataset");
 		
@@ -47,16 +66,25 @@ public class NumberGenerator {
 		return arrVals;
 	}
 	
+	/**
+	 * Recursively searches through all directories and creates NumberImage objects based on
+	 * greyscale pixel values of image (pixels[][]) and actual value of image obtained from folder name (value).
+	 *
+	 * @param files all files in current directory
+	 * @return ArrayList of NumberImage objects representing all
+	 * number images located in directory and all subdirectories
+	 * @throws Exception if a problem occurs when converting image to float array
+	 */
 	private static ArrayList<NumberImage> searchDir(File[] files) throws Exception {
 		ArrayList<NumberImage> allImgDecVals = new ArrayList<>();
 		
 		for (File file : files) {
-			if (file.isFile()) {
+			if (file.isFile()) {  // image file
 				float[][] pixels = imgToFloatArr(file);
 				String parent = file.getParentFile().getName();
 				NumberImage image = new NumberImage(pixels, Integer.parseInt(parent));
 				allImgDecVals.add(image);
-			} else if (file.isDirectory()) {
+			} else if (file.isDirectory()) {  // recursively search subdirectories
 				File[] subdirectoryFiles = file.listFiles();
 				
 				if (subdirectoryFiles == null) {
@@ -72,6 +100,9 @@ public class NumberGenerator {
 		return allImgDecVals;
 	}
 	
+	/**
+	 * Simple entrypoint for NumberGenerator.java
+	 */
 	public static void main(String[] args) throws Exception {
 		NumberImage[] allImgDecVals = getAllImgs();
 		for (NumberImage image : allImgDecVals) {
