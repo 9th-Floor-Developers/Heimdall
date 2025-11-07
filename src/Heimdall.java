@@ -1,13 +1,15 @@
 import static numbers.NumberGenerator.getAllImgs;
 import numbers.NumberImage;
 
+import java.util.Random;
+
 public class Heimdall {
 	public static void main(String[] args) throws Exception {
 		BasicTrainer trainer = new BasicTrainer();
 		NumberImage[] images = getAllImgs();
 		
-		float[][] inputs = new float[images.length][];
-		int[] outputs = new int[images.length];
+		float[][] allInputs = new float[images.length][];
+		int[] allOutputs = new int[images.length];
 		for (int i = 0; i < images.length; i++) {
 			NumberImage image = images[i];
 			float[] flatInputs = new float[image.pixels().length * image.pixels()[0].length];
@@ -19,9 +21,20 @@ public class Heimdall {
 				}
 			}
 			
-			inputs[i] = flatInputs;
-			outputs[i] = image.value();
+			allInputs[i] = flatInputs;
+			allOutputs[i] = image.value();
 		}
+
+        int data_amount = 100;
+
+        float[][] inputs = new float[data_amount][];
+        int[] outputs = new int[data_amount];
+        for (int i = 0; i < data_amount; i++) {
+            Random random = new Random();
+            int idx = random.nextInt(0, allInputs.length);
+            inputs[i] = allInputs[idx];
+            outputs[i] = allOutputs[idx];
+        }
 		
 		trainer.train(
 				inputs,
