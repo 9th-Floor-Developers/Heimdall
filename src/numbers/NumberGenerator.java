@@ -43,7 +43,7 @@ public class NumberGenerator {
 	 * @return array of NumberImages, representing all number images
 	 * located in ./src/numbers/dataset and all subdirectories
 	 * @throws Exception various errors are thrown based on file status
-	 * (i.e.: not found, is directory, empty directory, etc.)
+	 *                   (i.e.: not found, is directory, empty directory, etc.)
 	 */
 	public static NumberImage[] getAllImgs() throws Exception {
 		File dir = new File("./src/numbers/dataset");
@@ -65,6 +65,21 @@ public class NumberGenerator {
 			arrVals[i] = arrListVals.get(i);
 		
 		return arrVals;
+	}
+	
+	public static NumberImage getImg() throws Exception {
+		File image = new File("./src/numbers/dataset/0/Zero_full (1).jpg");
+		
+		if (!image.exists())
+			throw new FileNotFoundException();
+		else if (image.isDirectory())
+			throw new Exception("Selected path is a directory.");
+		
+		NumberImage numberImage = new NumberImage(imgToFloatArr(image),
+		                                          Integer.parseInt(image.getParentFile().getName()));
+		System.out.println();
+		
+		return numberImage;
 	}
 	
 	/**

@@ -48,6 +48,8 @@ public class BasicTrainer {
 			for (int j = 0; j < agentsPerRound; j++)
 				agents.add(bestAgent.get().evolve(scale));
 		}
+		
+		System.out.println("Best Score: " + bestScore.get() + "%");
 	}
 	
 	

@@ -81,7 +81,6 @@ public class NeuralNetwork {
 					getNode(i + 1, j).addValue(neuron.getValue() * neuron.getWeights()[j]);
 				}
 			}
-			
 		}
 		
 		return new ArrayList<>(neurons.getLast().stream().map(Neuron::getValue).toList());
