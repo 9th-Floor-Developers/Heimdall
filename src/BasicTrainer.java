@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -18,6 +19,7 @@ public class BasicTrainer {
 		AtomicReference<NeuralNetwork> bestAgent = new AtomicReference<>(agents.getFirst());
 		ArrayList<Thread> threads = new ArrayList<>();
 		for (int i = 1; i <= numRounds; i++) {
+			AtomicInteger roundBest = new AtomicInteger(-1);
 			for (NeuralNetwork agent : agents) {
 				Thread thread = new Thread(() -> {
 					int score = eval(agent, inputs, outputs);
@@ -26,6 +28,8 @@ public class BasicTrainer {
 						bestScore.set(score);
 						bestAgent.set(agent);
 					}
+					if (score > roundBest.get())
+						roundBest.set(score);
 				});
 				thread.start();
 				threads.add(thread);
@@ -35,8 +39,10 @@ public class BasicTrainer {
 				thread.join();
 			threads.clear();
 			
-			float percent = ((float) bestScore.get() / maxScore) * 100;
-			System.out.println("Round: " + i + " Best score: " + bestScore + " Which is: " + percent + "%");
+			float percent = ((float) roundBest.get() / maxScore) * 100;
+			String formatted = new DecimalFormat("#.##").format(percent);
+			
+			System.out.println("Round: " + i + " Best score: " + roundBest.get() + " Which is: " + formatted + "%");
 			
 			agents = new ArrayList<>();
 			for (int j = 0; j < agentsPerRound; j++)
