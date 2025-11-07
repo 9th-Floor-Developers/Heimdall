@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class BasicTrainer {
 	public void train(float[][] inputs, int[] outputs, int[] layers,
-	                  int agentsPerRound, int numRounds) throws InterruptedException {
+	                  int agentsPerRound, int numRounds, float scale) throws InterruptedException {
 		ArrayList<NeuralNetwork> agents = new ArrayList<>();
 		
 		for (int i = 0; i < agentsPerRound; i++)
@@ -40,7 +40,7 @@ public class BasicTrainer {
 			
 			agents = new ArrayList<>();
 			for (int j = 0; j < agentsPerRound; j++)
-				agents.add(bestAgent.get().evolve(.5f));
+				agents.add(bestAgent.get().evolve(scale));
 		}
 	}
 	
