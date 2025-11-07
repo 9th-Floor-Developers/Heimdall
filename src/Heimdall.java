@@ -34,7 +34,7 @@ public class Heimdall {
 						11  // output layer is number of possible answers (0.0-1.0 inclusive)
 				},
 				10,  // number of agents per round, more possibilities to evolve
-				50 // number of rounds, more opportunities to get higher percentage
+				999 // number of rounds, more opportunities to get higher percentage
 		);
 	}
 }

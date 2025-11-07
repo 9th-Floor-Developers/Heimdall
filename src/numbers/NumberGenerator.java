@@ -45,7 +45,7 @@ public class NumberGenerator {
 	 * @throws Exception various errors are thrown based on file status
 	 * (i.e.: not found, is directory, empty directory, etc.)
 	 */
-	private static NumberImage[] getAllImgs() throws Exception {
+	public static NumberImage[] getAllImgs() throws Exception {
 		File dir = new File("./src/numbers/dataset");
 		
 		if (!dir.exists())
