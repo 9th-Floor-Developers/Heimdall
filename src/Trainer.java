@@ -4,13 +4,13 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BasicTrainer {
-	public void train(float[][] inputs, int[] outputs, int[] layers,
+public class Trainer {
+	public void train(float[][] inputs, int[] outputs, int[] layerLengths,
 	                  int agentsPerRound, int numRounds, float scale) throws InterruptedException {
 		ArrayList<NeuralNetwork> agents = new ArrayList<>();
 		
 		for (int i = 0; i < agentsPerRound; i++)
-			agents.add(new NeuralNetwork(layers));  // new network with layer structure as specified in layers variable
+			agents.add(new NeuralNetwork(layerLengths));  // new network with layer structure as specified in layers variable
 		
 		int maxScore = outputs.length;
 		System.out.println("Training...");
