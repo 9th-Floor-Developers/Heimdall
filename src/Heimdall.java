@@ -5,7 +5,6 @@ import java.util.Random;
 
 public class Heimdall {
 	public static void main(String[] args) throws Exception {
-		Trainer trainer = new Trainer();
 		NumberImage[] images = getAllImgs();
 		
 		float[][] allInputs = new float[images.length][];
@@ -36,18 +35,18 @@ public class Heimdall {
             outputs[i] = allOutputs[idx];
         }
 		
-		trainer.train(
-				inputs,
-				outputs,
+		Trainer trainer = new Trainer(
+				10,  // number of agents per round, more possibilities to evolve
 				new int[] {  // layers format
 						inputs[0].length,  // input layer must match input count
 						15, // number of middle layer nodes, more opportunities per agent to learn
-						15,
-						15,
 						11  // output layer is number of possible answers (0.0-1.0 inclusive)
-				},
-				10,  // number of agents per round, more possibilities to evolve
-				200, // number of rounds, more opportunities to get higher percentage
+				}
+		);
+		trainer.train(
+				inputs,
+				outputs,
+				100, // number of rounds, more opportunities to get higher percentage
 				.5f
 		);
 	}

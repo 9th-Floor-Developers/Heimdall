@@ -1,25 +1,24 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Random;
 
 /**
  * A class that represents a neural network and all the layers within.
  */
 public class NeuralNetwork {
-	private final ArrayList<Layer> layers;  // network consisting of layers
+	private final Layer[] layers;  // network consisting of layers
 	private final int[] layerLengths;  // length of all layers in network
 	
 	public NeuralNetwork(int[] layerLengths) {
 		this.layerLengths = layerLengths;
 		
-		layers = new ArrayList<>();
+		layers = new Layer[layerLengths.length];
 		for (int i = 0; i < layerLengths.length; i++) {
 			Layer layer = new Layer(i, this, layerLengths[i]);
-			layers.add(layer);
+			layers[i] = layer;
 		}
 	}
 	
-	public ArrayList<Layer> getLayers() {
+	public Layer[] getLayers() {
 		return layers;
 	}
 	
@@ -37,14 +36,14 @@ public class NeuralNetwork {
 		NeuralNetwork newNetwork = new NeuralNetwork(layerLengths);
 		Random random = new Random();
 		
-		for (int i = 0; i < layers.size(); i++) {
-			if (i >= layers.size() - 1)  // dont update weights in output layer
+		for (int i = 0; i < layers.length; i++) {
+			if (i >= layers.length - 1)  // dont update weights in output layer
 				continue;
 			
-			for (int j = 0; j < layers.get(i).getNumNeurons(); j++) {
-				for (int k = 0; k < layers.get(i).getNeuron(j).getWeights().length; k++) {
+			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
+				for (int k = 0; k < layers[i].getNeuron(j).getWeights().length; k++) {
 					float randFloat = random.nextFloat(-scale, scale);  // new random number based on scale
-					newNetwork.getNode(i, j).addWeight(k, randFloat);
+					newNetwork.getNeuron(i, j).addWeight(k, randFloat);
 				}
 			}
 		}
@@ -59,49 +58,33 @@ public class NeuralNetwork {
 	 * @return values of output layer
 	 */
 	public ArrayList<Float> calculate(float[] inputs) {
-		layers.forEach(layer -> layer.getNeuronsList().forEach(n -> n.setValue(0)));  // initializes all values at 0
+		for (Layer layer : layers)
+			for (Neuron neuron : layer.getNeurons())
+				neuron.resetValue();  // initializes all neuron values to 0
 		
-		for (int i = 0; i < layers.size(); i++) {
-			if (i == 0) {  // checks if first layer
-				for (int j = 0; j < inputs.length; j++) {
-					getNode(0, j).addValue(inputs[j]);
-				}
-			}
+		for (int i = 0; i < layers.length - 1; i++) {
+			if (i == 0)  // checks if first layer
+				for (int j = 0; j < inputs.length; j++)
+					getNeuron(0, j).addValue(inputs[j]);
 			
-			if (i >= layers.size() - 1)
-				continue;
-			
-			for (Neuron neuron : layers.get(i).getNeurons()) {
+			for (Neuron neuron : layers[i].getNeurons()) {
 				for (int j = 0; j < neuron.getWeights().length; j++) {
 					// prev node value * prev node weight
 					// repeat for all nodes in next layer
-					getNode(i + 1, j).addValue(neuron.getValue() * neuron.getWeights()[j]);
+					getNeuron(i + 1, j).addValue(neuron.getValue() * neuron.getWeights()[j]);
 				}
 			}
 		}
 		
 		ArrayList<Float> outputs = new ArrayList<>();
-		Layer outputLayer = layers.getLast();
+		Layer outputLayer = layers[layers.length - 1];
 		for (Neuron neuron : outputLayer.getNeurons())
 			outputs.add(neuron.getValue());
 		
 		return outputs;
 	}
 	
-	public Neuron getNode(int layer, int number) {
-		return layers.get(layer).getNeuron(number);
-	}
-	
-	public ArrayList<Neuron> getAllNodes() {
-		ArrayList<Neuron> allNeurons = new ArrayList<>();
-		for (Layer layer : layers)
-			Collections.addAll(allNeurons, layer.getNeurons());
-		return allNeurons;
-	}
-	
-	public void printAllWeights() {
-		for (Neuron neuron : getAllNodes()) {
-			neuron.printWeights();
-		}
+	public Neuron getNeuron(int layer, int number) {
+		return layers[layer].getNeuron(number);
 	}
 }
