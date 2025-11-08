@@ -2,18 +2,18 @@
  * A class that represents a value that can influence the next layer.
  */
 public class Neuron {
-	private final int layer;  // layer node is located in
+	private final NeuralNetwork network;  // network node is located in
+	private final Layer layer;  // layer node is located in
 	private float[] weights;  // array of all weights from previous layer
 	private float value;  // weights * value of weight sources
-	private final NeuralNetwork network;  // network node is located in
 	
-	public Neuron(int layer, NeuralNetwork network) {
+	public Neuron(Layer layer, NeuralNetwork network) {
 		this.layer = layer;
 		this.network = network;
 		initWeight();
 	}
 	
-	public int getLayer() {
+	public Layer getLayer() {
 		return layer;
 	}
 	
@@ -57,10 +57,11 @@ public class Neuron {
 	 * Initializes weights that node connects to in next node layer.
 	 */
 	private void initWeight() {
-		if (layer >= network.getLayers().length - 1)  // exit if last node layer (output layer)
+		int layerNum = layer.getLayerNum();
+		if (layerNum >= network.getLayerLengths().length - 1)  // exit if last node layer (output layer)
 			return;
 		
-		int size = network.getLayers()[layer + 1];
-		setWeights(new float[size]);
+		int size = network.getLayerLengths()[layerNum + 1];
+		weights = new float[size];
 	}
 }
