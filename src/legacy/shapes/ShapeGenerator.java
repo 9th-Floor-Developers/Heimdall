@@ -1,4 +1,4 @@
-package shapes;
+package legacy.shapes;
 
 import java.util.Random;
 
