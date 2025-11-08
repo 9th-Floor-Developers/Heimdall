@@ -8,7 +8,8 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-public class BasicTrainer {
+public class
+BasicTrainer {
     /*
 	public void train(float[][] inputs, int[] outputs, int[] layers,
 	                  int agentsPerRound, int numRounds, float scale) throws InterruptedException {
