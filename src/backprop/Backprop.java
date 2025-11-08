@@ -5,6 +5,7 @@ import static numbers.NumberGenerator.getImg;
 
 import numbers.NumberImage;
 import training_data.BasicDataSets;
+import training_data.GeneratedDataSets;
 
 import java.util.Random;
 
@@ -12,60 +13,44 @@ public class Backprop {
 	private static final Random random = new Random();
 	
 	public static void main(String[] args) throws Exception {
-        /*
+
 		NumberImage[] images = getAllImgs();
-		float[][] targets = new float[images.length][];
-		float[][] inputs = new float[images.length][];
+		float[][] allTargets = new float[images.length][];
+		float[][] allInputs = new float[images.length][];
 
 		for (int i = 0; i < images.length; i++) {
 			NumberImage image = images[i];
-			
-			float[] flatInputs = new float[image.pixels().length * image.pixels()[0].length];
-			int idx = 0;
-			for (int r = 0; r < image.pixels().length; r++) {
-				for (int c = 0; c < image.pixels()[0].length; c++) {
-					flatInputs[idx] = image.pixels()[r][c];
-					idx++;
-				}
-			}
-			inputs[i] = flatInputs;
-			
-			float[] target = new float[10];
-			target[image.value()] = 1;
-			targets[i] = target;
+
+			allInputs[i] = image.to1D();
+			allTargets[i] = image.toTarget();
 		}
 		
 		int data_amount = 1000;
 		
-		float[][] newInputs = new float[data_amount][];
-		float[][] newTargets = new float[data_amount][];
+		float[][] inputs = new float[data_amount][];
+		float[][] targets = new float[data_amount][];
 		for (int i = 0; i < data_amount; i++) {
 			Random random = new Random();
-			int idx = random.nextInt(0, inputs.length);
-			newInputs[i] = inputs[idx];
-			newTargets[i] = targets[idx];
+			int idx = random.nextInt(0, allInputs.length);
+			inputs[i] = allInputs[idx];
+			targets[i] = allTargets[idx];
 		}
 		
-		NeuralNetwork network = new NeuralNetwork(newInputs[0].length, 20, newTargets[0].length); // input, hidden, output
-        */
-		float[][] inputs = BasicDataSets.or_not6_inputs;
-        int[] outputs = BasicDataSets.or_not6_outputs;
-        int possibleOutputs = 2;
-        float[][] targets = new float[outputs.length][];
+		NeuralNetwork network = new NeuralNetwork(inputs[0].length, 300, targets[0].length); // input, hidden, output
 
-        for (int i = 0; i < outputs.length; i++) {
-            targets[i] = new float[possibleOutputs];
-            targets[i][outputs[i]] = 1;
-        }
+        /*
+        GeneratedDataSets.generateAdder10DataSets(200);
+		float[][] inputs = GeneratedDataSets.adder10_inputs;
+        float[][] targets = GeneratedDataSets.adder10_targets;
 
-        NeuralNetwork network = new NeuralNetwork(inputs[0].length, 2, targets[0].length);
+        NeuralNetwork network = new NeuralNetwork(inputs[0].length, 100, targets[0].length);
+         */
 
-		for (int generation = 1; generation <= 10000; generation++) {
+		for (int generation = 1; generation <= 20000; generation++) {
 			for (int i = 0; i < inputs.length; i++) {
-				network.train(inputs[i], targets[i], .1f);
+				network.train(inputs[i], targets[i], .004f);
 			}
-			if (generation % 100 == 0)
-				System.out.printf("Generation %d | Loss: %.6f%n", generation, network.totalLoss(inputs, targets));
+            System.out.printf("Generation %d | Loss: %.6f%n", generation, network.totalLoss(inputs, targets));
 		}
 	}
 }
