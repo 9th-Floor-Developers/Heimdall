@@ -1,5 +1,7 @@
 package legacy;
 
+import legacy.matrixices.NeuralNetwork;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -7,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class BasicTrainer {
+    /*
 	public void train(float[][] inputs, int[] outputs, int[] layers,
 	                  int agentsPerRound, int numRounds, float scale) throws InterruptedException {
 		ArrayList<NeuralNetwork> agents = new ArrayList<>();
@@ -48,7 +51,7 @@ public class BasicTrainer {
 			
 			agents = new ArrayList<>();
 			for (int j = 0; j < agentsPerRound; j++)
-				agents.add(bestAgent.get().evolve(scale));
+				agents.add(bestAgent.get().evolve(scale, 2));
 		}
 		
 		System.out.println("Best Score: " + bestScore.get() + "%");
@@ -70,4 +73,5 @@ public class BasicTrainer {
 		
 		return score;
 	}
+    */
 }
