@@ -28,6 +28,26 @@ public record NumberImage(float[][] pixels,
         return target;
     }
 
+    public NumberImage toSmallerImage(int factor){
+        int height = pixels().length / factor;
+        int width = pixels()[0].length / factor;
+        float[][] newPixels = new float[height][width];
+
+        for (int y = 0; y < height; y++){
+            for (int x = 0; x < width; x++){
+                float sum = 0;
+                for (int yi = 0; yi < factor; yi++){
+                    for (int xi = 0; xi < factor; xi++){
+                        sum += pixels[(y * factor) + yi][(x * factor) + xi];
+                    }
+                }
+                newPixels[y][x] = sum / (factor * factor);
+            }
+        }
+
+        return new NumberImage(newPixels, value);
+    }
+
 	/**
 	 * Prints the image in ASCII format using pixels variable.
 	 * <p>
