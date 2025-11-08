@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class Heimdall {
 	public static void main(String[] args) throws Exception {
-		BasicTrainer trainer = new BasicTrainer();
+		Trainer trainer = new Trainer();
 		NumberImage[] images = getAllImgs();
 		
 		float[][] allInputs = new float[images.length][];
