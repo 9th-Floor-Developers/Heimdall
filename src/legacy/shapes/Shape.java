@@ -1,4 +1,4 @@
-package shapes;
+package legacy.shapes;
 
 public class Shape {
 	public ShapeType type;
