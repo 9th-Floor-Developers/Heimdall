@@ -1,4 +1,6 @@
-public class BasicDataSet {
+package training_data;
+
+public class BasicDataSets {
     public static final float[][] or5_inputs = new float[][] {
             {0, 0, 0, 0, 0},
             {0, 0, 0, 0, 1},
