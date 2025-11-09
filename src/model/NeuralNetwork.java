@@ -75,6 +75,7 @@ public class NeuralNetwork {
 					float randFloat = random.nextFloat(-scale, scale);
 					newNetwork.getNeuron(i, j).addWeight(k, randFloat);
 				}
+				newNetwork.getNeuron(i, j).addBias(random.nextFloat(-scale, scale));
 			}
 		}
 		
@@ -104,11 +105,7 @@ public class NeuralNetwork {
 					continue;
 				}
 				
-				Neuron neuron = getNeuron(i, j);
-				for (int k = 0; k < neuron.getNumWeights(); k++) {
-					Neuron prevNeuron = getNeuron(i - 1, k);
-					neuron.addValue(prevNeuron.getValue() * neuron.getWeight(k));
-				}
+				getNeuron(i, j).calculateValue(layers[i - 1]);
 			}
 		}
 		
