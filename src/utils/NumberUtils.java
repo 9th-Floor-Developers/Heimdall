@@ -70,33 +70,25 @@ public class NumberUtils {
 	}
 	
 	/**
-	 * Returns only random images from the {@code src} directory.
+	 * Returns random images from the {@code src} directory and all subdirectories.
+	 * <p>
+	 * Uses {@link #getAllImgs(String)} to get all images,
+	 * then returns {@code numImages} number of images.
 	 *
-	 * @param src       directory to get image files from
+	 * @param src       directory to begin recursive search
 	 * @param numImages desired number of {@link NumberImage} objects.
 	 * @return {@link NumberImage} array representing {@code numImages}
-	 * random images from {@code src} directory.
+	 * random images from {@code src} directory and subdirectories.
 	 * @throws Exception if directory is not found, empty, or is not a directory.
 	 */
 	public static NumberImage[] getRandomImgs(String src, int numImages) throws Exception {
-		NumberImage[] randomImages = new NumberImage[numImages];
-		File dir = new File(src);
+		NumberImage[] allImages = getAllImgs(src),
+				randomImages = new NumberImage[numImages];
 		
-		if (!dir.exists())
-			throw new FileNotFoundException();
-		else if (!dir.isDirectory())
-			throw new NotDirectoryException("Selected path is not a directory.");
-		
-		File[] files = dir.listFiles();
-		
-		if (files == null)
-			throw new Exception(src + " Is Empty.");
-		
+		Random random = new Random();
 		for (int i = 0; i < numImages; i++) {
-			Random random = new Random();
-			int idx = random.nextInt(0, files.length);
-			float[][] pixels = imgToFloatArr(files[idx]);
-			randomImages[i] = new NumberImage(pixels, Integer.parseInt(dir.getName()));
+			int idx = random.nextInt(0, allImages.length);
+			randomImages[i] = allImages[idx];
 		}
 		
 		return randomImages;
