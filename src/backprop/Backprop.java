@@ -1,7 +1,7 @@
 package backprop;
 
-import static numbers.NumberGenerator.getAllImgs;
-import static numbers.NumberGenerator.getImg;
+import static numbers.NumberUtils.getAllImgs;
+import static numbers.NumberUtils.getImg;
 
 import numbers.NumberImage;
 import training_data.BasicDataSets;
@@ -14,7 +14,7 @@ public class Backprop {
 	
 	public static void main(String[] args) throws Exception {
 
-		NumberImage[] images = getAllImgs();
+		NumberImage[] images = getAllImgs("./src/numbers/dataset/");
 		float[][] allTargets = new float[images.length][];
 		float[][] allInputs = new float[images.length][];
 
