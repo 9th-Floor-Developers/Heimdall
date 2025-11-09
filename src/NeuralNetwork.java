@@ -102,10 +102,11 @@ public class NeuralNetwork {
 					continue;
 				}
 				
-				Neuron neuron = getNeuron(i, j),
-						prevNeuron = getNeuron(i - 1, j);
-				for (int k = 0; k < neuron.getNumWeights(); k++)
+				Neuron neuron = getNeuron(i, j);
+				for (int k = 0; k < neuron.getNumWeights(); k++) {
+					Neuron prevNeuron = getNeuron(i - 1, k);
 					neuron.addValue(prevNeuron.getValue() * neuron.getWeight(k));
+				}
 			}
 		}
 		
