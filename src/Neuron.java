@@ -1,31 +1,35 @@
-import java.util.Arrays;
 import java.util.Random;
 
 /**
  * A class that represents a single neuron.
+ *
+ * @see Layer
+ * @see NeuralNetwork
  */
 public class Neuron {
-	private float[] weights;  // array of all weights for next layer
+	private final float[] weights;  // array of all weights for next layer
 	private float value;  // weights * value of weight sources
 	
+	/**
+	 * Creates a neuron with an empty (uninitialized) weights array
+	 * <p>
+	 * Initialize weights using {@link #initWeights()}, {@link #setWeight(int, float)},
+	 * or {@link #addWeight(int, float)}.
+	 *
+	 * @param weightsSize desired size of weights array, the number of nodes in previous layer (input layer has 0)
+	 */
 	public Neuron(int weightsSize) {
 		weights = new float[weightsSize];
 	}
 	
+	/**
+	 * Initialize all weights with random float between -1 and 1
+	 */
 	public void initWeights() {
 		Random random = new Random();
 		for (int i = 0; i < weights.length; i++)
 			weights[i] = random.nextFloat(-1, 1);
 	}
-	
-//	public Neuron(int layerNum, NeuralNetwork network) {
-//		if (layerNum == 0) {  // exit if last node layer (output layer)
-//			return;
-//		}
-//
-//		int size = network.getLayerLengths()[layerNum - 1];
-//		weights = new float[size];
-//	}
 	
 	public float getWeight(int idx) {
 		return weights[idx];
@@ -41,10 +45,6 @@ public class Neuron {
 	
 	public void setWeight(int idx, float weight) {
 		weights[idx] = weight;
-	}
-	
-	public void setWeights(float[] weights) {
-		this.weights = weights;
 	}
 	
 	public void addWeight(int index, float value) {
