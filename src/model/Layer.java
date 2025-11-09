@@ -1,3 +1,5 @@
+package model;
+
 /**
  * A class that represents a single layer containing a set number of neurons.
  *

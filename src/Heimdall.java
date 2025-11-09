@@ -1,31 +1,30 @@
-import numbers.NumberImage;
-import static numbers.NumberUtils.getAllImgs;
-import static training_data.BasicDataSets.*;
+import model.data.NumberImage;
+import static utils.NumberUtils.getAllImgs;
 
 public class Heimdall {
 	/**
 	 * Entry point
 	 */
 	public static void main(String[] args) throws Exception {
-		NumberImage[] images = getAllImgs("./src/numbers/dataset/");
-
+		NumberImage[] images = getAllImgs("./src/datasets/numbers/");
+		
 		for (int i = 0; i < images.length; i++)
 			images[i] = images[i].scaleDownImage(5);  // scale images down for speed and accuracy
-
+		
 		float[][] inputs = new float[images.length][];
 		int[] outputs = new int[images.length];
-
+		
 		for (int i = 0; i < images.length; i++) {
 			NumberImage image = images[i];
 			inputs[i] = image.to1D();
 			outputs[i] = image.value();
 		}
-		
+
 //		float[][] inputs = or5_inputs;
 //		int[] outputs = or5_outputs;
 		
 		Trainer trainer = new Trainer(
-				20,  // number of agents per round, more possibilities to evolve
+				4,  // number of agents per round, more possibilities to evolve
 				new int[] {  // layers format
 						inputs[0].length,  // input layer must match input count
 						200, // number of middle layer nodes, more opportunities per agent to learn

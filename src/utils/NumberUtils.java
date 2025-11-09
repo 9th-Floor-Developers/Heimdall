@@ -1,4 +1,6 @@
-package numbers;
+package utils;
+
+import model.data.NumberImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

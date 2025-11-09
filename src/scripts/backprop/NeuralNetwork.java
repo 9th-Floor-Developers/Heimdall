@@ -1,4 +1,4 @@
-package backprop;
+package scripts.backprop;
 
 import java.util.Random;
 

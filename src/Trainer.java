@@ -1,3 +1,7 @@
+import model.Layer;
+import model.NeuralNetwork;
+import model.Neuron;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -8,7 +12,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
  * A class representing a trainer that contains an array of agents
- * ({@link NeuralNetwork} objects) and all methods required to train them.
+ * ({@link Neuron} objects) and all methods required to train them.
  *
  * @see #train(float[][], int[], int, float)
  */
