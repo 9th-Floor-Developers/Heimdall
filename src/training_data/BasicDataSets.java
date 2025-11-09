@@ -139,4 +139,14 @@ public class BasicDataSets {
             1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,
             1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0
     };
+
+    public static float[][] outputsToTargets(int[] outputs){
+        float[][] targets = new float[outputs.length][];
+        for (int i = 0; i < outputs.length; i++){
+            targets[i] = new float[10];
+            targets[i][outputs[i]] = 1;
+        }
+
+        return targets;
+    }
 }
