@@ -8,7 +8,6 @@ package numbers;
  */
 public record NumberImage(float[][] pixels,
                           int value) {
-
     public float[] to1D() {
         float[] flatInputs = new float[pixels().length * pixels()[0].length];
         int idx = 0;
@@ -24,7 +23,7 @@ public record NumberImage(float[][] pixels,
 
     public float[] toTarget(){
         float[] target = new float[10];
-        target[value()] = 1;
+        target[value] = 1;
         return target;
     }
 
