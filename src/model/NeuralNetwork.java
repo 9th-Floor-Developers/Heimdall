@@ -40,18 +40,6 @@ public class NeuralNetwork {
 			layerLengths[i] = layers[i].getNumNeurons();
 	}
 	
-	public Layer getLayer(int idx) {
-		return layers[idx];
-	}
-	
-	public Layer[] getLayers() {
-		return layers;
-	}
-	
-	public int[] getLayerLengths() {
-		return layerLengths;
-	}
-	
 	/**
 	 * Adjust all weights in a network randomly to return a new variation of the network
 	 *
@@ -150,7 +138,22 @@ public class NeuralNetwork {
 		return total / outputLayer.getNumNeurons();
 	}
 	
+	// region Getters/Setters
+	public Layer[] getLayers() {
+		return layers;
+	}
+	
+	public int[] getLayerLengths() {
+		return layerLengths;
+	}
+	
+	public Layer getLayer(int idx) {
+		return layers[idx];
+	}
+	
+	
 	public Neuron getNeuron(int layer, int number) {
 		return layers[layer].getNeuron(number);
 	}
+	// endregion
 }

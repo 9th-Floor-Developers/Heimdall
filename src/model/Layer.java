@@ -34,14 +34,7 @@ public class Layer {
 		}
 	}
 	
-	public Neuron getNeuron(int idx) {
-		return neurons[idx];
-	}
-	
-	public void setNeuron(int idx, Neuron neuron) {
-		neurons[idx] = neuron;
-	}
-	
+	// region Getters/Setters
 	public Neuron[] getNeurons() {
 		return neurons;
 	}
@@ -49,4 +42,13 @@ public class Layer {
 	public int getNumNeurons() {
 		return neurons.length;
 	}
+	
+	public Neuron getNeuron(int idx) {
+		return neurons[idx];
+	}
+	
+	public void setNeuron(int idx, Neuron neuron) {
+		neurons[idx] = neuron;
+	}
+	// endregion
 }

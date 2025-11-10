@@ -99,6 +99,7 @@ public class Neuron {
 		return y * (1 - y);
 	}
 	
+	// region Getters/Setters
 	public float getWeight(int idx) {
 		return weights[idx];
 	}
@@ -119,6 +120,7 @@ public class Neuron {
 		weights[index] += value;
 	}
 	
+	
 	public float getValue() {
 		return value;
 	}
@@ -127,31 +129,34 @@ public class Neuron {
 		this.value = value;
 	}
 	
-	public void resetValue() {
-		value = 0;
-	}
-	
 	public void addValue(float value) {
 		this.value += value;
 	}
 	
+	
 	public float getBias() {
 		return bias;
+	}
+	
+	public void setBias(float bias) {
+		this.bias = bias;
 	}
 	
 	public void addBias(float bias) {
 		this.bias += bias;
 	}
 	
+	
 	public float getError() {
 		return error;
-	}
-	
-	public void addError(float error) {
-		this.error += error;
 	}
 	
 	public void setError(float target) {
 		this.error = target - value;
 	}
+	
+	public void addError(float error) {
+		this.error += error;
+	}
+	// endregion
 }
