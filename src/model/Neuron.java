@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class Neuron {
 	private final float[] weights;  // array of all weights for next layer
-	private float value, bias;  // value = weights * value + bias
+	private float value, bias, error;  // value = weights * value + bias
 	
 	/**
 	 * Creates a neuron with an empty (uninitialized) weights array
@@ -40,16 +40,46 @@ public class Neuron {
 	 *
 	 * @param prevLayer previous {@link Layer} of neurons, used to calculate current neuron's value
 	 */
-	public void calculateValue(Layer prevLayer) {
+	public void calcValue(Layer prevLayer) {
 		value = bias;
+		error = 0;
 		
-		Neuron[] neurons = prevLayer.getNeurons();
-		for (int i = 0; i < neurons.length; i++) {
-			Neuron prevNeuron = neurons[i];
+		Neuron[] prevNeurons = prevLayer.getNeurons();
+		for (int i = 0; i < prevNeurons.length; i++) {
+			Neuron prevNeuron = prevNeurons[i];
 			value += prevNeuron.value * getWeight(i);
 		}
 		
 		value = sigmoid(value);
+	}
+	
+	/**
+	 * Calculates errors in previous error
+	 *
+	 * @param prevLayer layer to calculate errors for
+	 */
+	public void calcErrors(Layer prevLayer) {
+		Neuron[] prevNeurons = prevLayer.getNeurons();
+		for (int i = 0; i < prevNeurons.length; i++) {
+			Neuron prevNeuron = prevNeurons[i];
+			prevNeuron.error += error * getWeight(i);
+		}
+	}
+	
+	/**
+	 * Calculates the gradient of the cost function to find the global minimum.
+	 *
+	 * @param learningRate rate to apply to weights (0.00-0.10)
+	 * @param prevLayer    layer to get neuron weights from
+	 */
+	public void modifyWeights(float learningRate, Layer prevLayer) {
+		Neuron[] prevNeurons = prevLayer.getNeurons();
+		for (int i = 0; i < prevNeurons.length; i++) {
+			Neuron prevNeuron = prevNeurons[i];
+			float gradient = error * sigmoidDerivative(value);
+			addWeight(i, learningRate * gradient * prevNeuron.getValue());
+		}
+		addBias(learningRate * error);
 	}
 	
 	/**
@@ -58,7 +88,7 @@ public class Neuron {
 	 * @param x value of x in sigmoid function
 	 * @return output value of sigmoid function
 	 */
-	public float sigmoid(float x) {
+	private float sigmoid(float x) {
 		return (float) (1 / (1 + Math.exp(-x)));
 	}
 	
@@ -68,7 +98,7 @@ public class Neuron {
 	 * @param y value of y in derivative of sigmoid function
 	 * @return output value of derivative of sigmoid function
 	 */
-	public float sigmoidDerivative(float y) {
+	private float sigmoidDerivative(float y) {
 		return y * (1 - y);
 	}
 	
@@ -114,5 +144,17 @@ public class Neuron {
 	
 	public void addBias(float bias) {
 		this.bias += bias;
+	}
+	
+	public float getError() {
+		return error;
+	}
+	
+	public void addError(float error) {
+		this.error += error;
+	}
+	
+	public void setError(float target) {
+		this.error = target - value;
 	}
 }

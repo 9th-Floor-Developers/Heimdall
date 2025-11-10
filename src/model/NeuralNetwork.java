@@ -92,11 +92,8 @@ public class NeuralNetwork {
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public ArrayList<Float> calculate(float[] inputs) {
-		for (Layer layer : layers)
-			for (Neuron neuron : layer.getNeurons())
-				neuron.resetValue();  // resets all neuron values to 0
-		
+	public float[] calculate(float[] inputs) {
+		float[] outputs = new float[layers[layers.length - 1].getNumNeurons()];
 		for (int i = 0; i < layers.length; i++) {
 			Neuron[] neurons = layers[i].getNeurons();
 			for (int j = 0; j < neurons.length; j++) {
@@ -105,16 +102,54 @@ public class NeuralNetwork {
 					continue;
 				}
 				
-				getNeuron(i, j).calculateValue(layers[i - 1]);
+				getNeuron(i, j).calcValue(layers[i - 1]);
+				
+				if (i == layers.length - 1){
+					outputs[j] = getNeuron(i, j).getValue();
+				}
 			}
 		}
 		
-		ArrayList<Float> outputs = new ArrayList<>();
-		Layer outputLayer = layers[layers.length - 1];
-		for (Neuron neuron : outputLayer.getNeurons())
-			outputs.add(neuron.getValue());
-		
 		return outputs;
+	}
+	
+	/**
+	 * Apply back propagation process to neural network
+	 *
+	 * @param target       desired output values
+	 * @param learningRate difference to modify weights (0.0-0.5)
+	 * @see Layer
+	 * @see Neuron
+	 */
+	public void backProp(float[] target, float learningRate) {
+		for (int i = 1; i < layers.length; i++) {
+			Neuron[] neurons = layers[i].getNeurons();
+			for (int j = 0; j < neurons.length; j++) {
+				Neuron neuron = getNeuron(i, j);
+				if (i == layers.length - 1)
+					neuron.setError(target[j]);
+				
+				neuron.calcErrors(layers[i - 1]);
+				neuron.modifyWeights(learningRate, layers[i - 1]);
+			}
+		}
+	}
+	
+	public float totalLoss() {
+		float total = 0;
+		int numNeurons = 0;
+		for (int i = 0; i < layers.length; i++) {
+			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
+				if (i == 0){
+					continue;
+				}
+				Neuron neuron = getNeuron(i, j);
+				total += (float) Math.pow(neuron.getError(), 2);
+				numNeurons++;
+			}
+		}
+		
+		return total / numNeurons;
 	}
 	
 	public Neuron getNeuron(int layer, int number) {

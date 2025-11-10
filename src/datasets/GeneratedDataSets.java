@@ -3,10 +3,10 @@ package datasets;
 import java.util.Random;
 
 public class GeneratedDataSets {
-	public static float[][] adder10_inputs;
-	public static float[][] adder10_targets;
+	public float[][] adder10_inputs;
+	public float[][] adder10_targets;
 	
-	public static void generateAdder10DataSets(int dataAmount) {
+	public void generateAdder10DataSets(int dataAmount) {
 		Random random = new Random();
 		
 		adder10_inputs = new float[dataAmount][];
