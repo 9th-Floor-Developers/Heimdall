@@ -6,7 +6,7 @@ public class Heimdall {
 	 * Entry point
 	 */
 	public static void main(String[] args) throws Exception {
-		NumberImage[] images = getRandomImgs("./src/datasets/numbers/", 100);
+		NumberImage[] images = getRandomImgs("./src/datasets/numbers/", 1000);
 		float[][] targets = new float[images.length][],
 				inputs = new float[images.length][];
 		int[] outputs = new int[images.length];
@@ -19,7 +19,7 @@ public class Heimdall {
 		}
 		
 		Trainer trainer = new Trainer(
-				8,  // number of agents per round, more possibilities to evolve
+				3,  // number of agents per round, more possibilities to evolve
 				new int[] {  // layers format
 						inputs[0].length,  // input layer must match input count // number of middle layer nodes, more opportunities per agent to learn
 						300,
@@ -27,12 +27,12 @@ public class Heimdall {
 				}
 		);
 		
-		for (int generation = 1; generation <= 10000; generation++) {
+		for (int generation = 1; generation <= 100000; generation++) {
 			trainer.train(
 					inputs,
 					targets,
 					outputs,
-					.002f,
+					.005f,
 					generation
 			);
 		}

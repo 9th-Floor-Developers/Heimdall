@@ -16,6 +16,7 @@ public class Trainer {
 	private final AtomicReference<NeuralNetwork> bestAgent;
 	private final NeuralNetwork[] variants;
 	private final AtomicLong bestScore;
+    private NeuralNetwork agent;
 	
 	/**
 	 * Initialize trainer and all agents ({@link NeuralNetwork} objects) within.
@@ -28,6 +29,7 @@ public class Trainer {
 		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths));
 		variants = new NeuralNetwork[agentsPerRound];
 		bestScore = new AtomicLong(0);
+        agent = new NeuralNetwork(layerLengths);
 	}
 	
 	/**
@@ -60,23 +62,43 @@ public class Trainer {
 			agent.backProp(targets[i], learningRate);
 			sumLosses += agent.totalLoss();
 		}
-		
-		return score;
+        sumLosses /= inputs.length;
+
+        float percent = (float) score / inputs.length * 100;
+        String formatted = new DecimalFormat("###.##").format(percent);
+        System.out.println("Score: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
+        System.out.println("Loss : [" + sumLosses + "]");
+		return sumLosses;
 	}
 	
 	public void train(float[][] inputs, float[][] targets, int[] outputs,
 	                  float learningRate, int generationNum) throws InterruptedException {
 		ArrayList<Thread> threads = new ArrayList<>();
-		
+
 		for (int i = 0; i < variants.length; i++)
-			variants[i] = bestAgent.get();
-		
+			variants[i] = bestAgent.get().evolve(learningRate * 100);
+
+        System.out.println("Generation: " + generationNum);
+        float loss = trainAgent(agent, inputs, targets, outputs, learningRate);
+
+        /*
+        for (int i = 0; i < variants.length; i++){
+            float variantLoss = trainAgent(variants[i], inputs, targets, outputs, learningRate);
+            if (variantLoss < loss){
+                System.out.println("EVOLUTION BETTER");
+            }
+        }
+
+         */
+
+        /*
 		for (NeuralNetwork variant : variants) {
 			Thread thread = new Thread(() -> {
 				float score = trainAgent(variant, inputs, targets, outputs, learningRate);
 				if (score > bestScore.get()) {
 					bestScore.set((long) score);
 					bestAgent.set(variant);
+                    System.out.println("Best replaced");
 				}
 			});
 			thread.start();
@@ -85,9 +107,6 @@ public class Trainer {
 		
 		for (Thread thread : threads)
 			thread.join();
-		
-		float percent = (float) bestScore.get() / inputs.length * 100;
-		String formatted = new DecimalFormat("###.##").format(percent);
-		System.out.println("Generation: " + generationNum + " | Score: [" + bestScore.get() + "/" + inputs.length + "] (" + formatted + "%)");
+         */
 	}
 }
