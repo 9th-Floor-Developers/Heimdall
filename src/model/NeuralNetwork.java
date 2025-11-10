@@ -1,24 +1,21 @@
 package model;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
  * A class that represents a neural network and all the layers within.
- *
- * @see Layer
+ * <p>
+ * Each {@link Layer} contains an array of {@link Neuron} objects.
  */
 public class NeuralNetwork {
-	private final Layer[] layers;  // network consisting of layers
-	private final int[] layerLengths;  // length of all layers in network
+	private final Layer[] layers;
+	private final int[] layerLengths;
 	
 	/**
 	 * Creates a neural network and initializes all layers, neurons, and weights within
 	 *
-	 * @param layerLengths array containing number of neurons in each layer,
-	 *                     {@code layerLengths.length} should be number of layers in network
-	 * @see Layer
-	 * @see Neuron
+	 * @param layerLengths array containing number of {@link Neuron} objects in each {@link Layer},
+	 *                     {@code layerLengths.length} should be number of layers in network.
 	 */
 	public NeuralNetwork(int[] layerLengths) {
 		layers = new Layer[layerLengths.length];
@@ -31,11 +28,9 @@ public class NeuralNetwork {
 	}
 	
 	/**
-	 * Creates a neural network with already initialized layers
+	 * Creates a neural network with already initialized {@link Layer} objects.
 	 *
-	 * @param layers array of already initialized layers of neurons
-	 * @see Layer
-	 * @see Neuron
+	 * @param layers array of already initialized {@link Layer} objects consisting of {@link Neuron} objects.
 	 */
 	public NeuralNetwork(Layer[] layers) {
 		this.layers = layers;
@@ -71,11 +66,12 @@ public class NeuralNetwork {
 		
 		for (int i = 1; i < layers.length; i++) {  // skip input layer
 			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
+				Neuron neuron = newNetwork.getNeuron(i, j);
 				for (int k = 0; k < layers[i].getNeuron(j).getNumWeights(); k++) {
 					float randFloat = random.nextFloat(-scale, scale);
-					newNetwork.getNeuron(i, j).addWeight(k, randFloat);
+					neuron.addWeight(k, randFloat);
 				}
-				newNetwork.getNeuron(i, j).addBias(random.nextFloat(-scale, scale));
+				neuron.addBias(random.nextFloat(-scale, scale));
 			}
 		}
 		
@@ -83,7 +79,7 @@ public class NeuralNetwork {
 	}
 	
 	/**
-	 * Returns network determined values of output layer, essentially the "run" function.
+	 * Returns network determined values of output layer.
 	 * <p>
 	 * When return value is compared with definitive answer array, the accuracy of the network can be determined.
 	 *
@@ -92,21 +88,22 @@ public class NeuralNetwork {
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public float[] calculate(float[] inputs) {
-		float[] outputs = new float[layers[layers.length - 1].getNumNeurons()];
+	public float[] calcOutputs(float[] inputs) {
+		int outputLayerIdx = layers.length - 1;
+		float[] outputs = new float[layers[outputLayerIdx].getNumNeurons()];
+		
 		for (int i = 0; i < layers.length; i++) {
 			Neuron[] neurons = layers[i].getNeurons();
 			for (int j = 0; j < neurons.length; j++) {
+				Neuron neuron = getNeuron(i, j);
 				if (i == 0) {
-					getNeuron(i, j).setValue(inputs[j]);
+					neuron.setValue(inputs[j]);
 					continue;
 				}
 				
-				getNeuron(i, j).calcValue(layers[i - 1]);
-				
-				if (i == layers.length - 1){
-					outputs[j] = getNeuron(i, j).getValue();
-				}
+				neuron.calcValue(layers[i - 1]);
+				if (i == outputLayerIdx)
+					outputs[j] = neuron.getValue();
 			}
 		}
 		
@@ -114,7 +111,7 @@ public class NeuralNetwork {
 	}
 	
 	/**
-	 * Apply back propagation process to neural network
+	 * Apply back propagation process to neural network.
 	 *
 	 * @param target       desired output values
 	 * @param learningRate difference to modify weights (0.0-0.5)
@@ -129,27 +126,28 @@ public class NeuralNetwork {
 				if (i == layers.length - 1)
 					neuron.setError(target[j]);
 				
-				neuron.calcErrors(layers[i - 1]);
-				neuron.modifyWeights(learningRate, layers[i - 1]);
+				Layer layer = layers[i - 1];
+				neuron.calcErrors(layer);
+				neuron.modifyWeights(learningRate, layer);
 			}
 		}
 	}
 	
+	/**
+	 * Calculates total loss of all neurons in output layer.
+	 *
+	 * @return averaged loss of each node in the output layer
+	 * @see Layer
+	 * @see Neuron
+	 */
 	public float totalLoss() {
+		Layer outputLayer = layers[layers.length - 1];
 		float total = 0;
-		int numNeurons = 0;
-		for (int i = 0; i < layers.length; i++) {
-			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
-				if (i == 0){
-					continue;
-				}
-				Neuron neuron = getNeuron(i, j);
-				total += (float) Math.pow(neuron.getError(), 2);
-				numNeurons++;
-			}
-		}
 		
-		return total / numNeurons;
+		for (Neuron neuron : outputLayer.getNeurons())
+			total += (float) Math.pow(neuron.getError(), 2);
+		
+		return total / outputLayer.getNumNeurons();
 	}
 	
 	public Neuron getNeuron(int layer, int number) {

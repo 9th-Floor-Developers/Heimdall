@@ -1,12 +1,11 @@
 package model;
 
 /**
- * A class that represents a single layer containing a set number of neurons.
- *
- * @see Neuron
+ * A class that represents a single layer containing a set number of
+ * {@link Neuron} objects located in a {@link NeuralNetwork} object.
  */
 public class Layer {
-	private final Neuron[] neurons;  // all neurons in layer
+	private final Neuron[] neurons;
 	
 	/**
 	 * Creates a layer of neurons and initializes all weights within except for input layer.
