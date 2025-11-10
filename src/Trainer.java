@@ -1,16 +1,21 @@
 import model.NeuralNetwork;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A class representing a trainer that contains an array of agents
  * ({@link NeuralNetwork} objects) and all methods required to train them.
  * <p>
  *
- * @see #train(float[][], float[][], int[], float)
+// * @see #train(float[][], float[][], int[], float)
  */
 public class Trainer {
-	private final NeuralNetwork agent;
+	private final AtomicReference<NeuralNetwork> bestAgent;
+	private final NeuralNetwork[] variants;
+	private final AtomicLong bestScore;
 	
 	/**
 	 * Initialize trainer and all agents ({@link NeuralNetwork} objects) within.
@@ -20,7 +25,9 @@ public class Trainer {
 	 *                       ({@code layerLengths.length} will be used to create number of layers)
 	 */
 	public Trainer(int agentsPerRound, int[] layerLengths) {
-		agent = new NeuralNetwork(layerLengths);
+		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths));
+		variants = new NeuralNetwork[agentsPerRound];
+		bestScore = new AtomicLong(0);
 	}
 	
 	/**
@@ -32,7 +39,8 @@ public class Trainer {
 	 * @param learningRate difference to modify weights (0.0-0.5)
 	 * @see NeuralNetwork
 	 */
-	public void train(float[][] inputs, float[][] targets, int[] outputs, float learningRate) {
+	private float trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
+	                         int[] outputs, float learningRate) {
 		float sumLosses = 0;
 		int score = 0;
 		
@@ -53,8 +61,33 @@ public class Trainer {
 			sumLosses += agent.totalLoss();
 		}
 		
-		float percent = (float) score / inputs.length * 100;
+		return score;
+	}
+	
+	public void train(float[][] inputs, float[][] targets, int[] outputs,
+	                  float learningRate, int generationNum) throws InterruptedException {
+		ArrayList<Thread> threads = new ArrayList<>();
+		
+		for (int i = 0; i < variants.length; i++)
+			variants[i] = bestAgent.get();
+		
+		for (NeuralNetwork variant : variants) {
+			Thread thread = new Thread(() -> {
+				float score = trainAgent(variant, inputs, targets, outputs, learningRate);
+				if (score > bestScore.get()) {
+					bestScore.set((long) score);
+					bestAgent.set(variant);
+				}
+			});
+			thread.start();
+			threads.add(thread);
+		}
+		
+		for (Thread thread : threads)
+			thread.join();
+		
+		float percent = (float) bestScore.get() / inputs.length * 100;
 		String formatted = new DecimalFormat("###.##").format(percent);
-		System.out.println("Score: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
+		System.out.println("Generation: " + generationNum + " | Score: [" + bestScore.get() + "/" + inputs.length + "] (" + formatted + "%)");
 	}
 }
