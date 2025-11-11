@@ -106,36 +106,25 @@ public class NeuralNetwork {
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public void backProp(float[] target, float learningRate) {
+	public float[] backProp(float[] target, float learningRate) {
+        float[] outputError = new float[layers[layers.length - 1].getNeurons().length];
+
 		for (int i = 1; i < layers.length; i++) {
 			Neuron[] neurons = layers[i].getNeurons();
 			for (int j = 0; j < neurons.length; j++) {
 				Neuron neuron = getNeuron(i, j);
-				if (i == layers.length - 1)
-					neuron.setError(target[j]);
+				if (i == layers.length - 1){
+                    neuron.setError(target[j]);
+                    outputError[j] = neuron.getError();
+                }
 				
 				Layer layer = layers[i - 1];
 				neuron.calcErrors(layer);
 				neuron.modifyWeights(learningRate, layer);
 			}
 		}
-	}
-	
-	/**
-	 * Calculates total loss of all neurons in output layer.
-	 *
-	 * @return averaged loss of each node in the output layer
-	 * @see Layer
-	 * @see Neuron
-	 */
-	public float totalLoss() {
-		Layer outputLayer = layers[layers.length - 1];
-		float total = 0;
-		
-		for (Neuron neuron : outputLayer.getNeurons())
-			total += (float) Math.pow(neuron.getError(), 2);
-		
-		return total / outputLayer.getNumNeurons();
+
+        return outputError;
 	}
 	
 	// region Getters/Setters

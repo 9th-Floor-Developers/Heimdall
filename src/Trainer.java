@@ -2,6 +2,7 @@ import model.NeuralNetwork;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,9 +42,9 @@ public class Trainer {
 	 * @param learningRate difference to modify weights (0.0-0.5)
 	 * @see NeuralNetwork
 	 */
-	private float trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
+	private void trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
 	                         int[] outputs, float learningRate) {
-		float sumLosses = 0;
+		float[] MSE = new float[targets[0].length];
 		int score = 0;
 		
 		for (int i = 0; i < inputs.length; i++) {
@@ -59,27 +60,28 @@ public class Trainer {
 			if (maxIndex == outputs[i])
 				score++;
 			
-			agent.backProp(targets[i], learningRate);
-			sumLosses += agent.totalLoss();
+			float[] outputErrors = agent.backProp(targets[i], learningRate);
+			for (int j = 0; j < outputErrors.length; j++){;
+                MSE[j] += (float) Math.pow(outputErrors[j], 2);
+            }
 		}
-        sumLosses /= inputs.length;
+
+        for (int i = 0; i < MSE.length; i++){
+            MSE[i] /= inputs.length;
+        }
 
         float percent = (float) score / inputs.length * 100;
         String formatted = new DecimalFormat("###.##").format(percent);
         System.out.println("Score: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
-        System.out.println("Loss : [" + sumLosses + "]");
-		return sumLosses;
+        System.out.println("Loss : [" + Arrays.toString(MSE) + "]");
 	}
 	
 	public void train(float[][] inputs, float[][] targets, int[] outputs,
 	                  float learningRate, int generationNum) throws InterruptedException {
-		ArrayList<Thread> threads = new ArrayList<>();
-
-		for (int i = 0; i < variants.length; i++)
-			variants[i] = bestAgent.get().evolve(learningRate * 100);
+		//ArrayList<Thread> threads = new ArrayList<>();
 
         System.out.println("Generation: " + generationNum);
-        float loss = trainAgent(agent, inputs, targets, outputs, learningRate);
+        trainAgent(agent, inputs, targets, outputs, learningRate);
 
         /*
         for (int i = 0; i < variants.length; i++){
