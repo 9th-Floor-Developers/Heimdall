@@ -34,7 +34,7 @@ public class NumberUtils {
 			for (int x = 0; x < width; x++) {
 				int pixel = image.getRGB(x, y);
 				int grey = (pixel >> 16) & 0xFF;  // extract greyscale value using red component
-				floatArray[y][x] = grey / 255.0f;  // normalize in 0-1 range
+				floatArray[y][x] = 1 - grey / 255.0f;  // normalize in 0-1 range, 1 - ... inverts colors
 			}
 		}
 		
