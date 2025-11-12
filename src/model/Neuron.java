@@ -9,6 +9,8 @@ import java.util.Random;
 public class Neuron {
 	private final float[] weights;
     private float[] weightsChange;
+    private final float[] squaredGradientsSum;
+    private float[] gradientChange;
 	private float value, bias, error, biasChange;
 	
 	/**
@@ -22,6 +24,8 @@ public class Neuron {
 	public Neuron(int weightsSize) {
 		weights = new float[weightsSize];
         weightsChange = new float[weightsSize];
+        gradientChange = new float[weightsSize];
+        squaredGradientsSum = new float[weightsSize];
 	}
 	
 	/**
@@ -69,26 +73,32 @@ public class Neuron {
 	/**
 	 * Calculates the gradient of the cost function to find the global minimum.
 	 *
-	 * @param learningRate rate to apply to weights (0.00-0.10)
 	 * @param layer        {@link Layer} object to get neuron weights from
 	 */
-	public void calcWeightChange(float learningRate, Layer layer) {
+	public void calcWeightChange(Layer layer) {
 		Neuron[] neurons = layer.getNeurons();
 		for (int i = 0; i < neurons.length; i++) {
 			Neuron neuron = neurons[i];
 			float gradient = error * sigmoidDerivative(value);
-			weightsChange[i] += learningRate * gradient * neuron.getValue();
+            gradientChange[i] += gradient;
+			weightsChange[i] += gradient * neuron.getValue();
 		}
-		biasChange += learningRate * error;
+		biasChange += error;
 	}
 
-    public void applyWeightChange(int inputLength){
+    public void applyWeightChange(float learningRate){
         for (int i = 0; i < getNumWeights(); i++) {
-            addWeight(i, weightsChange[i]);
+            float weightLearningRate = learningRate;
+            squaredGradientsSum[i] = (float) ((0.9 * squaredGradientsSum[i]) + (0.1 * Math.pow(gradientChange[i], 2)));
+            weightLearningRate /= (float) (Math.pow(squaredGradientsSum[i] + 1.0e-8, 0.5));
+
+            addWeight(i, weightsChange[i] * weightLearningRate);
         }
-        addBias(biasChange);
+        addBias(biasChange * learningRate);
+
         weightsChange = new float[weights.length];
         biasChange = 0;
+        gradientChange = new float[weights.length];
     }
 	
 	/**
