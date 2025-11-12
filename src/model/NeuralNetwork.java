@@ -120,12 +120,22 @@ public class NeuralNetwork {
 				
 				Layer layer = layers[i - 1];
 				neuron.calcErrors(layer);
-				neuron.modifyWeights(learningRate, layer);
+				neuron.calcWeightChange(learningRate, layer);
 			}
 		}
 
         return outputError;
 	}
+
+    public void applyWeights(int inputLength){
+        for (int i = 0; i < layers.length; i++) {
+            Neuron[] neurons = layers[i].getNeurons();
+            for (int j = 0; j < neurons.length; j++) {
+                Neuron neuron = getNeuron(i, j);
+                neuron.applyWeightChange(inputLength);
+            }
+        }
+    }
 	
 	// region Getters/Setters
 	public Layer[] getLayers() {

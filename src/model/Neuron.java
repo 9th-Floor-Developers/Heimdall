@@ -8,7 +8,8 @@ import java.util.Random;
  */
 public class Neuron {
 	private final float[] weights;
-	private float value, bias, error;
+    private float[] weightsChange;
+	private float value, bias, error, biasChange;
 	
 	/**
 	 * Creates a neuron with an empty (uninitialized) weights array
@@ -20,11 +21,13 @@ public class Neuron {
 	 */
 	public Neuron(int weightsSize) {
 		weights = new float[weightsSize];
+        weightsChange = new float[weightsSize];
 	}
 	
 	/**
 	 * Initialize all weights and bias with random float between -1 and 1
 	 */
+
 	public void initWeights() {
 		Random random = new Random();
 		bias = random.nextFloat(-1, 1);
@@ -69,15 +72,24 @@ public class Neuron {
 	 * @param learningRate rate to apply to weights (0.00-0.10)
 	 * @param layer        {@link Layer} object to get neuron weights from
 	 */
-	public void modifyWeights(float learningRate, Layer layer) {
+	public void calcWeightChange(float learningRate, Layer layer) {
 		Neuron[] neurons = layer.getNeurons();
 		for (int i = 0; i < neurons.length; i++) {
 			Neuron neuron = neurons[i];
 			float gradient = error * sigmoidDerivative(value);
-			addWeight(i, learningRate * gradient * neuron.getValue());
+			weightsChange[i] += learningRate * gradient * neuron.getValue();
 		}
-		addBias(learningRate * error);
+		biasChange += learningRate * error;
 	}
+
+    public void applyWeightChange(int inputLength){
+        for (int i = 0; i < getNumWeights(); i++) {
+            addWeight(i, weightsChange[i]);
+        }
+        addBias(biasChange);
+        weightsChange = new float[weights.length];
+        biasChange = 0;
+    }
 	
 	/**
 	 * Calculates sigmoid function

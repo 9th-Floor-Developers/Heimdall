@@ -65,6 +65,7 @@ public class Trainer {
                 MSE[j] += (float) Math.pow(outputErrors[j], 2);
             }
 		}
+        agent.applyWeights(inputs.length);
 
         for (int i = 0; i < MSE.length; i++){
             MSE[i] /= inputs.length;
