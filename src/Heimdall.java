@@ -40,5 +40,6 @@ public class Heimdall {
 		System.out.println("Best Score: " + trainer.getBestScore());
 		
 		trainer.logWeights();
+		trainer.logBiases();
 	}
 }

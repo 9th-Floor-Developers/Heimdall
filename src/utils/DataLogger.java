@@ -2,12 +2,12 @@ package utils;
 
 import model.Layer;
 import model.NeuralNetwork;
-import model.Neuron;
 
 import java.io.*;
+import java.util.Arrays;
 
 public class DataLogger {
-	private final File data, weights;
+	private final File data, weights, biases;
 	
 	public DataLogger() throws IOException, InstantiationException {
 		String folder_path = "./src/training-results";
@@ -26,6 +26,9 @@ public class DataLogger {
 		weights = new File(folder.getPath() + "/weights.csv");
 		if (!weights.createNewFile())
 			throw new InstantiationException("Failed To Create New Weights File");
+		biases = new File(folder.getPath() + "/biases.csv");
+		if (!biases.createNewFile())
+			throw new InstantiationException("Failed To Create New Biases File");
 		
 		FileWriter writer = new FileWriter(data);
 		writer.write("Generation, Score, Total, Percent\n");
@@ -51,22 +54,48 @@ public class DataLogger {
 	
 	public void logWeights(NeuralNetwork network) throws IOException {
 		Layer[] layers = network.getLayers();
-		float[][] allWeights = new float[layers.length][];
+		float[][][] allWeights = new float[layers.length - 1][][];
 		
-		for (int i = 0; i < layers.length; i++) {
-			Layer layer = layers[i];
-			for (int j = 0; j < layer.getNumNeurons(); j++) {
-				Neuron neuron = network.getNeuron(i, j);
-				allWeights[i] = neuron.getWeights();
+		for (int j = 1; j < layers.length; j++) {  // ignore input layer
+			int numNeurons = layers[j].getNumNeurons();
+			allWeights[j - 1] = new float[numNeurons][];
+			for (int i = 0; i < numNeurons; i++)
+				allWeights[j - 1][i] = network.getNeuron(j, i).getWeights();
+		}
+		
+		FileWriter writer = new FileWriter(weights, true);
+		for (float[][] layerWeights : allWeights) {
+			for (float[] neuronWeights : layerWeights) {
+				for (float weight : neuronWeights)
+					writer.write(weight + ",");
+				writer.write("\n");  // one node weights per line
 			}
+			writer.write("\n");  // whitespace between layers
 		}
 		
-		FileWriter writer = new FileWriter(weights);
-		for (int i = 1; i < allWeights.length; i++) {
-			float[] allWeight = allWeights[i];
-			for (float v : allWeight)
-				writer.write(v + ",");
-			writer.write("\n");
+		writer.close();
+	}
+	
+	public void logBiases(NeuralNetwork network) throws IOException {
+		Layer[] layers = network.getLayers();
+		float[][] allBiases = new float[layers.length - 1][];
+		
+		for (int j = 1; j < layers.length; j++) {  // ignore input layer
+			int numNeurons = layers[j].getNumNeurons();
+			allBiases[j - 1] = new float[numNeurons];
+			for (int i = 0; i < numNeurons; i++)
+				allBiases[j - 1][i] = network.getNeuron(j, i).getBias();
 		}
+		
+		System.out.println(Arrays.deepToString(allBiases));
+		
+		FileWriter writer = new FileWriter(biases, true);
+		for (float[] layerBias : allBiases) {
+			for (float neuronBias : layerBias)
+				writer.write(neuronBias + ",");
+			writer.write("\n");  // one layer per line
+		}
+		
+		writer.close();
 	}
 }

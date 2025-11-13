@@ -19,8 +19,7 @@ public class Trainer {
 	private final AtomicReference<NeuralNetwork> bestAgent;
 	private final NeuralNetwork[] agents;
 	private final AtomicLong bestScore;
-    private NeuralNetwork agent;
-	private DataLogger logger;
+	private final DataLogger logger;
 	
 	/**
 	 * Initialize trainer and all agents ({@link NeuralNetwork} objects) within.
@@ -122,5 +121,17 @@ public class Trainer {
 	 */
 	public void logWeights() throws IOException {
 		logger.logWeights(bestAgent.get());
+	}
+	
+	/**
+	 * Logs all biases of the best agent in biases.csv
+	 * <p>
+	 * Should only be run after the final training session.
+	 *
+	 * @throws IOException if file logging fails
+	 * @see DataLogger#logBiases(NeuralNetwork)
+	 */
+	public void logBiases() throws IOException {
+		logger.logBiases(bestAgent.get());
 	}
 }
