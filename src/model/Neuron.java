@@ -30,14 +30,14 @@ public class Neuron {
 	
 	/**
 	 * Initialize all weights and bias with random float between -1 and 1
+     * (Currently uses a set seed to make the weights and bias same every time it's ran)
 	 */
-
-	public void initWeights() {
-		Random random = new Random();
+	public void initWeights(Random random) {
 		bias = random.nextFloat(-1, 1);
 		
-		for (int i = 0; i < weights.length; i++)
-			weights[i] = random.nextFloat(-1, 1);
+		for (int i = 0; i < weights.length; i++){
+            weights[i] = random.nextFloat(-1, 1);
+        }
 	}
 	
 	/**

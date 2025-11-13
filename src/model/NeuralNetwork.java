@@ -17,12 +17,14 @@ public class NeuralNetwork {
 	 * @param layerLengths array containing number of {@link Neuron} objects in each {@link Layer},
 	 *                     {@code layerLengths.length} should be number of layers in network.
 	 */
-	public NeuralNetwork(int[] layerLengths) {
+	public NeuralNetwork(int[] layerLengths, int seed) {
+        Random random = new Random(seed);
+
 		layers = new Layer[layerLengths.length];
 		this.layerLengths = layerLengths;
 		
 		for (int i = 0; i < layerLengths.length; i++) {
-			Layer layer = new Layer(i, this, layerLengths[i]);
+			Layer layer = new Layer(i, this, layerLengths[i], random);
 			layers[i] = layer;
 		}
 	}

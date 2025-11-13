@@ -7,7 +7,7 @@ import java.text.DecimalFormat;
 
 public class Backprop {
 	public static void main(String[] args) throws Exception {
-		NumberImage[] images = getRandomImgs("./src/datasets/numbers/", 1000);
+		NumberImage[] images = getRandomImgs("./src/datasets/numbers/", 1000, 67);
 		float[][] targets = new float[images.length][],
 				inputs = new float[images.length][];
 		
@@ -16,7 +16,7 @@ public class Backprop {
 			inputs[i] = image.to1D();
 			targets[i] = image.toTarget();
 		}
-		
+
 		System.out.println("Training...");
 		
 		NeuralNetwork network = new NeuralNetwork(

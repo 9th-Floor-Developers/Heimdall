@@ -81,13 +81,14 @@ public class NumberUtils {
 	 * random images from {@code src} directory and subdirectories.
 	 * @throws Exception if directory is not found, empty, or is not a directory.
 	 */
-	public static NumberImage[] getRandomImgs(String src, int numImages) throws Exception {
+	public static NumberImage[] getRandomImgs(String src, int numImages, int seed) throws Exception {
 		NumberImage[] allImages = getAllImgs(src),
 				randomImages = new NumberImage[numImages];
 		
-		Random random = new Random();
+		Random random = new Random(seed);
 		for (int i = 0; i < numImages; i++) {
 			int idx = random.nextInt(0, allImages.length);
+            //System.out.println(idx);
 			randomImages[i] = allImages[idx];
 		}
 		

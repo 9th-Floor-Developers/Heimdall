@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Random;
+
 /**
  * A class that represents a single layer containing a set number of
  * {@link Neuron} objects located in a {@link NeuralNetwork} object.
@@ -17,7 +19,7 @@ public class Layer {
 	 * @param numNeurons number of {@link Neuron} objects to include in layer, output layer should
 	 *                   be number of possible answers for all input values
 	 */
-	public Layer(int layerNum, NeuralNetwork network, int numNeurons) {
+	public Layer(int layerNum, NeuralNetwork network, int numNeurons, Random random) {
 		neurons = new Neuron[numNeurons];
 		
 		for (int i = 0; i < numNeurons; i++) {
@@ -29,7 +31,7 @@ public class Layer {
 			
 			int numWeights = network.getLayer(layerNum - 1).getNumNeurons();
 			Neuron neuron = new Neuron(numWeights);
-			neuron.initWeights();
+			neuron.initWeights(random);
 			neurons[i] = neuron;
 		}
 	}
