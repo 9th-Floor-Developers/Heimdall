@@ -1,13 +1,12 @@
 import model.NeuralNetwork;
 import utils.DataLogger;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
+
+// TODO: update docstrings
 
 /**
  * A class representing a trainer that contains an array of agents
@@ -18,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public class Trainer {
 	private final AtomicReference<NeuralNetwork> bestAgent;
-	private final NeuralNetwork[] variants;
+	private final NeuralNetwork[] agents;
 	private final AtomicLong bestScore;
     private NeuralNetwork agent;
 	private DataLogger logger;
@@ -32,10 +31,11 @@ public class Trainer {
 	 */
 	public Trainer(int agentsPerRound, int[] layerLengths) throws Exception {
 		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths));
-		variants = new NeuralNetwork[agentsPerRound];
 		bestScore = new AtomicLong(0);
-        agent = new NeuralNetwork(layerLengths);
 		logger = new DataLogger();
+		agents = new NeuralNetwork[agentsPerRound];
+		for (int i = 0; i < agentsPerRound; i++)
+			agents[i] = new NeuralNetwork(layerLengths);
 	}
 	
 	/**
@@ -81,45 +81,46 @@ public class Trainer {
 	
 	public void train(float[][] inputs, float[][] targets, int[] outputs,
 	                  float learningRate, int generationNum) throws Exception {
-		//ArrayList<Thread> threads = new ArrayList<>();
+		// TODO: add multithreading
+		float[] scores = new float[agents.length];
+		for (int i = 0; i < agents.length; i++)
+			scores[i] = trainAgent(agents[i], inputs, targets, outputs, learningRate);
+		
+		int bestIndex = 0;
+		for (int i = 0; i < scores.length; i++)
+			if (scores[i] > scores[bestIndex])
+				bestIndex = i;
 
-		float score = trainAgent(agent, inputs, targets, outputs, learningRate);
-		float percent = score / inputs.length * 100;
+		float bestRoundScore = scores[bestIndex];
+		float percent = bestRoundScore / inputs.length * 100;
 		String formatted = new DecimalFormat("###.##").format(percent);
 		
-		System.out.println("Generation: " + generationNum + " | Score: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
-		logger.log(generationNum, score, inputs.length, formatted);
-
-        /*
-        for (int i = 0; i < variants.length; i++){
-            float variantLoss = trainAgent(variants[i], inputs, targets, outputs, learningRate);
-            if (variantLoss < loss){
-                System.out.println("EVOLUTION BETTER");
-            }
-        }
-
-         */
-
-        /*
-		for (NeuralNetwork variant : variants) {
-			Thread thread = new Thread(() -> {
-				float score = trainAgent(variant, inputs, targets, outputs, learningRate);
-				if (score > bestScore.get()) {
-					bestScore.set((long) score);
-					bestAgent.set(variant);
-                    System.out.println("Best replaced");
-				}
-			});
-			thread.start();
-			threads.add(thread);
+		System.out.println("Generation: " + generationNum + " | Best: [" + bestRoundScore + "/" + inputs.length + "] (" + formatted + "%)");
+		logger.log(generationNum, bestRoundScore, inputs.length, formatted);
+		
+		if (bestRoundScore > bestScore.get()) {
+			bestScore.set((long) bestRoundScore);
+			bestAgent.set(agents[bestIndex]);
 		}
 		
-		for (Thread thread : threads)
-			thread.join();
-         */
+		NeuralNetwork bestRoundAgent = agents[bestIndex];
+		for (int i = 0; i < agents.length; i++)
+			agents[i] = bestRoundAgent.evolve(learningRate);
 	}
 	
+	public float getBestScore() {
+		return bestScore.get();
+	}
+	
+	/**
+	 * Logs all weights of the best agent in weights.csv
+	 * <p>
+	 * Should only be run after the final training session.
+	 *
+	 * @throws IOException if file logging fails
+	 * @see DataLogger#logWeights(NeuralNetwork)
+	 */
 	public void logWeights() throws IOException {
-		logger.logWeights(agent);
+		logger.logWeights(bestAgent.get());
 	}
 }

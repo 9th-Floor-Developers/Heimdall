@@ -19,10 +19,10 @@ public class Heimdall {
 		}
 		
 		Trainer trainer = new Trainer(
-				3,  // number of agents per round, more possibilities to evolve
+				10,  // number of agents per round, more possibilities to evolve
 				new int[] {  // layers format
 						inputs[0].length,  // input layer must match input count // number of middle layer nodes, more opportunities per agent to learn
-						300,
+						100,
 						targets[0].length  // output layer is number of possible answers (0.0-1.0 inclusive)
 				}
 		);
@@ -32,10 +32,12 @@ public class Heimdall {
 					inputs,
 					targets,
 					outputs,
-					.005f,
+					.01f,
 					generation
 			);
 		}
+		
+		System.out.println("Best Score: " + trainer.getBestScore());
 		
 		trainer.logWeights();
 	}
