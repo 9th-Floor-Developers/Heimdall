@@ -27,7 +27,9 @@ public class Heimdall {
 				}
 		);
 		
-		for (int generation = 1; generation <= 100000; generation++) {
+		trainer.loadData("./src/training-results/5/weights.csv", "./src/training-results/5/biases.csv");
+		
+		for (int generation = 1; generation <= 100; generation++) {
 			trainer.train(
 					inputs,
 					targets,

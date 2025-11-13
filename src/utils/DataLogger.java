@@ -87,8 +87,6 @@ public class DataLogger {
 				allBiases[j - 1][i] = network.getNeuron(j, i).getBias();
 		}
 		
-		System.out.println(Arrays.deepToString(allBiases));
-		
 		FileWriter writer = new FileWriter(biases, true);
 		for (float[] layerBias : allBiases) {
 			for (float neuronBias : layerBias)
