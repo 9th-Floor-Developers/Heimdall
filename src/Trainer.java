@@ -1,5 +1,8 @@
 import model.NeuralNetwork;
+import utils.DataLogger;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,6 +21,7 @@ public class Trainer {
 	private final NeuralNetwork[] variants;
 	private final AtomicLong bestScore;
     private NeuralNetwork agent;
+	private DataLogger logger;
 	
 	/**
 	 * Initialize trainer and all agents ({@link NeuralNetwork} objects) within.
@@ -26,11 +30,12 @@ public class Trainer {
 	 * @param layerLengths   arraylist containing lengths of each layer
 	 *                       ({@code layerLengths.length} will be used to create number of layers)
 	 */
-	public Trainer(int agentsPerRound, int[] layerLengths) {
+	public Trainer(int agentsPerRound, int[] layerLengths) throws Exception {
 		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths));
 		variants = new NeuralNetwork[agentsPerRound];
 		bestScore = new AtomicLong(0);
         agent = new NeuralNetwork(layerLengths);
+		logger = new DataLogger();
 	}
 	
 	/**
@@ -42,7 +47,7 @@ public class Trainer {
 	 * @param learningRate difference to modify weights (0.0-0.5)
 	 * @see NeuralNetwork
 	 */
-	private void trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
+	private float trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
 	                         int[] outputs, float learningRate) {
 		float[] MSE = new float[targets[0].length];
 		int score = 0;
@@ -71,18 +76,19 @@ public class Trainer {
             MSE[i] /= inputs.length;
         }
 
-        float percent = (float) score / inputs.length * 100;
-        String formatted = new DecimalFormat("###.##").format(percent);
-        System.out.println("Score: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
-        System.out.println("Loss : [" + Arrays.toString(MSE) + "]");
+		return score;
 	}
 	
 	public void train(float[][] inputs, float[][] targets, int[] outputs,
-	                  float learningRate, int generationNum) throws InterruptedException {
+	                  float learningRate, int generationNum) throws Exception {
 		//ArrayList<Thread> threads = new ArrayList<>();
 
-        System.out.println("Generation: " + generationNum);
-        trainAgent(agent, inputs, targets, outputs, learningRate);
+		float score = trainAgent(agent, inputs, targets, outputs, learningRate);
+		float percent = score / inputs.length * 100;
+		String formatted = new DecimalFormat("###.##").format(percent);
+		
+		System.out.println("Generation: " + generationNum + " | Score: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
+		logger.log(generationNum, score, inputs.length, formatted);
 
         /*
         for (int i = 0; i < variants.length; i++){
@@ -111,5 +117,9 @@ public class Trainer {
 		for (Thread thread : threads)
 			thread.join();
          */
+	}
+	
+	public void logWeights() throws IOException {
+		logger.logWeights(agent);
 	}
 }

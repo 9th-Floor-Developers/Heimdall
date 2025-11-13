@@ -36,5 +36,7 @@ public class Heimdall {
 					generation
 			);
 		}
+		
+		trainer.logWeights();
 	}
 }
