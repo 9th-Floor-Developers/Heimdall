@@ -48,16 +48,12 @@ public class Neuron implements Serializable {
 	public void calcValue(Layer layer) {
 		value = bias;
 		error = 0;
-		System.out.println("Bais " + bias);
 		
 		Neuron[] neurons = layer.getNeurons();
 		for (int i = 0; i < neurons.length; i++){
-			System.out.println("Weight " + getWeight(i));
-			System.out.println("Prev value: " + neurons[i].value);
 			value += neurons[i].value * getWeight(i);
 		}
-		
-		System.out.println("Value: " + value);
+
 		value = sigmoid(value);
 	}
 	

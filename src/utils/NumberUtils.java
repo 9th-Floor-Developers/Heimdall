@@ -88,7 +88,6 @@ public class NumberUtils {
 		Random random = new Random(seed);
 		for (int i = 0; i < numImages; i++) {
 			int idx = random.nextInt(0, allImages.length);
-            //System.out.println(idx);
 			randomImages[i] = allImages[idx];
 		}
 		
@@ -151,25 +150,18 @@ public class NumberUtils {
 					System.out.println("Empty directory: " + file.getName());
 					continue;
 				}
-				
-				Thread thread = new Thread(() -> {
-					ArrayList<NumberImage> subDirImgs;
-					try {
-						subDirImgs = searchDir(file);
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-					allImgDecVals.addAll(subDirImgs);
-				});
-				
-				thread.start();
-				threads.add(thread);
+
+                ArrayList<NumberImage> subDirImgs;
+                try {
+                    subDirImgs = searchDir(file);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+                allImgDecVals.addAll(subDirImgs);
+
 			}
 		}
-		
-		for (Thread thread : threads)
-			thread.join();
-		
+
 		return allImgDecVals;
 	}
 }
