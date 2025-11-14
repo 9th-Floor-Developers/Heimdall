@@ -1,12 +1,12 @@
 package model;
 
-import java.util.Random;
+import java.io.Serializable;
 
 /**
  * A class that represents a single layer containing a set number of
  * {@link Neuron} objects located in a {@link NeuralNetwork} object.
  */
-public class Layer {
+public class Layer implements Serializable {
 	private final Neuron[] neurons;
 	
 	/**
@@ -19,7 +19,7 @@ public class Layer {
 	 * @param numNeurons number of {@link Neuron} objects to include in layer, output layer should
 	 *                   be number of possible answers for all input values
 	 */
-	public Layer(int layerNum, NeuralNetwork network, int numNeurons, Random random) {
+	public Layer(int layerNum, NeuralNetwork network, int numNeurons) {
 		neurons = new Neuron[numNeurons];
 		
 		for (int i = 0; i < numNeurons; i++) {
@@ -31,7 +31,7 @@ public class Layer {
 			
 			int numWeights = network.getLayer(layerNum - 1).getNumNeurons();
 			Neuron neuron = new Neuron(numWeights);
-			neuron.initWeights(random);
+			neuron.initWeights();
 			neurons[i] = neuron;
 		}
 	}
@@ -51,6 +51,11 @@ public class Layer {
 	
 	public void setNeuron(int idx, Neuron neuron) {
 		neurons[idx] = neuron;
+	}
+	
+	public void setWeights(float[][] weights) {
+		for (int i = 0; i < getNumNeurons(); i++)
+			getNeuron(i).setWeights(weights[i]);
 	}
 	// endregion
 }

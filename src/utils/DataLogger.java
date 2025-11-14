@@ -1,31 +1,24 @@
 package utils;
 
-import model.Layer;
 import model.NeuralNetwork;
-import model.Neuron;
 
 import java.io.*;
 
 public class DataLogger {
-	private final File data, weights;
+	private final String path;
+	private File data;
 	
-	public DataLogger() throws IOException, InstantiationException {
-		String folder_path = "./src/training-results";
-		File trainingPath = new File(folder_path);
+	public DataLogger(String path) {
+		File folder = new File(path);
+		this.path = path + "/" + findNextSessionNumber(folder);
+	}
+	
+	public void initLogger() throws IOException, InstantiationException {
+		File folder = new File(path);
+		if(!folder.mkdir())
+			throw new InstantiationException("Failed To Create New Folder");
 		
-		if (!trainingPath.exists())
-			throw new FileNotFoundException("Training results folder does not exist: " + trainingPath);
-		
-		File folder = new File(folder_path + "/" + findNextSessionNumber(trainingPath));
-		if (!folder.mkdir())
-			throw new InstantiationException("Failed To Create Directory.");
-		
-		data = new File(folder.getPath() + "/training-data.csv");
-		if (!data.createNewFile())
-			throw new InstantiationException("Failed To Create New Training Data File");
-		weights = new File(folder.getPath() + "/weights.csv");
-		if (!weights.createNewFile())
-			throw new InstantiationException("Failed To Create New Weights File");
+		data = new File(path + "/training-data.csv");
 		
 		FileWriter writer = new FileWriter(data);
 		writer.write("Generation, Score, Total, Percent\n");
@@ -39,7 +32,6 @@ public class DataLogger {
 			if (number > max)
 				max = number;
 		}
-		
 		return max + 1;
 	}
 	
@@ -49,24 +41,57 @@ public class DataLogger {
 		writer.close();
 	}
 	
-	public void logWeights(NeuralNetwork network) throws IOException {
-		Layer[] layers = network.getLayers();
-		float[][] allWeights = new float[layers.length][];
-		
-		for (int i = 0; i < layers.length; i++) {
-			Layer layer = layers[i];
-			for (int j = 0; j < layer.getNumNeurons(); j++) {
-				Neuron neuron = network.getNeuron(i, j);
-				allWeights[i] = neuron.getWeights();
-			}
-		}
+	public void logWeights(NeuralNetwork network) throws IOException, InstantiationException {
+		File weights = new File(path + "/weights.csv");
+		if (!weights.createNewFile())
+			throw new InstantiationException("Failed To Create New Weights File");
 		
 		FileWriter writer = new FileWriter(weights);
-		for (int i = 1; i < allWeights.length; i++) {
-			float[] allWeight = allWeights[i];
-			for (float v : allWeight)
-				writer.write(v + ",");
-			writer.write("\n");
+		for (float[][] layerWeights : network.getWeights()) {
+			for (float[] neuronWeights : layerWeights) {
+				for (float weight : neuronWeights)
+					writer.write(weight + ",");
+				writer.write("\n");  // one node weights per line
+			}
+			writer.write("\n");  // whitespace between layers
+		}
+		
+		writer.close();
+	}
+	
+	public void logBiases(NeuralNetwork network) throws IOException, InstantiationException {
+		File biases = new File(path + "/biases.csv");
+		if (!biases.createNewFile())
+			throw new InstantiationException("Failed To Create New Biases File");
+		
+		FileWriter writer = new FileWriter(biases);
+		for (float[] layerBias : network.getBiases()) {
+			for (float neuronBias : layerBias)
+				writer.write(neuronBias + ",");
+			writer.write("\n");  // one layer per line
+		}
+		
+		writer.close();
+	}
+	
+	public void saveBestAgent(NeuralNetwork agent) {
+		try (FileOutputStream fileOut = new FileOutputStream(path + "/agent.ser");
+		     ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+			out.writeObject(agent);
+			System.out.println("Agent Saved Successfully...");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public NeuralNetwork loadBestAgent(String folder) {
+		try (FileInputStream fileIn = new FileInputStream(folder + "/agent.ser");
+		     ObjectInputStream in = new ObjectInputStream(fileIn)) {
+			NeuralNetwork agent = (NeuralNetwork) in.readObject();
+			System.out.println("Agent Loaded Successfully");
+			return agent;
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException(e);
 		}
 	}
 }
