@@ -8,10 +8,8 @@ import java.util.Random;
  * object, located in a {@link NeuralNetwork} object.
  */
 public class Neuron implements Serializable {
-	private final float[] weights;
-    private float[] weightsChange;
-    private final float[] squaredGradientsSum;
-    private float[] gradientChange;
+	private final float[] weights, squaredGradientsSum;
+    private float[] weightsChange, gradientChange;
 	private float value, bias, error, biasChange;
 	
 	/**
@@ -50,11 +48,16 @@ public class Neuron implements Serializable {
 	public void calcValue(Layer layer) {
 		value = bias;
 		error = 0;
+		System.out.println("Bais " + bias);
 		
 		Neuron[] neurons = layer.getNeurons();
-		for (int i = 0; i < neurons.length; i++)
+		for (int i = 0; i < neurons.length; i++){
+			System.out.println("Weight " + getWeight(i));
+			System.out.println("Prev value: " + neurons[i].value);
 			value += neurons[i].value * getWeight(i);
+		}
 		
+		System.out.println("Value: " + value);
 		value = sigmoid(value);
 	}
 	

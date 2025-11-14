@@ -87,9 +87,8 @@ public class Trainer {
 				score++;
 			
 			float[] outputErrors = agent.backProp(targets[i], learningRate);
-			for (int j = 0; j < outputErrors.length; j++){;
-                MSE[j] += (float) Math.pow(outputErrors[j], 2);
-            }
+			for (int j = 0; j < outputErrors.length; j++)
+				MSE[j] += (float) Math.pow(outputErrors[j], 2);
 		}
 		agent.applyWeights(learningRate);
 		

@@ -131,13 +131,9 @@ public class NeuralNetwork implements Serializable {
 	}
 
     public void applyWeights(float learningRate){
-        for (int i = 0; i < layers.length; i++) {
-            Neuron[] neurons = layers[i].getNeurons();
-            for (int j = 0; j < neurons.length; j++) {
-                Neuron neuron = getNeuron(i, j);
-                neuron.applyWeightChange(learningRate);
-            }
-        }
+        for (int i = 0; i < layers.length; i++)
+            for (int j = 0; j < layers[i].getNumNeurons(); j++)
+	            getNeuron(i, j).applyWeightChange(learningRate);
     }
 	
 	// region Getters/Setters

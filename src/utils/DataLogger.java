@@ -41,38 +41,38 @@ public class DataLogger {
 		writer.close();
 	}
 	
-	public void logWeights(NeuralNetwork network) throws IOException, InstantiationException {
-		File weights = new File(path + "/weights.csv");
-		if (!weights.createNewFile())
-			throw new InstantiationException("Failed To Create New Weights File");
-		
-		FileWriter writer = new FileWriter(weights);
-		for (float[][] layerWeights : network.getWeights()) {
-			for (float[] neuronWeights : layerWeights) {
-				for (float weight : neuronWeights)
-					writer.write(weight + ",");
-				writer.write("\n");  // one node weights per line
-			}
-			writer.write("\n");  // whitespace between layers
-		}
-		
-		writer.close();
-	}
+//	public void logWeights(NeuralNetwork network) throws IOException, InstantiationException {
+//		File weights = new File(path + "/weights.csv");
+//		if (!weights.createNewFile())
+//			throw new InstantiationException("Failed To Create New Weights File");
+//
+//		FileWriter writer = new FileWriter(weights);
+//		for (float[][] layerWeights : network.getWeights()) {
+//			for (float[] neuronWeights : layerWeights) {
+//				for (float weight : neuronWeights)
+//					writer.write(weight + ",");
+//				writer.write("\n");  // one node weights per line
+//			}
+//			writer.write("\n");  // whitespace between layers
+//		}
+//
+//		writer.close();
+//	}
 	
-	public void logBiases(NeuralNetwork network) throws IOException, InstantiationException {
-		File biases = new File(path + "/biases.csv");
-		if (!biases.createNewFile())
-			throw new InstantiationException("Failed To Create New Biases File");
-		
-		FileWriter writer = new FileWriter(biases);
-		for (float[] layerBias : network.getBiases()) {
-			for (float neuronBias : layerBias)
-				writer.write(neuronBias + ",");
-			writer.write("\n");  // one layer per line
-		}
-		
-		writer.close();
-	}
+//	public void logBiases(NeuralNetwork network) throws IOException, InstantiationException {
+//		File biases = new File(path + "/biases.csv");
+//		if (!biases.createNewFile())
+//			throw new InstantiationException("Failed To Create New Biases File");
+//
+//		FileWriter writer = new FileWriter(biases);
+//		for (float[] layerBias : network.getBiases()) {
+//			for (float neuronBias : layerBias)
+//				writer.write(neuronBias + ",");
+//			writer.write("\n");  // one layer per line
+//		}
+//
+//		writer.close();
+//	}
 	
 	public void saveBestAgent(NeuralNetwork agent) {
 		try (FileOutputStream fileOut = new FileOutputStream(path + "/agent.ser");
