@@ -25,7 +25,7 @@ public class Trainer {
 	private final AtomicReference<NeuralNetwork> bestAgent;
 	private final NeuralNetwork[] agents;
 	private final AtomicLong bestScore;
-	private final DataLogger logger;
+	private DataLogger logger;
 	
 	/**
 	 * Initialize trainer and all agents ({@link NeuralNetwork} objects) within.
@@ -34,80 +34,33 @@ public class Trainer {
 	 * @param layerLengths   arraylist containing lengths of each layer
 	 *                       ({@code layerLengths.length} will be used to create number of layers)
 	 */
-	public Trainer(int agentsPerRound, int[] layerLengths) throws Exception {
+	public Trainer(int agentsPerRound, int[] layerLengths) {
 		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths));
 		bestScore = new AtomicLong(0);
-		logger = new DataLogger();
+		logger = null;
 		agents = new NeuralNetwork[agentsPerRound];
 		for (int i = 0; i < agentsPerRound; i++)
 			agents[i] = new NeuralNetwork(layerLengths);
 	}
 	
-	public void loadData(String weightsPath, String biasesPath) throws FileNotFoundException {
-		File weights = new File(weightsPath),
-			biases = new File(biasesPath);
-		
-		String delimiter = ",";
-		
-		ArrayList<ArrayList<ArrayList<Float>>> allWeights = readWeights(weights, delimiter);
-		ArrayList<ArrayList<Float>> allBiases = readBiases(biases, delimiter);
-		
-		int[] layerLengths = agents[0].getLayerLengths();
-		NeuralNetwork savedAgent = new NeuralNetwork(layerLengths);
-		for (int i = 1; i < layerLengths.length; i++) {
-			for (int j = 0; j < layerLengths[i]; j++) {
-				Neuron neuron = savedAgent.getNeuron(i, j);
-				for (int k = 0; k < allWeights.get(i - 1).get(j).size(); k++)
-					neuron.setWeight(k, allWeights.get(i - 1).get(j).get(k));
-				neuron.setBias(allBiases.get(i - 1).get(j));
-			}
-		}
-		
-		Arrays.fill(agents, savedAgent);
+	public Trainer addLogger() throws Exception {
+		logger = new DataLogger("./src/training-results");
+		logger.initLogger();
+		return this;
 	}
 	
-	private static ArrayList<ArrayList<ArrayList<Float>>> readWeights(File file, String delimiter) throws FileNotFoundException {
-		ArrayList<ArrayList<ArrayList<Float>>> allData = new ArrayList<>();
-		ArrayList<ArrayList<Float>> layerData = new ArrayList<>();
-		Scanner reader = new Scanner(file);
-		while (reader.hasNextLine()) {
-			String line = reader.nextLine();
-			if (line.isEmpty()) {
-				allData.add(layerData);
-				layerData = new ArrayList<>();
-				continue;
-			}
-			String[] data = line.split(delimiter);
-			
-			ArrayList<Float> nodeData = new ArrayList<>();
-			for (String datum : data)
-				nodeData.add(Float.parseFloat(datum));
-			
-			layerData.add(nodeData);
-		}
-		
-		return allData;
+	public Trainer loadBestAgent(String folder) {
+		NeuralNetwork loaded = logger.loadBestAgent(folder);
+		bestAgent.set(loaded);
+		Arrays.fill(agents, loaded);
+		return this;
 	}
 	
-	private static ArrayList<ArrayList<Float>> readBiases(File file, String delimiter) throws FileNotFoundException {
-		ArrayList<ArrayList<Float>> allData = new ArrayList<>();
-		Scanner reader = new Scanner(file);
-		while (reader.hasNextLine()) {
-			ArrayList<Float> layerData = new ArrayList<>();
-			String line = reader.nextLine();
-			String[] data = line.split(delimiter);
-			
-			for (String datum : data)
-				layerData.add(Float.parseFloat(datum));
-			
-			allData.add(layerData);
-		}
-		
-		return allData;
+	public void saveBestAgent() {
+		logger.saveBestAgent(bestAgent.get());
 	}
 	
 	/**
-	 * Trains a single generation of agents.
 	 *
 	 * @param inputs       values neural network is trained on
 	 * @param targets      calculated values of output layer
@@ -138,12 +91,11 @@ public class Trainer {
                 MSE[j] += (float) Math.pow(outputErrors[j], 2);
             }
 		}
-        agent.applyWeights(learningRate);
-
-        for (int i = 0; i < MSE.length; i++){
-            MSE[i] /= inputs.length;
-        }
-
+		agent.applyWeights(learningRate);
+		
+		for (int i = 0; i < MSE.length; i++)
+			MSE[i] /= inputs.length;
+		
 		return score;
 	}
 	
@@ -164,7 +116,9 @@ public class Trainer {
 		String formatted = new DecimalFormat("###.##").format(percent);
 		
 		System.out.println("Generation: " + generationNum + " | Best: [" + bestRoundScore + "/" + inputs.length + "] (" + formatted + "%)");
-		logger.log(generationNum, bestRoundScore, inputs.length, formatted);
+		
+		if (logger != null)
+			logger.log(generationNum, bestRoundScore, inputs.length, formatted);
 		
 		if (bestRoundScore > bestScore.get()) {
 			bestScore.set((long) bestRoundScore);
@@ -172,8 +126,14 @@ public class Trainer {
 		}
 		
 		NeuralNetwork bestRoundAgent = agents[bestIndex];
-		for (int i = 0; i < agents.length; i++)
+		for (int i = 0; i < agents.length; i++) {
+			if (i == bestIndex) {
+				agents[i] = bestRoundAgent;
+				continue;
+			}
+			
 			agents[i] = bestRoundAgent.evolve(learningRate);
+		}
 	}
 	
 	public float getBestScore() {
@@ -188,7 +148,7 @@ public class Trainer {
 	 * @throws IOException if file logging fails
 	 * @see DataLogger#logWeights(NeuralNetwork)
 	 */
-	public void logWeights() throws IOException {
+	public void logWeights() throws IOException, InstantiationException {
 		logger.logWeights(bestAgent.get());
 	}
 	
@@ -200,7 +160,7 @@ public class Trainer {
 	 * @throws IOException if file logging fails
 	 * @see DataLogger#logBiases(NeuralNetwork)
 	 */
-	public void logBiases() throws IOException {
+	public void logBiases() throws IOException, InstantiationException {
 		logger.logBiases(bestAgent.get());
 	}
 }

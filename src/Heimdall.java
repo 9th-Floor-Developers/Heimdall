@@ -21,13 +21,11 @@ public class Heimdall {
 		Trainer trainer = new Trainer(
 				10,  // number of agents per round, more possibilities to evolve
 				new int[] {  // layers format
-						inputs[0].length,  // input layer must match input count // number of middle layer nodes, more opportunities per agent to learn
-						100,
-						targets[0].length  // output layer is number of possible answers (0.0-1.0 inclusive)
+						inputs[0].length,  // input layer - must match input count
+						100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
+						targets[0].length  // output layer - number of possible answers (0.0-1.0 inclusive)
 				}
-		);
-		
-		trainer.loadData("./src/training-results/5/weights.csv", "./src/training-results/5/biases.csv");
+		).addLogger().loadBestAgent("./src/training-results/13");
 		
 		for (int generation = 1; generation <= 100; generation++) {
 			trainer.train(
@@ -40,6 +38,8 @@ public class Heimdall {
 		}
 		
 		System.out.println("Best Score: " + trainer.getBestScore());
+
+//		trainer.saveBestAgent();
 		
 		trainer.logWeights();
 		trainer.logBiases();

@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
@@ -7,7 +8,7 @@ import java.util.Random;
  * <p>
  * Each {@link Layer} contains an array of {@link Neuron} objects.
  */
-public class NeuralNetwork {
+public class NeuralNetwork implements Serializable {
 	private final Layer[] layers;
 	private final int[] layerLengths;
 	
@@ -153,6 +154,45 @@ public class NeuralNetwork {
 	
 	public Neuron getNeuron(int layer, int number) {
 		return layers[layer].getNeuron(number);
+	}
+	
+	
+	public void setWeights(float[][][] weights) {
+		for (int i = 1; i < layers.length; i++)
+			layers[i].setWeights(weights[i - 1]);
+	}
+	
+	public float[][][] getWeights() {
+		float[][][] weights = new float[layers.length - 1][][];
+		
+		for (int i = 1; i < layers.length; i++) {  // ignore input layer
+			int numNeurons = layers[i].getNumNeurons();
+			weights[i - 1] = new float[numNeurons][];
+			for (int j = 0; j < numNeurons; j++)
+				weights[i - 1][j] = getNeuron(i, j).getWeights();
+		}
+		
+		return weights;
+	}
+	
+	
+	public void setBiases(float[][] biases) {
+		for (int i = 1; i < layerLengths.length; i++)
+			for (int j = 0; j < layerLengths[i]; j++)
+				getNeuron(i, j).setBias(biases[i - 1][j]);
+	}
+	
+	public float[][] getBiases() {
+		float[][] biases = new float[layers.length - 1][];
+		
+		for (int i = 1; i < layers.length; i++) {  // ignore input layer
+			int numNeurons = layers[i].getNumNeurons();
+			biases[i - 1] = new float[numNeurons];
+			for (int j = 0; j < numNeurons; j++)
+				biases[i - 1][j] = getNeuron(i, j).getBias();
+		}
+		
+		return biases;
 	}
 	// endregion
 }

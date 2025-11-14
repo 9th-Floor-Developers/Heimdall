@@ -1,12 +1,13 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 
 /**
  * A class that represents a single neuron located in a {@link Layer}
  * object, located in a {@link NeuralNetwork} object.
  */
-public class Neuron {
+public class Neuron implements Serializable {
 	private final float[] weights;
     private float[] weightsChange;
     private final float[] squaredGradientsSum;
@@ -136,6 +137,14 @@ public class Neuron {
 	
 	public void setWeight(int idx, float weight) {
 		weights[idx] = weight;
+	}
+	
+	public void setWeights(float[] weights) {
+		if (weights.length != this.weights.length)
+			throw new RuntimeException("Length of weights parameter does not match number of weights: " + weights.length + " != " + this.weights.length);
+		
+		for (int i = 0; i < getNumWeights(); i++)
+			setWeight(i, weights[i]);
 	}
 	
 	public void addWeight(int index, float value) {

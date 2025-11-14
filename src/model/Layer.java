@@ -1,10 +1,12 @@
 package model;
 
+import java.io.Serializable;
+
 /**
  * A class that represents a single layer containing a set number of
  * {@link Neuron} objects located in a {@link NeuralNetwork} object.
  */
-public class Layer {
+public class Layer implements Serializable {
 	private final Neuron[] neurons;
 	
 	/**
@@ -49,6 +51,11 @@ public class Layer {
 	
 	public void setNeuron(int idx, Neuron neuron) {
 		neurons[idx] = neuron;
+	}
+	
+	public void setWeights(float[][] weights) {
+		for (int i = 0; i < getNumNeurons(); i++)
+			getNeuron(i).setWeights(weights[i]);
 	}
 	// endregion
 }

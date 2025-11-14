@@ -1,34 +1,24 @@
 package utils;
 
-import model.Layer;
 import model.NeuralNetwork;
 
 import java.io.*;
-import java.util.Arrays;
 
 public class DataLogger {
-	private final File data, weights, biases;
+	private final String path;
+	private File data;
 	
-	public DataLogger() throws IOException, InstantiationException {
-		String folder_path = "./src/training-results";
-		File trainingPath = new File(folder_path);
+	public DataLogger(String path) {
+		File folder = new File(path);
+		this.path = path + "/" + findNextSessionNumber(folder);
+	}
+	
+	public void initLogger() throws IOException, InstantiationException {
+		File folder = new File(path);
+		if(!folder.mkdir())
+			throw new InstantiationException("Failed To Create New Folder");
 		
-		if (!trainingPath.exists())
-			throw new FileNotFoundException("Training results folder does not exist: " + trainingPath);
-		
-		File folder = new File(folder_path + "/" + findNextSessionNumber(trainingPath));
-		if (!folder.mkdir())
-			throw new InstantiationException("Failed To Create Directory.");
-		
-		data = new File(folder.getPath() + "/training-data.csv");
-		if (!data.createNewFile())
-			throw new InstantiationException("Failed To Create New Training Data File");
-		weights = new File(folder.getPath() + "/weights.csv");
-		if (!weights.createNewFile())
-			throw new InstantiationException("Failed To Create New Weights File");
-		biases = new File(folder.getPath() + "/biases.csv");
-		if (!biases.createNewFile())
-			throw new InstantiationException("Failed To Create New Biases File");
+		data = new File(path + "/training-data.csv");
 		
 		FileWriter writer = new FileWriter(data);
 		writer.write("Generation, Score, Total, Percent\n");
@@ -42,7 +32,6 @@ public class DataLogger {
 			if (number > max)
 				max = number;
 		}
-		
 		return max + 1;
 	}
 	
@@ -52,19 +41,13 @@ public class DataLogger {
 		writer.close();
 	}
 	
-	public void logWeights(NeuralNetwork network) throws IOException {
-		Layer[] layers = network.getLayers();
-		float[][][] allWeights = new float[layers.length - 1][][];
+	public void logWeights(NeuralNetwork network) throws IOException, InstantiationException {
+		File weights = new File(path + "/weights.csv");
+		if (!weights.createNewFile())
+			throw new InstantiationException("Failed To Create New Weights File");
 		
-		for (int j = 1; j < layers.length; j++) {  // ignore input layer
-			int numNeurons = layers[j].getNumNeurons();
-			allWeights[j - 1] = new float[numNeurons][];
-			for (int i = 0; i < numNeurons; i++)
-				allWeights[j - 1][i] = network.getNeuron(j, i).getWeights();
-		}
-		
-		FileWriter writer = new FileWriter(weights, true);
-		for (float[][] layerWeights : allWeights) {
+		FileWriter writer = new FileWriter(weights);
+		for (float[][] layerWeights : network.getWeights()) {
 			for (float[] neuronWeights : layerWeights) {
 				for (float weight : neuronWeights)
 					writer.write(weight + ",");
@@ -76,24 +59,39 @@ public class DataLogger {
 		writer.close();
 	}
 	
-	public void logBiases(NeuralNetwork network) throws IOException {
-		Layer[] layers = network.getLayers();
-		float[][] allBiases = new float[layers.length - 1][];
+	public void logBiases(NeuralNetwork network) throws IOException, InstantiationException {
+		File biases = new File(path + "/biases.csv");
+		if (!biases.createNewFile())
+			throw new InstantiationException("Failed To Create New Biases File");
 		
-		for (int j = 1; j < layers.length; j++) {  // ignore input layer
-			int numNeurons = layers[j].getNumNeurons();
-			allBiases[j - 1] = new float[numNeurons];
-			for (int i = 0; i < numNeurons; i++)
-				allBiases[j - 1][i] = network.getNeuron(j, i).getBias();
-		}
-		
-		FileWriter writer = new FileWriter(biases, true);
-		for (float[] layerBias : allBiases) {
+		FileWriter writer = new FileWriter(biases);
+		for (float[] layerBias : network.getBiases()) {
 			for (float neuronBias : layerBias)
 				writer.write(neuronBias + ",");
 			writer.write("\n");  // one layer per line
 		}
 		
 		writer.close();
+	}
+	
+	public void saveBestAgent(NeuralNetwork agent) {
+		try (FileOutputStream fileOut = new FileOutputStream(path + "/agent.ser");
+		     ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+			out.writeObject(agent);
+			System.out.println("Agent Saved Successfully...");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	public NeuralNetwork loadBestAgent(String folder) {
+		try (FileInputStream fileIn = new FileInputStream(folder + "/agent.ser");
+		     ObjectInputStream in = new ObjectInputStream(fileIn)) {
+			NeuralNetwork agent = (NeuralNetwork) in.readObject();
+			System.out.println("Agent Loaded Successfully");
+			return agent;
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 	}
 }
