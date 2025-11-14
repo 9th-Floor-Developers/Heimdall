@@ -35,12 +35,12 @@ public class Trainer {
 	 *                       ({@code layerLengths.length} will be used to create number of layers)
 	 */
 	public Trainer(int agentsPerRound, int[] layerLengths) {
-		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths));
+		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths, 67));
 		bestScore = new AtomicLong(0);
 		logger = null;
 		agents = new NeuralNetwork[agentsPerRound];
 		for (int i = 0; i < agentsPerRound; i++)
-			agents[i] = new NeuralNetwork(layerLengths);
+			agents[i] = new NeuralNetwork(layerLengths, 67);
 	}
 	
 	public Trainer addLogger() throws Exception {
