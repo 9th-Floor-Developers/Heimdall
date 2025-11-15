@@ -1,25 +1,22 @@
 import model.NeuralNetwork;
-import model.Neuron;
 import utils.DataLogger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 // TODO: update docstrings
 
 /**
- * A class representing a trainer that contains an array of agents
+ * A class representing a trainer object that contains an array of agents
  * ({@link NeuralNetwork} objects) and all methods required to train them.
- * <p>
  *
-// * @see #train(float[][], float[][], int[], float)
+ * @see #addLogger()
+ * @see #getBestScore()
+ * @see #train(float[][], float[][], int[], float, int)
+ * @see #saveAgent()
+ * @see #loadAgent(String)
  */
 public class Trainer {
 	private final AtomicReference<NeuralNetwork> bestAgent;
@@ -35,38 +32,59 @@ public class Trainer {
 	 *                       ({@code layerLengths.length} will be used to create number of layers)
 	 */
 	public Trainer(int agentsPerRound, int[] layerLengths) {
-		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths, 67));
+		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths, 123));
 		bestScore = new AtomicLong(0);
 		logger = null;
 		agents = new NeuralNetwork[agentsPerRound];
 		for (int i = 0; i < agentsPerRound; i++)
-			agents[i] = new NeuralNetwork(layerLengths, 67);
+			agents[i] = new NeuralNetwork(layerLengths, 123);
 	}
 	
+	/**
+	 * initializes a {@link DataLogger} object to the current Trainer object.
+	 *
+	 * @return current object, allowing for inheritance chain and one-line setup
+	 * @throws Exception if error occurs in {@link DataLogger#initLogger()}
+	 */
 	public Trainer addLogger() throws Exception {
 		logger = new DataLogger("./src/training-results");
 		logger.initLogger();
 		return this;
 	}
 	
-	public Trainer loadBestAgent(String folder) {
-		NeuralNetwork loaded = logger.loadBestAgent(folder);
+	/**
+	 * Loads an agent from a serialized file.
+	 * <p>
+	 * Agent can be saved using {@link #saveAgent()}.
+	 *
+	 * @param folder folder to locate serialized agent object in
+	 * @return current trainer object, allowing for inheritance chain and one-line setup.
+	 */
+	public Trainer loadAgent(String folder) {
+		NeuralNetwork loaded = logger.loadAgent(folder);
 		bestAgent.set(loaded);
 		Arrays.fill(agents, loaded);
 		return this;
 	}
 	
-	public void saveBestAgent() {
-		logger.saveBestAgent(bestAgent.get());
+	/**
+	 * Saves an agent to a serialized object.
+	 * <p>
+	 * Agent can be loaded using {@link #loadAgent(String)}.
+	 */
+	public void saveAgent() {
+		logger.saveAgent(bestAgent.get());
 	}
 	
 	/**
+	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
 	 *
+	 * @param agent        {@link NeuralNetwork} object to train with
 	 * @param inputs       values neural network is trained on
 	 * @param targets      calculated values of output layer
 	 * @param outputs      desired values of the output layer
 	 * @param learningRate difference to modify weights (0.0-0.5)
-	 * @see NeuralNetwork
+	 * @return number of data points the agent got correct
 	 */
 	private float trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
 	                         int[] outputs, float learningRate) {
@@ -86,7 +104,7 @@ public class Trainer {
 			if (maxIndex == outputs[i])
 				score++;
 			
-			float[] outputErrors = agent.backProp(targets[i], learningRate);
+			float[] outputErrors = agent.backProp(targets[i]);
 			for (int j = 0; j < outputErrors.length; j++)
 				MSE[j] += (float) Math.pow(outputErrors[j], 2);
 		}
@@ -98,6 +116,16 @@ public class Trainer {
 		return score;
 	}
 	
+	/**
+	 * Trains all {@link NeuralNetwork} objects within current trainer object.
+	 *
+	 * @param inputs        values neural network is trained on
+	 * @param targets       calculated values of output layer
+	 * @param outputs       desired values of the output layer
+	 * @param learningRate  difference to modify weights (0.0-0.5)
+	 * @param generationNum generation number of current training session
+	 * @throws Exception if file logging fails
+	 */
 	public void train(float[][] inputs, float[][] targets, int[] outputs,
 	                  float learningRate, int generationNum) throws Exception {
 		// TODO: add multithreading
@@ -109,12 +137,13 @@ public class Trainer {
 		for (int i = 0; i < scores.length; i++)
 			if (scores[i] > scores[bestIndex])
 				bestIndex = i;
-
+		
 		float bestRoundScore = scores[bestIndex];
 		float percent = bestRoundScore / inputs.length * 100;
 		String formatted = new DecimalFormat("###.##").format(percent);
 		
-		System.out.println("Generation: " + generationNum + " | Best: [" + bestRoundScore + "/" + inputs.length + "] (" + formatted + "%)");
+		System.out.println(
+				"Generation: " + generationNum + " | Best: [" + bestRoundScore + "/" + inputs.length + "] (" + formatted + "%)");
 		
 		if (logger != null)
 			logger.log(generationNum, bestRoundScore, inputs.length, formatted);
@@ -137,29 +166,5 @@ public class Trainer {
 	
 	public float getBestScore() {
 		return bestScore.get();
-	}
-	
-	/**
-	 * Logs all weights of the best agent in weights.csv
-	 * <p>
-	 * Should only be run after the final training session.
-	 *
-	 * @throws IOException if file logging fails
-	 * @see DataLogger#logWeights(NeuralNetwork)
-	 */
-	public void logWeights() throws IOException, InstantiationException {
-		logger.logWeights(bestAgent.get());
-	}
-	
-	/**
-	 * Logs all biases of the best agent in biases.csv
-	 * <p>
-	 * Should only be run after the final training session.
-	 *
-	 * @throws IOException if file logging fails
-	 * @see DataLogger#logBiases(NeuralNetwork)
-	 */
-	public void logBiases() throws IOException, InstantiationException {
-		logger.logBiases(bestAgent.get());
 	}
 }

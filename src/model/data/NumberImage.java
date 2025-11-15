@@ -9,21 +9,21 @@ package model.data;
 public record NumberImage(float[][] pixels,
                           int value) {
 	/**
-	 * Converts image from 2D pixel array into longer 1D array of same values.
+	 * Converts image from 2D pixel array into longer 1D array of same values, essentially "flattening" values
 	 *
-	 * @return 1D array preserving all values of 2D array
+	 * @return 1D array preserving all values of 2D array, 1D array length is width * height of image pixels
 	 */
 	public float[] to1D() {
-		float[] flatInputs = new float[pixels.length * pixels[0].length];
+		float[] flattened = new float[pixels.length * pixels[0].length];
 		int idx = 0;
 		for (float[] pixel : pixels) {
 			for (int c = 0; c < pixels[0].length; c++) {
-				flatInputs[idx] = pixel[c];
+				flattened[idx] = pixel[c];
 				idx++;
 			}
 		}
 		
-		return flatInputs;
+		return flattened;
 	}
 	
 	/**
@@ -31,7 +31,7 @@ public record NumberImage(float[][] pixels,
 	 * <p>
 	 * Example: {@code 2 = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]}
 	 *
-	 * @return float array representing target value
+	 * @return float array with length 10, representing target value
 	 */
 	public float[] toTarget() {
 		float[] target = new float[10];  // 10 representing digits 0-9
@@ -43,8 +43,8 @@ public record NumberImage(float[][] pixels,
 	 * Scales image down by a specified factor,
 	 * creating an image with same contents but smaller size.
 	 *
-	 * @param factor times to scale image down by
-	 * @return new scaled {@link NumberImage}
+	 * @param factor times to scale image down
+	 * @return new scaled {@link NumberImage} object
 	 */
 	public NumberImage scaleDownImage(int factor) {
 		int height = pixels.length / factor;

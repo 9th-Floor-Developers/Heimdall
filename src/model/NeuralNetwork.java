@@ -1,35 +1,41 @@
 package model;
 
+import utils.DataLogger;
+
 import java.io.Serializable;
 import java.util.Random;
 
 /**
  * A class that represents a neural network and all the layers within.
- * <p>
  * Each {@link Layer} contains an array of {@link Neuron} objects.
+ * <p>
+ * Class can be serialized to save/load the best agent.
+ *
+ * @see DataLogger#saveAgent(NeuralNetwork)
+ * @see DataLogger#loadAgent(String)
  */
-public class NeuralNetwork implements Serializable {
+public class NeuralNetwork implements Serializable, Cloneable {
 	private final Layer[] layers;
 	private final int[] layerLengths;
 	
+	// TODO: create alternative without seed parameter
 	/**
 	 * Creates a neural network and initializes all layers, neurons, and weights within
 	 *
 	 * @param layerLengths array containing number of {@link Neuron} objects in each {@link Layer},
-	 *                     {@code layerLengths.length} should be number of layers in network.
+	 *                     {@code layerLengths.length} should be total number of layers in network.
+	 * @param seed         initial value of the internal state of the pseudorandom number generator used in
+	 *                     {@link Neuron} objects inside this network
 	 */
 	public NeuralNetwork(int[] layerLengths, int seed) {
-        Random random = new Random(seed);
-
 		layers = new Layer[layerLengths.length];
 		this.layerLengths = layerLengths;
 		
-		for (int i = 0; i < layerLengths.length; i++) {
-			Layer layer = new Layer(i, this, layerLengths[i], random);
-			layers[i] = layer;
-		}
+		for (int i = 0; i < layerLengths.length; i++)
+			layers[i] = new Layer(i, this, layerLengths[i], seed);
 	}
 	
+	// TODO: delete if not needed
 	/**
 	 * Creates a neural network with already initialized {@link Layer} objects.
 	 *
@@ -44,25 +50,26 @@ public class NeuralNetwork implements Serializable {
 	}
 	
 	/**
-	 * Adjust all weights in a network randomly to return a new variation of the network
+	 * Adjust all weights in a network randomly to return a new variation of the current network.
 	 *
-	 * @param scale how much the weights are changing (+ and - bounds for new random evolution)
-	 * @return a new neural network with modified ("evolved") weights
+	 * @param scale how much the weights are changing (+/- bounds for new random evolution),
+	 *              should be between 0.0-0.5
+	 * @return a clone of the current neural network but with slightly modified ("evolved") weights
+	 * @throws CloneNotSupportedException if cloning of current network object fails
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public NeuralNetwork evolve(float scale) {
-		NeuralNetwork newNetwork = this;
+	public NeuralNetwork evolve(float scale) throws CloneNotSupportedException {
+		NeuralNetwork newNetwork = (NeuralNetwork) this.clone();
 		Random random = new Random();
 		
 		for (int i = 1; i < layers.length; i++) {  // skip input layer
 			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
-				Neuron neuron = newNetwork.getNeuron(i, j);
-				for (int k = 0; k < layers[i].getNeuron(j).getNumWeights(); k++) {
-					float randFloat = random.nextFloat(-scale, scale);
-					neuron.addWeight(k, randFloat);
-				}
-				neuron.addBias(random.nextFloat(-scale, scale));
+				Neuron newNeuron = getNeuron(i, j);
+				for (int k = 0; k < newNeuron.getNumWeights(); k++)
+					newNeuron.addWeight(k, random.nextFloat(-scale, scale));
+				newNeuron.addBias(random.nextFloat(-scale, scale));
+				newNetwork.setNeuron(i, j, newNeuron);
 			}
 		}
 		
@@ -104,37 +111,41 @@ public class NeuralNetwork implements Serializable {
 	/**
 	 * Apply back propagation process to neural network.
 	 *
-	 * @param target       desired output values
-	 * @param learningRate difference to modify weights (0.0-0.5)
+	 * @param target desired output values
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public float[] backProp(float[] target, float learningRate) {
-        float[] outputError = new float[layers[layers.length - 1].getNeurons().length];
-
+	public float[] backProp(float[] target) {
+		float[] outputError = new float[target.length];
+		
 		for (int i = 1; i < layers.length; i++) {
-			Neuron[] neurons = layers[i].getNeurons();
-			for (int j = 0; j < neurons.length; j++) {
+			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
 				Neuron neuron = getNeuron(i, j);
-				if (i == layers.length - 1){
-                    neuron.setError(target[j]);
-                    outputError[j] = neuron.getError();
-                }
+				if (i == layers.length - 1) {
+					neuron.setError(target[j]);
+					outputError[j] = neuron.getError();
+				}
 				
-				Layer layer = layers[i - 1];
-				neuron.calcErrors(layer);
+				Layer layer = layers[i];
+				layer.calcErrors(neuron.getError(), neuron.getWeight(j));
 				neuron.calcWeightChange(layer);
 			}
 		}
-
-        return outputError;
+		
+		return outputError;
 	}
-
-    public void applyWeights(float learningRate){
-        for (int i = 0; i < layers.length; i++)
-            for (int j = 0; j < layers[i].getNumNeurons(); j++)
-	            getNeuron(i, j).applyWeightChange(learningRate);
-    }
+	
+	/**
+	 * Runs {@link Neuron#applyWeightChange(float)} function to all {@link Neuron} objects in network.
+	 *
+	 * @param learningRate difference to modify weights (0.0-0.5)
+	 * @see Layer
+	 */
+	public void applyWeights(float learningRate) {
+		for (int i = 0; i < layers.length; i++)
+			for (int j = 0; j < layers[i].getNumNeurons(); j++)
+				getNeuron(i, j).applyWeightChange(learningRate);
+	}
 	
 	// region Getters/Setters
 	public Layer[] getLayers() {
@@ -152,6 +163,10 @@ public class NeuralNetwork implements Serializable {
 	
 	public Neuron getNeuron(int layer, int number) {
 		return layers[layer].getNeuron(number);
+	}
+	
+	public void setNeuron(int layer, int idx, Neuron neuron) {
+		layers[layer].setNeuron(idx, neuron);
 	}
 	
 	

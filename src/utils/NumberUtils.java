@@ -150,18 +150,14 @@ public class NumberUtils {
 					System.out.println("Empty directory: " + file.getName());
 					continue;
 				}
-
-                ArrayList<NumberImage> subDirImgs;
-                try {
-                    subDirImgs = searchDir(file);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-                allImgDecVals.addAll(subDirImgs);
-
+				
+				ArrayList<NumberImage> subDirImgs;
+				subDirImgs = searchDir(file);
+				allImgDecVals.addAll(subDirImgs);
+				
 			}
 		}
-
+		
 		return allImgDecVals;
 	}
 }
