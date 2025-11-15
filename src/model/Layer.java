@@ -44,12 +44,14 @@ public class Layer implements Serializable {
 	 * @param error  difference between layer value and target value;
 	 *               smaller error means better accuracy;
 	 *               calculated using {@link Neuron#getError()}
-	 * @param weight a singular weight value in next layer;
+	 * @param weights a singular weight value in next layer;
 	 *               calculated using {@link Neuron#getWeight(int)}
 	 */
-	public void calcErrors(float error, float weight) {
-		for (Neuron neuron : getNeurons())
-			neuron.addError(error * weight);
+	public void calcErrors(float error, float[] weights) {
+        for (int i = 0; i < getNeurons().length; i++) {
+            Neuron neuron = getNeurons()[i];
+            neuron.addError(error * weights[i]);
+        }
 	}
 	
 	// region Getters/Setters
