@@ -28,7 +28,7 @@ public class Heimdall {
 		).addLogger();//.loadBestAgent("./src/training-results/35");
 		
 		for (int generation = 1; generation <= 100; generation++) {
-			trainer.train(
+			trainer.regularTrain(
 					inputs,
 					targets,
 					outputs,

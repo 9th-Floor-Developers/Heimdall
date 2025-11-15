@@ -86,7 +86,7 @@ public class Trainer {
 	 * @param learningRate difference to modify weights (0.0-0.5)
 	 * @return number of data points the agent got correct
 	 */
-	private float trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
+	private int trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
 	                         int[] outputs, float learningRate) {
 		float[] MSE = new float[targets[0].length];
 		int score = 0;
@@ -115,6 +115,16 @@ public class Trainer {
 		
 		return score;
 	}
+
+    public void regularTrain(float[][] inputs, float[][] targets, int[] outputs,
+                 float learningRate, int generationNum){
+        int score = trainAgent(agents[0], inputs, targets, outputs, learningRate);
+
+        float percent = (float) score / inputs.length * 100;
+        String formatted = new DecimalFormat("###.##").format(percent);
+
+        System.out.println("Generation: " + generationNum + " | Best: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
+    }
 	
 	/**
 	 * Trains all {@link NeuralNetwork} objects within current trainer object.
@@ -126,7 +136,7 @@ public class Trainer {
 	 * @param generationNum generation number of current training session
 	 * @throws Exception if file logging fails
 	 */
-	public void train(float[][] inputs, float[][] targets, int[] outputs,
+	public void evolutionTrain(float[][] inputs, float[][] targets, int[] outputs,
 	                  float learningRate, int generationNum) throws Exception {
 		// TODO: add multithreading
 		float[] scores = new float[agents.length];
