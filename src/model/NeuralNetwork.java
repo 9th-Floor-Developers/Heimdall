@@ -126,10 +126,10 @@ public class NeuralNetwork implements Serializable, Cloneable {
 					outputError[j] = neuron.getError();
 				}
 				
-				Layer prevLayer = layers[i];
+				Layer prevLayer = layers[i - 1];
 				prevLayer.calcErrors(neuron.getError(), neuron.getWeights());
 
-				neuron.calcWeightChange(layers[i]);
+				neuron.calcWeightChange(prevLayer);
 			}
 		}
 		
