@@ -112,6 +112,8 @@ public class Trainer {
 		
 		for (int i = 0; i < MSE.length; i++)
 			MSE[i] /= inputs.length;
+
+        System.out.println("MSE | " + Arrays.toString(MSE));
 		
 		return score;
 	}

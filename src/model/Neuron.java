@@ -21,7 +21,7 @@ public class Neuron implements Serializable {
 	 * Initialize weights using various weight managing methods.
 	 *
 	 * @param weightsSize desired size of weights array, the number of nodes in previous layer (input layer has 0)
-	 * @see #initWeights(int)
+	 * @see #initWeights(Random)
 	 * @see #setWeight(int, float)
 	 * @see #setWeights(float[])
 	 * @see #addWeight(int, float)
