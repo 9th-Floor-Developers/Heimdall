@@ -7,8 +7,8 @@ public class Heimdall {
 	 * Entry point
 	 */
 	public static void main(String[] args) throws Exception {
-        adderTrain();
-		//numberTrain();
+        //adderTrain();
+		numberTrain();
 	}
 
     public static void adderTrain() {

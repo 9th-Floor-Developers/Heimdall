@@ -28,11 +28,13 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	 *                     {@link Neuron} objects inside this network
 	 */
 	public NeuralNetwork(int[] layerLengths, int seed) {
+        Random random = new Random(seed);
+
 		layers = new Layer[layerLengths.length];
 		this.layerLengths = layerLengths;
 		
 		for (int i = 0; i < layerLengths.length; i++)
-			layers[i] = new Layer(i, this, layerLengths[i], seed);
+			layers[i] = new Layer(i, this, layerLengths[i], random);
 	}
 	
 	// TODO: delete if not needed

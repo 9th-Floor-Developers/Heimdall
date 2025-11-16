@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Random;
 
 /**
  * A class that represents a single layer containing a set number of
@@ -20,10 +21,9 @@ public class Layer implements Serializable {
 	 * @param network    {@link NeuralNetwork} object that layer is located in, used to find previous layer
 	 * @param numNeurons number of {@link Neuron} objects to include in layer, output layer should
 	 *                   be number of possible answers for all input values
-	 * @param seed       initial value of the internal state of the pseudorandom number generator used in
-	 *                   {@link Neuron} objects inside this network
+	 * @param random An instance of random, to keep neural network constants
 	 */
-	public Layer(int layerNum, NeuralNetwork network, int numNeurons, int seed) {
+	public Layer(int layerNum, NeuralNetwork network, int numNeurons, Random random) {
 		neurons = new Neuron[numNeurons];
 		
 		for (int i = 0; i < numNeurons; i++) {
@@ -34,7 +34,7 @@ public class Layer implements Serializable {
 			}
 			
 			int numWeights = network.getLayer(layerNum - 1).getNumNeurons();
-			neurons[i] = new Neuron(numWeights).initWeights(seed);
+			neurons[i] = new Neuron(numWeights).initWeights(random);
 		}
 	}
 	

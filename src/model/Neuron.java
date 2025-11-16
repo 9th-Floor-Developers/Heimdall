@@ -36,13 +36,11 @@ public class Neuron implements Serializable {
 	/**
 	 * Initialize all weights and bias with random float between -1 and 1.
 	 *
-	 * @param seed initial value of the internal state of the pseudorandom
-	 *             number generator used to generate weights and biases.
+	 * @param random An instance of random, to keep neural network constants
+     *
 	 * @see Random#Random(long)
 	 */
-	public Neuron initWeights(int seed) {
-		Random random = new Random(seed);
-		
+	public Neuron initWeights(Random random) {
 		bias = random.nextFloat(-1, 1);
 		for (int i = 0; i < weights.length; i++)
 			weights[i] = random.nextFloat(-1, 1);
