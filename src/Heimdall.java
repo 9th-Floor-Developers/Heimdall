@@ -1,5 +1,8 @@
 import datasets.BasicDataSets;
+import datasets.GeneratedDataSets;
 import model.data.NumberImage;
+
+import static utils.NumberUtils.getAllImgs;
 import static utils.NumberUtils.getRandomImgs;
 
 public class Heimdall {
@@ -7,35 +10,11 @@ public class Heimdall {
 	 * Entry point
 	 */
 	public static void main(String[] args) throws Exception {
-        //adderTrain();
 		numberTrain();
 	}
 
-    public static void adderTrain() {
-        Trainer trainer = new Trainer(
-                10,  // number of agents per round, more possibilities to evolve
-                new int[] {  // layers format
-                        2,
-                        2
-                }
-        );
-
-        for (int generation = 1; generation <= 100; generation++) {
-            trainer.regularTrain(
-                    BasicDataSets.or2_inputs,
-                    BasicDataSets.or2_targets,
-                    BasicDataSets.or2_outputs,
-                    .01f,
-                    generation
-            );
-        }
-
-        System.out.println("Best Score: " + trainer.getBestScore());
-    }
-
-
     public static void numberTrain() throws Exception {
-        NumberImage[] images = getRandomImgs("./src/datasets/numbers/", 100, 123);
+        NumberImage[] images = getRandomImgs("./src/datasets/numbers/", 100, 67);
         float[][] targets = new float[images.length][],
                 inputs = new float[images.length][];
         int[] outputs = new int[images.length];
