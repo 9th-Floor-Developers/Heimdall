@@ -138,28 +138,5 @@ public class Trainer {
 	public float getBestScore() {
 		return bestScore.get();
 	}
-	
-	/**
-	 * Logs all weights of the best agent in weights.csv
-	 * <p>
-	 * Should only be run after the final training session.
-	 *
-	 * @throws IOException if file logging fails
-	 * @see DataLogger#logWeights(NeuralNetwork)
-	 */
-	public void logWeights() throws IOException, InstantiationException {
-		logger.logWeights(bestAgent.get());
-	}
-	
-	/**
-	 * Logs all biases of the best agent in biases.csv
-	 * <p>
-	 * Should only be run after the final training session.
-	 *
-	 * @throws IOException if file logging fails
-	 * @see DataLogger#logBiases(NeuralNetwork)
-	 */
-	public void logBiases() throws IOException, InstantiationException {
-		logger.logBiases(bestAgent.get());
-	}
+
 }

@@ -22,12 +22,12 @@ public class Heimdall {
 				1,  // number of agents per round, more possibilities to evolve
 				new int[] {  // layers format
 						inputs[0].length,  // input layer - must match input count
-						//100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
+						100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
 						targets[0].length  // output layer - number of possible answers (0.0-1.0 inclusive)
 				}
-		).addLogger().loadBestAgent("./src/training-results/31");
+		);
 		
-		for (int generation = 1; generation <= 100; generation++) {
+		for (int generation = 1; generation <= 1000; generation++) {
 			trainer.train(
 					inputs,
 					targets,
