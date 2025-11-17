@@ -16,11 +16,9 @@ public class Heimdall {
 	}
 
     public static void numberTrain() throws Exception {
-        Random random = new Random();
-
         NumberImage[] allImages = getAllImgs("./src/datasets/numbers/");
 
-        NumberImage[] images = getRandomImgs(allImages, 20, 67);
+        NumberImage[] images = getRandomImgs(allImages, 100, 67);
         float[][] targets = new float[images.length][],
                 inputs = new float[images.length][];
         int[] outputs = new int[images.length];
@@ -36,13 +34,12 @@ public class Heimdall {
                 10,  // number of agents per round, more possibilities to evolve
                 new int[] {  // layers format
                         inputs[0].length,  // input layer - must match input count
-                        50,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
-                        16,
+                        100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
                         targets[0].length  // output layer - number of possible answers (0.0-1.0 inclusive)
                 }
         ).addLogger();//.loadBestAgent("./src/training-results/35");
 
-        for (int generation = 1; generation <= 10000; generation++) {
+        for (int generation = 1; generation <= 100; generation++) {
             trainer.regularTrain(
                     inputs,
                     targets,
@@ -50,19 +47,6 @@ public class Heimdall {
                     .01f,
                     generation
             );
-
-            images = getRandomImgs(allImages, 50, random.nextInt(1000));
-            targets = new float[images.length][];
-            inputs = new float[images.length][];
-            outputs = new int[images.length];
-
-            for (int i = 0; i < images.length; i++) {
-                NumberImage image = images[i];
-                inputs[i] = image.to1D();
-                targets[i] = image.toTarget();
-                outputs[i] = image.value();
-            }
-
         }
 
         System.out.println("Best Score: " + trainer.getBestScore());
