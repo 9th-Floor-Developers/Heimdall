@@ -93,6 +93,18 @@ public class NumberUtils {
 		
 		return randomImages;
 	}
+
+    public static NumberImage[] getRandomImgs(NumberImage[] allImages, int numImages, int seed) throws Exception {
+        NumberImage[] randomImages = new NumberImage[numImages];
+
+        Random random = new Random(seed);
+        for (int i = 0; i < numImages; i++) {
+            int idx = random.nextInt(0, allImages.length);
+            randomImages[i] = allImages[idx];
+        }
+
+        return randomImages;
+    }
 	
 	/**
 	 * Parses single specified image into {@link NumberImage}
