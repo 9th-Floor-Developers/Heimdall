@@ -14,8 +14,9 @@ import java.util.concurrent.atomic.AtomicReference;
  *
  * @see #addLogger()
  * @see #getBestScore()
- * @see #train(float[][], float[][], int[], float, int)
- * @see #saveAgent()
+ * @see #regularTrain(float[][], float[][], int[], float, int)
+ * @see #evolutionTrain(float[][], float[][], int[], float, int)
+ * @see #saveAgent(String)
  * @see #loadAgent(String)
  */
 public class Trainer {
@@ -55,13 +56,13 @@ public class Trainer {
 	/**
 	 * Loads an agent from a serialized file.
 	 * <p>
-	 * Agent can be saved using {@link #saveAgent()}.
+	 * Agent can be saved using {@link #saveAgent(String)}.
 	 *
-	 * @param folder folder to locate serialized agent object in
+	 * @param path path to serialized file
 	 * @return current trainer object, allowing for inheritance chain and one-line setup.
 	 */
-	public Trainer loadAgent(String folder) {
-		NeuralNetwork loaded = logger.loadAgent(folder);
+	public Trainer loadAgent(String path) {
+		NeuralNetwork loaded = logger.loadAgent(path);
 		bestAgent.set(loaded);
 		Arrays.fill(agents, loaded);
 		return this;
@@ -71,9 +72,11 @@ public class Trainer {
 	 * Saves an agent to a serialized object.
 	 * <p>
 	 * Agent can be loaded using {@link #loadAgent(String)}.
+	 *
+	 * @param agentName name of serialized agent file
 	 */
-	public void saveAgent() {
-		logger.saveAgent(bestAgent.get());
+	public void saveAgent(String agentName) {
+		logger.saveAgent(bestAgent.get(), agentName);
 	}
 	
 	/**
@@ -87,7 +90,7 @@ public class Trainer {
 	 * @return number of data points the agent got correct
 	 */
 	private int trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
-	                         int[] outputs, float learningRate) {
+	                       int[] outputs, float learningRate) {
 		float[] MSE = new float[targets[0].length];
 		int score = 0;
 		
@@ -117,16 +120,17 @@ public class Trainer {
 		
 		return score;
 	}
-
-    public void regularTrain(float[][] inputs, float[][] targets, int[] outputs,
-                 float learningRate, int generationNum){
-        int score = trainAgent(agents[0], inputs, targets, outputs, learningRate);
-
-        float percent = (float) score / inputs.length * 100;
-        String formatted = new DecimalFormat("###.##").format(percent);
-
-        System.out.println("Generation: " + generationNum + " | Best: [" + score + "/" + inputs.length + "] (" + formatted + "%)");
-    }
+	
+	public void regularTrain(float[][] inputs, float[][] targets, int[] outputs,
+	                         float learningRate, int generationNum) {
+		int score = trainAgent(agents[0], inputs, targets, outputs, learningRate);
+		
+		float percent = (float) score / inputs.length * 100;
+		String formatted = new DecimalFormat("###.##").format(percent);
+		
+		System.out.println("Generation: " + generationNum + " | Best: [" +
+				                   score + "/" + inputs.length + "] (" + formatted + "%)");
+	}
 	
 	/**
 	 * Trains all {@link NeuralNetwork} objects within current trainer object.
@@ -139,7 +143,7 @@ public class Trainer {
 	 * @throws Exception if file logging fails
 	 */
 	public void evolutionTrain(float[][] inputs, float[][] targets, int[] outputs,
-	                  float learningRate, int generationNum) throws Exception {
+	                           float learningRate, int generationNum) throws Exception {
 		// TODO: add multithreading
 		float[] scores = new float[agents.length];
 		for (int i = 0; i < agents.length; i++)

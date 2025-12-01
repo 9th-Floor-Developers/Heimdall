@@ -8,7 +8,7 @@ import java.io.*;
  * Data Utility Class, contains several data management saving utility classes.
  *
  * @see #log(int, float, int, String)
- * @see #saveAgent(NeuralNetwork)
+ * @see #saveAgent(NeuralNetwork, String)
  * @see #loadAgent(String)
  */
 public class DataLogger {
@@ -21,7 +21,7 @@ public class DataLogger {
 	 * @param path folder path to store data in;
 	 *             child folders will be made for better organization
 	 * @see #log(int, float, int, String)
-	 * @see #saveAgent(NeuralNetwork)
+	 * @see #saveAgent(NeuralNetwork, String)
 	 * @see #loadAgent(String)
 	 */
 	public DataLogger(String path) {
@@ -57,6 +57,7 @@ public class DataLogger {
 	 */
 	private int findNextSessionNumber(File trainingFolder) {
 		int max = 0;
+		//noinspection DataFlowIssue
 		for (String s : trainingFolder.list()) {
 			int number = Integer.parseInt(s);
 			if (number > max)
@@ -89,10 +90,11 @@ public class DataLogger {
 	 * <p>
 	 * Serialized object can be unserialized using {@link #loadAgent(String)}.
 	 *
-	 * @param agent {@link NeuralNetwork} object to be serialized
+	 * @param agent    {@link NeuralNetwork} object to be serialized
+	 * @param fileName name of file to save the best agent as
 	 */
-	public void saveAgent(NeuralNetwork agent) {
-		try (FileOutputStream fileOut = new FileOutputStream(path + "/agent.ser");
+	public void saveAgent(NeuralNetwork agent, String fileName) {
+		try (FileOutputStream fileOut = new FileOutputStream(path + "/" + fileName);
 		     ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
 			out.writeObject(agent);
 			System.out.println("Agent Saved Successfully...");
@@ -104,13 +106,13 @@ public class DataLogger {
 	/**
 	 * Loads an agent from a serialized file, {@code folder/agent.ser}.
 	 * <p>
-	 * Objects can be serialized to a file using {@link #saveAgent(NeuralNetwork)}.
+	 * Objects can be serialized to a file using {@link #saveAgent(NeuralNetwork, String)}.
 	 *
 	 * @param folder path of folder that serialized agent object is located in
 	 * @return {@link NeuralNetwork} object loaded from a serialized function
 	 */
 	public NeuralNetwork loadAgent(String folder) {
-		try (FileInputStream fileIn = new FileInputStream(folder + "/agent.ser");
+		try (FileInputStream fileIn = new FileInputStream(folder);
 		     ObjectInputStream in = new ObjectInputStream(fileIn)) {
 			NeuralNetwork agent = (NeuralNetwork) in.readObject();
 			System.out.println("Agent Loaded Successfully");

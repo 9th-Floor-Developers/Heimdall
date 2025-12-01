@@ -1,9 +1,4 @@
-import datasets.BasicDataSets;
-import datasets.GeneratedDataSets;
 import model.data.NumberImage;
-
-import java.util.Random;
-
 import static utils.NumberUtils.getAllImgs;
 import static utils.NumberUtils.getRandomImgs;
 
