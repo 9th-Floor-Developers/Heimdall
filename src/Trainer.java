@@ -132,54 +132,6 @@ public class Trainer {
 				                   score + "/" + inputs.length + "] (" + formatted + "%)");
 	}
 	
-	/**
-	 * Trains all {@link NeuralNetwork} objects within current trainer object.
-	 *
-	 * @param inputs        values neural network is trained on
-	 * @param targets       calculated values of output layer
-	 * @param outputs       desired values of the output layer
-	 * @param learningRate  difference to modify weights (0.0-0.5)
-	 * @param generationNum generation number of current training session
-	 * @throws Exception if file logging fails
-	 */
-	public void evolutionTrain(float[][] inputs, float[][] targets, int[] outputs,
-	                           float learningRate, int generationNum) throws Exception {
-		// TODO: add multithreading
-		float[] scores = new float[agents.length];
-		for (int i = 0; i < agents.length; i++)
-			scores[i] = trainAgent(agents[i], inputs, targets, outputs, learningRate);
-		
-		int bestIndex = 0;
-		for (int i = 0; i < scores.length; i++)
-			if (scores[i] > scores[bestIndex])
-				bestIndex = i;
-		
-		float bestRoundScore = scores[bestIndex];
-		float percent = bestRoundScore / inputs.length * 100;
-		String formatted = new DecimalFormat("###.##").format(percent);
-		
-		System.out.println(
-				"Generation: " + generationNum + " | Best: [" + bestRoundScore + "/" + inputs.length + "] (" + formatted + "%)");
-		
-		if (logger != null)
-			logger.log(generationNum, bestRoundScore, inputs.length, formatted);
-		
-		if (bestRoundScore > bestScore.get()) {
-			bestScore.set((long) bestRoundScore);
-			bestAgent.set(agents[bestIndex]);
-		}
-		
-		NeuralNetwork bestRoundAgent = agents[bestIndex];
-		for (int i = 0; i < agents.length; i++) {
-			if (i == bestIndex) {
-				agents[i] = bestRoundAgent;
-				continue;
-			}
-			
-			agents[i] = bestRoundAgent.evolve(learningRate);
-		}
-	}
-	
 	public float getBestScore() {
 		return bestScore.get();
 	}
