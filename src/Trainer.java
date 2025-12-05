@@ -6,8 +6,6 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
-// TODO: update docstrings
-
 /**
  * A class representing a trainer object that contains an array of agents
  * ({@link NeuralNetwork} objects) and all methods required to train them.
@@ -121,6 +119,17 @@ public class Trainer {
 		return score;
 	}
 	
+	/**
+	 * Train a single agent using back propagation, single threaded.
+	 * <p>
+	 * Outputs generation information.
+	 *
+	 * @param inputs        values neural network is trained on
+	 * @param targets       calculated values of output layer
+	 * @param outputs       desired values of the output layer
+	 * @param learningRate  difference to modify weights (0.0-0.5)
+	 * @param generationNum current generation number, used only for displaying information
+	 */
 	public void regularTrain(float[][] inputs, float[][] targets, int[] outputs,
 	                         float learningRate, int generationNum) {
 		int score = trainAgent(agents[0], inputs, targets, outputs, learningRate);
