@@ -1,13 +1,18 @@
+import exceptions.FileNotDeleted;
 import model.data.NumberImage;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static utils.NumberUtils.getAllImgs;
 import static utils.NumberUtils.getRandomImgs;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.DirectoryNotEmptyException;
 
 class TrainerTest {
 	private static Trainer trainer;
+	private static int counter = 0;
 	
 	@BeforeAll
 	public static void initTrainer() throws Exception {
@@ -35,6 +40,30 @@ class TrainerTest {
 		);
 	}
 	
+	@AfterAll
+	public static void clearTestingData() throws DirectoryNotEmptyException, FileNotFoundException {
+		File resultsDirectory = new File("./src/training-results/");
+		File[] files = resultsDirectory.listFiles();
+		//noinspection DataFlowIssue
+		int length = files.length;
+		
+		for (int i = 0; i < counter; i++) {
+			int idx = length + 1 - counter;
+			File tempFile = new File(resultsDirectory.getPath() + "/" + idx);
+			
+			if (!tempFile.isDirectory())
+				throw new FileNotFoundException(tempFile.getPath() + " Is Not A Directory");
+			
+			//noinspection DataFlowIssue
+			for (File file : tempFile.listFiles())
+				if (!file.delete())
+					throw new FileNotDeleted(file.getPath() + " Failed To Delete");
+			
+			if (!tempFile.delete())
+				throw new DirectoryNotEmptyException(tempFile.getPath() + " Could Not Be Deleted");
+		}
+	}
+	
 	@Test
 	public void IOAgent() throws Exception {
 		File resultsDirectory = new File("./src/training-results/");
@@ -49,6 +78,7 @@ class TrainerTest {
 		assert resultsDirectory.listFiles().length == length + 1;
 		
 		trainer.saveAgent("testAgent.ser");
+		counter++;
 		assert trainer.loadAgent("./src/training-results/" + (length + 1) + "/testAgent.ser") != null;
 	}
 	
