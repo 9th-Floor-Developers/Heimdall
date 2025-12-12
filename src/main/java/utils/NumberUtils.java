@@ -157,25 +157,38 @@ public class NumberUtils {
 			throw new FileNotFoundException("Directory does not contain files.");
 		
 		for (File file : files) {
-			if (file.isFile()) {  // image file
+			if (!file.isDirectory()) {  // file
 				float[][] pixels = imgToFloatArr(file);
 				String parent = file.getParentFile().getName();
 				NumberImage image = new NumberImage(pixels, Integer.parseInt(parent));
-				allImgDecVals.add(image);
-			} else if (file.isDirectory()) {  // recursively search subdirectories
-				File[] subdirectoryFiles = file.listFiles();
-				
-				if (subdirectoryFiles == null) {
-					System.out.println("Empty directory: " + file.getName());
-					continue;
-				}
-				
-				ArrayList<NumberImage> subDirImgs;
-				subDirImgs = searchDir(file);
-				allImgDecVals.addAll(subDirImgs);
-				
+				allImgs.add(image);
+				continue;
 			}
+			
+			// asynchronously and recursively search subdirectories
+			File[] subdirectoryFiles = file.listFiles();
+			
+			if (subdirectoryFiles == null) {
+				System.out.println("Empty directory: " + file.getName());
+				continue;
+			}
+			
+			Thread thread = new Thread(() -> {
+				ArrayList<NumberImage> subDirImgs;
+				try {
+					subDirImgs = searchDir(file);
+				} catch (Exception e) {
+					throw new RuntimeException(e);
+				}
+				allImgs.addAll(subDirImgs);
+			});
+			
+			threads.add(thread);
+			thread.start();
 		}
+		
+		for (Thread thread : threads)
+			thread.join();
 		
 		return allImgs;
 	}
