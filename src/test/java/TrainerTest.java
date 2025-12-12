@@ -14,15 +14,17 @@ import java.nio.file.DirectoryNotEmptyException;
 class TrainerTest {
 	private static Trainer trainer;
 	private static int counter = 0;
+	private static float[][] targets, inputs;
+	private static int[] outputs;
 	
 	@BeforeAll
-	public static void initTrainer() throws Exception {
-		NumberImage[] allImages = getAllImgs("./src/datasets/numbers/");
+	static void initTrainer() throws Exception {
+		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
 		NumberImage[] images = getRandomImgs(allImages, 1000, 67);
-		float[][] targets = new float[images.length][],
-				inputs = new float[images.length][];
-		int[] outputs = new int[images.length];
+		targets = new float[images.length][];
+		inputs = new float[images.length][];
+		outputs = new int[images.length];
 		
 		for (int i = 0; i < images.length; i++) {
 			NumberImage image = images[i];
@@ -42,7 +44,7 @@ class TrainerTest {
 	}
 	
 	@AfterAll
-	public static void clearTestingData() throws DirectoryNotEmptyException, FileNotFoundException {
+	static void clearTestingData() throws DirectoryNotEmptyException, FileNotFoundException {
 		File resultsDirectory = new File("./src/training-results/");
 		File[] files = resultsDirectory.listFiles();
 		//noinspection DataFlowIssue
@@ -66,7 +68,7 @@ class TrainerTest {
 	}
 	
 	@Test
-	public void IOAgent() throws Exception {
+	void IOAgent() throws Exception {
 		File resultsDirectory = new File("./src/training-results/");
 		File[] files = resultsDirectory.listFiles();
 		//noinspection DataFlowIssue
@@ -84,14 +86,23 @@ class TrainerTest {
 	}
 	
 	@Test
-	public void regularTrain() {
+	void regularTrain() throws Exception {
+		NeuralNetwork[] agents = (NeuralNetwork[]) TestingUtils.getPrivate(trainer, "agents");
+		
+		int score = (int) TestingUtils.invokePrivate(
+				trainer, "trainAgent",
+				new Class[] {
+						NeuralNetwork.class, float[][].class,
+						float[][].class, int[].class, float.class
+				},
+				agents[0], inputs, targets, outputs, .01f
+		);
+		
+		assert score >= 0;
 	}
 	
 	@Test
-	public void evolutionTrain() {
-	}
-	
-	@Test
-	public void getBestScore() {
+	void getBestScore() {
+		assert trainer.getBestScore() >= 0;
 	}
 }
