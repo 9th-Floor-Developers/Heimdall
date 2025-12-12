@@ -59,9 +59,16 @@ public class Layer implements Serializable {
 		return neurons;
 	}
 	
+	public void setNeurons(Neuron[] neurons) {
+		for (int i = 0; i < this.neurons.length; i++)
+			setNeuron(i, neurons[i]);
+	}
+	
+	
 	public int getNumNeurons() {
 		return neurons.length;
 	}
+	
 	
 	public Neuron getNeuron(int idx) {
 		return neurons[idx];
@@ -71,9 +78,60 @@ public class Layer implements Serializable {
 		neurons[idx] = neuron;
 	}
 	
+	
+	public float[][] getWeights() {
+		int numNeurons = getNumNeurons();
+		float[][] weights = new float[numNeurons][];
+		for (int i = 0; i < numNeurons; i++)
+			weights[i] = getNeuron(i).getWeights();
+		return weights;
+	}
+	
 	public void setWeights(float[][] weights) {
 		for (int i = 0; i < getNumNeurons(); i++)
 			getNeuron(i).setWeights(weights[i]);
+	}
+	
+	
+	public float[] getBiases() {
+		int numNeurons = getNumNeurons();
+		float[] biases = new float[numNeurons];
+		for (int i = 0; i < numNeurons; i++)
+			biases[i] = getNeuron(i).getBias();
+		return biases;
+	}
+	
+	public void setBiases(float[] biases) {
+		for (int i = 0; i < getNumNeurons(); i++)
+			getNeuron(i).setBias(biases[i]);
+	}
+	
+	
+	public float[] getValues() {
+		int numNeurons = getNumNeurons();
+		float[] values = new float[numNeurons];
+		for (int i = 0; i < numNeurons; i++)
+			values[i] = getNeuron(i).getValue();
+		return values;
+	}
+	
+	public void setValues(float[] values) {
+		for (int i = 0; i < getNumNeurons(); i++)
+			getNeuron(i).setValue(values[i]);
+	}
+	
+	
+	public float[] getErrors() {
+		int numNeurons = getNumNeurons();
+		float[] errors = new float[numNeurons];
+		for (int i = 0; i < numNeurons; i++)
+			errors[i] = getNeuron(i).getError();
+		return errors;
+	}
+	
+	public void setErrors(float[] errors) {
+		for (int i = 0; i < getNumNeurons(); i++)
+			getNeuron(i).setError(errors[i]);
 	}
 	// endregion
 }

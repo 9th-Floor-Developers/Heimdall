@@ -10,9 +10,8 @@ import java.util.Random;
  * Contains weights and a bias - used to calculate a value, used to calculate an input.
  */
 public class Neuron implements Serializable {
-	private float[] weights;
 	private final float[] squaredGradientsSum;
-	private float[] weightsChange, gradientChange;
+	private float[] weights, weightsChange, gradientChange;
 	private float value, bias, error, biasChange;
 	
 	/**
@@ -63,6 +62,16 @@ public class Neuron implements Serializable {
 			value += neurons[i].value * getWeight(i);
 		
 		value = sigmoid(value);
+	}
+	
+	/**
+	 * Calculates output error by calculating the difference of the target value
+	 * and the current value, then assigning that to {@code error}.
+	 *
+	 * @param target desired output value
+	 */
+	public void calcError(float target) {
+		this.error = target - value;
 	}
 	
 	/**
@@ -183,8 +192,8 @@ public class Neuron implements Serializable {
 		return error;
 	}
 	
-	public void setError(float target) {
-		this.error = target - value;
+	public void setError(float error) {
+		this.error = error;
 	}
 	
 	public void addError(float error) {

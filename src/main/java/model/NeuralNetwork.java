@@ -82,8 +82,8 @@ public class NeuralNetwork implements Serializable, Cloneable {
 		for (int i = layers.length - 1; i >= 1; i--) {
 			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
 				Neuron neuron = getNeuron(i, j);
-				if (i == layers.length - 1) {
-					neuron.setError(target[j]);
+				if (i == layers.length - 1) {  // output layer
+					neuron.calcError(target[j]);
 					outputError[j] = neuron.getError();
 				}
 				
@@ -122,6 +122,10 @@ public class NeuralNetwork implements Serializable, Cloneable {
 		return layers[idx];
 	}
 	
+	public void setLayer(int idx, Layer layer) {
+		layers[idx] = layer;
+	}
+	
 	
 	public Neuron getNeuron(int layer, int number) {
 		return layers[layer].getNeuron(number);
@@ -132,6 +136,19 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	}
 	
 	
+	public Neuron[][] getNeurons() {
+		Neuron[][] neurons = new Neuron[layers.length][];
+		for (int i = 0; i < layers.length; i++)
+			neurons[i] = layers[i].getNeurons();
+		return neurons;
+	}
+	
+	public void setNeurons(Neuron[][] neurons) {
+		for (int i = 0; i < layers.length; i++)
+			layers[i].setNeurons(neurons[i]);
+	}
+	
+	
 	public void setWeights(float[][][] weights) {
 		for (int i = 1; i < layers.length; i++)
 			layers[i].setWeights(weights[i - 1]);
@@ -139,35 +156,48 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	
 	public float[][][] getWeights() {
 		float[][][] weights = new float[layers.length - 1][][];
-		
-		for (int i = 1; i < layers.length; i++) {  // ignore input layer
-			int numNeurons = layers[i].getNumNeurons();
-			weights[i - 1] = new float[numNeurons][];
-			for (int j = 0; j < numNeurons; j++)
-				weights[i - 1][j] = getNeuron(i, j).getWeights();
-		}
-		
+		for (int i = 1; i < layers.length; i++)  // ignore input layer
+			weights[i - 1] = layers[i].getWeights();
 		return weights;
 	}
 	
 	
 	public void setBiases(float[][] biases) {
 		for (int i = 1; i < layerLengths.length; i++)
-			for (int j = 0; j < layerLengths[i]; j++)
-				getNeuron(i, j).setBias(biases[i - 1][j]);
+			layers[i].setBiases(biases[i - 1]);
 	}
 	
 	public float[][] getBiases() {
 		float[][] biases = new float[layers.length - 1][];
-		
-		for (int i = 1; i < layers.length; i++) {  // ignore input layer
-			int numNeurons = layers[i].getNumNeurons();
-			biases[i - 1] = new float[numNeurons];
-			for (int j = 0; j < numNeurons; j++)
-				biases[i - 1][j] = getNeuron(i, j).getBias();
-		}
-		
+		for (int i = 1; i < layers.length; i++)  // ignore input layer
+			biases[i - 1] = layers[i].getBiases();
 		return biases;
+	}
+	
+	
+	public float[][] getValues() {
+		float[][] values = new float[layers.length - 1][];
+		for (int i = 1; i < layers.length; i++)  // ignore input layer
+			values[i - 1] = layers[i].getValues();
+		return values;
+	}
+	
+	public void setValues(float[][] values) {
+		for (int i = 1; i < layerLengths.length; i++)
+			layers[i].setValues(values[i - 1]);
+	}
+	
+	
+	public float[][] getErrors() {
+		float[][] errors = new float[layers.length - 1][];
+		for (int i = 1; i < layers.length; i++)  // ignore input layer
+			errors[i - 1] = layers[i].getErrors();
+		return errors;
+	}
+	
+	public void setErrors(float[][] errors) {
+		for (int i = 1; i < layerLengths.length; i++)
+			layers[i].setErrors(errors[i - 1]);
 	}
 	// endregion
 }

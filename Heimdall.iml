@@ -3,7 +3,6 @@
   <component name="AdditionalModuleElements">
     <content url="file://$MODULE_DIR$" dumb="true">
       <excludeFolder url="file://$MODULE_DIR$/src/training-results" />
-      <excludeFolder url="file://$MODULE_DIR$/src/tests" />
       <excludeFolder url="file://$MODULE_DIR$/src/main/java/legacy" />
     </content>
   </component>
