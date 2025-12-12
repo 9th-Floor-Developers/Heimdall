@@ -11,7 +11,7 @@ import java.util.Random;
  * <p>
  * Class can be serialized to save/load the best agent.
  *
- * @see DataLogger#saveAgent(NeuralNetwork)
+ * @see DataLogger#saveAgent(NeuralNetwork, String)
  * @see DataLogger#loadAgent(String)
  */
 public class NeuralNetwork implements Serializable, Cloneable {
@@ -35,47 +35,6 @@ public class NeuralNetwork implements Serializable, Cloneable {
 		
 		for (int i = 0; i < layerLengths.length; i++)
 			layers[i] = new Layer(i, this, layerLengths[i], random);
-	}
-	
-	// TODO: delete if not needed
-	/**
-	 * Creates a neural network with already initialized {@link Layer} objects.
-	 *
-	 * @param layers array of already initialized {@link Layer} objects consisting of {@link Neuron} objects.
-	 */
-	public NeuralNetwork(Layer[] layers) {
-		this.layers = layers;
-		layerLengths = new int[layers.length];
-		
-		for (int i = 0; i < layers.length; i++)
-			layerLengths[i] = layers[i].getNumNeurons();
-	}
-	
-	/**
-	 * Adjust all weights in a network randomly to return a new variation of the current network.
-	 *
-	 * @param scale how much the weights are changing (+/- bounds for new random evolution),
-	 *              should be between 0.0-0.5
-	 * @return a clone of the current neural network but with slightly modified ("evolved") weights
-	 * @throws CloneNotSupportedException if cloning of current network object fails
-	 * @see Layer
-	 * @see Neuron
-	 */
-	public NeuralNetwork evolve(float scale) throws CloneNotSupportedException {
-		NeuralNetwork newNetwork = (NeuralNetwork) this.clone();
-		Random random = new Random();
-		
-		for (int i = 1; i < layers.length; i++) {  // skip input layer
-			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
-				Neuron newNeuron = getNeuron(i, j);
-				for (int k = 0; k < newNeuron.getNumWeights(); k++)
-					newNeuron.addWeight(k, random.nextFloat(-scale, scale));
-				newNeuron.addBias(random.nextFloat(-scale, scale));
-				newNetwork.setNeuron(i, j, newNeuron);
-			}
-		}
-		
-		return newNetwork;
 	}
 	
 	/**
