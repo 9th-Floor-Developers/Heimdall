@@ -29,4 +29,5 @@ out/
 
 Heimdall.iml
 
-/src/training-results/*
+training-results/
+target/
