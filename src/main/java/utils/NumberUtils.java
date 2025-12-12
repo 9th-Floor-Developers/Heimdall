@@ -87,25 +87,31 @@ public class NumberUtils {
 				randomImages = new NumberImage[numImages];
 		
 		Random random = new Random(seed);
-		for (int i = 0; i < numImages; i++) {
-			int idx = random.nextInt(0, allImages.length);
-			randomImages[i] = allImages[idx];
-		}
+		for (int i = 0; i < numImages; i++)
+			randomImages[i] = allImages[random.nextInt(allImages.length)];
 		
 		return randomImages;
 	}
-
-    public static NumberImage[] getRandomImgs(NumberImage[] allImages, int numImages, int seed) throws Exception {
-        NumberImage[] randomImages = new NumberImage[numImages];
-
-        Random random = new Random(seed);
-        for (int i = 0; i < numImages; i++) {
-            int idx = random.nextInt(0, allImages.length);
-            randomImages[i] = allImages[idx];
-        }
-
-        return randomImages;
-    }
+	
+	/**
+	 * Returns random images from {@code allImages} {@link NumberImage} selection array.
+	 * <p>
+	 * A smaller selection of images will increase the number of duplicate {@link NumberImage} objects.
+	 *
+	 * @param allImages {@link NumberImage} array to pick images from.
+	 * @param numImages desired number of {@link NumberImage} objects.
+	 * @return {@link NumberImage} array representing {@code numImages}
+	 * random images from {@code allImages} array.
+	 */
+	public static NumberImage[] getRandomImgs(NumberImage[] allImages, int numImages, int seed) {
+		NumberImage[] randomImages = new NumberImage[numImages];
+		
+		Random random = new Random(seed);
+		for (int i = 0; i < numImages; i++)
+			randomImages[i] = allImages[random.nextInt(allImages.length)];
+		
+		return randomImages;
+	}
 	
 	/**
 	 * Parses single specified image into {@link NumberImage}
@@ -120,7 +126,7 @@ public class NumberUtils {
 		if (!image.exists())
 			throw new FileNotFoundException();
 		else if (image.isDirectory())
-			throw new Exception("Selected path is a directory.");
+			throw new IsDirectoryException("Selected path is a directory.");
 		
 		NumberImage numberImage = new NumberImage(imgToFloatArr(image),
 		                                          Integer.parseInt(image.getParentFile().getName()));
@@ -143,7 +149,7 @@ public class NumberUtils {
 	 * @throws Exception if a problem occurs when converting image to float array
 	 */
 	private static ArrayList<NumberImage> searchDir(File dir) throws Exception {
-		ArrayList<NumberImage> allImgDecVals = new ArrayList<>();
+		ArrayList<NumberImage> allImgs = new ArrayList<>();
 		ArrayList<Thread> threads = new ArrayList<>();
 		
 		File[] files = dir.listFiles();
@@ -171,6 +177,6 @@ public class NumberUtils {
 			}
 		}
 		
-		return allImgDecVals;
+		return allImgs;
 	}
 }
