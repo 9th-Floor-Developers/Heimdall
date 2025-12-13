@@ -14,8 +14,8 @@ class NeuralNetworkTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		int[] layerLengths = {
-				500,
-				100,
+				2,
+				2,
 				10
 		};
 		
@@ -26,23 +26,34 @@ class NeuralNetworkTest {
 	@Test
 	void initialValues() {
 		// checks if all initial values are in range: -1 < v < 1
-		for (float[][] layerWeights : network.getWeights())
-			for (float[] neuronWeights : layerWeights)
-				for (float weight : neuronWeights)
-					assert weight > -1 && weight < 1;
-	}
-	
-	@Test
+        checkWeights();
+    }
+
+    private void checkWeights() {
+        for (float[][] layerWeights : network.getWeights())
+            for (float[] neuronWeights : layerWeights)
+                for (float weight : neuronWeights)
+                    assert weight > -1 && weight < 1;
+    }
+
+    @Test
 	void calcOutputs() {
+        network.calcOutputs(new float[]{1, 0});
+
+        Layer layer = network.getLayer(network.getLayers().length - 1);
+        for (Neuron neuron : layer.getNeurons())
+            assert neuron.getValue() > -1 && neuron.getValue() < 1;
 	}
 	
 	@Test
 	void backProp() {
-	}
+        checkWeights();
+    }
 	
 	@Test
-	void applyWeights() {
-	}
+	void applyWeightsChange() {
+        checkWeights();
+    }
 	
 	@Test
 	void layers() {
