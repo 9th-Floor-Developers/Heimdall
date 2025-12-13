@@ -103,7 +103,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	 * @param learningRate difference to modify weights (0.0-0.5)
 	 * @see Layer
 	 */
-	public void applyWeights(float learningRate) {
+	public void applyWeightsChange(float learningRate) {
 		for (int i = 0; i < layers.length; i++)
 			for (int j = 0; j < layers[i].getNumNeurons(); j++)
 				getNeuron(i, j).applyWeightChange(learningRate);
