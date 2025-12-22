@@ -9,7 +9,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.zip.DataFormatException;
 
 /**
  * A class containing all operations and processes relating to converting an image of a number into a {@link NumberImage}.
@@ -64,8 +66,12 @@ public class NumberUtils {
 		System.out.println("\rImage Parsing Complete...");
 		
 		NumberImage[] arrVals = new NumberImage[arrListVals.size()];
-		for (int i = 0; i < arrListVals.size(); i++)
-			arrVals[i] = arrListVals.get(i);
+		for (int i = 0; i < arrListVals.size(); i++){
+            arrVals[i] = arrListVals.get(i);
+            if (arrVals[i].value() == -1){
+                throw new DataFormatException("Number image could not be loaded properly, most likely due to invalid folder name ");
+            }
+        }
 		
 		return arrVals;
 	}
@@ -120,7 +126,8 @@ public class NumberUtils {
 	 * @return image as {@link NumberImage} object
 	 * @throws Exception if file at src location does not exist or is a directory
 	 */
-	public static NumberImage getImg(String src) throws Exception {
+	@SuppressWarnings("UnusedReturnValue")
+    public static NumberImage getImg(String src) throws Exception {
 		File image = new File(src);
 		
 		if (!image.exists())
@@ -131,7 +138,7 @@ public class NumberUtils {
 		NumberImage numberImage = new NumberImage(imgToFloatArr(image),
 		                                          Integer.parseInt(image.getParentFile().getName()));
 		System.out.println("\rImage Parsing Complete...");
-		
+
 		return numberImage;
 	}
 	
@@ -146,21 +153,32 @@ public class NumberUtils {
 	 * @param dir directory to check files in as a {@link File} object, origin of recursive process
 	 * @return ArrayList of {@link NumberImage} objects representing all
 	 * number images located in directory and all subdirectories
+     * any {@link NumberImage} without a numeric folder name will have -1 as its value
+     *
 	 * @throws Exception if a problem occurs when converting image to float array
 	 */
 	private static ArrayList<NumberImage> searchDir(File dir) throws Exception {
 		ArrayList<NumberImage> allImgs = new ArrayList<>();
+        ArrayList<ArrayList<NumberImage>> allSublists = new ArrayList<>();
+
 		ArrayList<Thread> threads = new ArrayList<>();
-		
+
 		File[] files = dir.listFiles();
 		if (files == null)
 			throw new FileNotFoundException("Directory does not contain files.");
-		
+
+        int value = -1;
+        try {
+            value = Integer.parseInt(dir.getName());
+        }
+        catch (Exception ignored){}
+
+        final int dirValue = value;
+
 		for (File file : files) {
 			if (!file.isDirectory()) {  // file
 				float[][] pixels = imgToFloatArr(file);
-				String parent = file.getParentFile().getName();
-				NumberImage image = new NumberImage(pixels, Integer.parseInt(parent));
+				NumberImage image = new NumberImage(pixels, dirValue);
 				allImgs.add(image);
 				continue;
 			}
@@ -172,6 +190,8 @@ public class NumberUtils {
 				System.out.println("Empty directory: " + file.getName());
 				continue;
 			}
+
+            ArrayList<NumberImage> newSubList = new ArrayList<>();
 			
 			Thread thread = new Thread(() -> {
 				ArrayList<NumberImage> subDirImgs;
@@ -180,15 +200,18 @@ public class NumberUtils {
 				} catch (Exception e) {
 					throw new RuntimeException(e);
 				}
-				allImgs.addAll(subDirImgs);
+                newSubList.addAll(subDirImgs);
 			});
-			
+
+			allSublists.add(newSubList);
 			threads.add(thread);
 			thread.start();
 		}
-		
+
 		for (Thread thread : threads)
-			thread.join();
+            thread.join();
+
+        allSublists.forEach(allImgs::addAll);
 		
 		return allImgs;
 	}
