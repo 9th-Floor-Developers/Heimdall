@@ -15,7 +15,11 @@ on:
     branches: [ "main" ]
 
 permissions:
-  contents: read
+  contents: write
+  issues: write        # Ability to create/edit issues
+  pull-requests: write # Ability to comment/edit PRs
+  packages: write      # Push to GitHub Packages
+  id-token: write      # Required for OIDC/cloud auth
   security-events: write
 
 jobs:
