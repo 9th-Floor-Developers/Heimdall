@@ -9,7 +9,9 @@ import static utils.NumberUtils.getRandomImgs;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
+import java.nio.file.Files;
 
 class TrainerTest {
 	private static Trainer trainer;
@@ -44,10 +46,15 @@ class TrainerTest {
 	}
 	
 	@AfterAll
-	static void clearTestingData() throws DirectoryNotEmptyException, FileNotFoundException {
+	static void clearTestingData() throws IOException {
 		File resultsDirectory = new File("./src/training-results/");
 		File[] files = resultsDirectory.listFiles();
-		//noinspection DataFlowIssue
+        
+        if (files == null) {
+            Files.createDirectory(resultsDirectory.toPath());
+            files = new File[] {};
+        }
+        
 		int length = files.length;
 		
 		for (int i = 0; i < counter; i++) {
@@ -71,7 +78,12 @@ class TrainerTest {
 	void IOAgent() throws Exception {
 		File resultsDirectory = new File("./src/training-results/");
 		File[] files = resultsDirectory.listFiles();
-		//noinspection DataFlowIssue
+        
+        if (files == null) {
+            Files.createDirectory(resultsDirectory.toPath());
+            files = new File[] {};
+        }
+        
 		int length = files.length;
 		
 		//noinspection AssertWithSideEffects
