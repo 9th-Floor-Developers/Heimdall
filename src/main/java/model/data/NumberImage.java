@@ -70,12 +70,11 @@ public record NumberImage(float[][] pixels,
 	 * Greyscale values are printed as {@code @$#!;:~-,.} in .1 intervals.
 	 */
 	public void printASCII() {
+        char[] symbols = { '.', ',', '-', '~', ':', ';', '!', '#', '$', '@' };
 		for (float[] floats : pixels) {
 			for (float v : floats) {
-				char[] symbols = { '.', ',', '-', '~', ':', ';', '!', '#', '$', '@' };
 				int index = Math.min((int) (v * 10), 9);  // converts 0.0-1.0 decimal to
-				char symbol = symbols[index];
-				System.out.print(symbol);
+				System.out.print(symbols[index]);
 			}
 			System.out.println();
 		}
