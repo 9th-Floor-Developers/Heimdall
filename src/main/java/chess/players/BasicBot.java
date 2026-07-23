@@ -3,6 +3,7 @@ package chess.players;
 import chess.Board;
 import chess.model.Move;
 import chess.model.PieceType;
+import static chess.model.PieceType.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -36,15 +37,16 @@ public class BasicBot implements Player{
         return legalMoves.getFirst();
     }
 
-    public double evalBoard(Board board){
-        double score = 0;
-
-        score += board.getPieceTypeAmount(PieceType.PAWN) * 1.0;
-        score += board.getPieceTypeAmount(PieceType.KNIGHT) * 3.0;
-        score += board.getPieceTypeAmount(PieceType.BISHOP) * 3.5;
-        score += board.getPieceTypeAmount(PieceType.ROOK) * 5.0;
-        score += board.getPieceTypeAmount(PieceType.QUEEN) * 10.0;
-        score += board.getPieceTypeAmount(PieceType.KING) * 100.0;
+    public int evalBoard(Board board) {
+        int score = 0;
+	    
+	    score += board.getPieceTypeAmount(PAWN);
+	    score += board.getPieceTypeAmount(KNIGHT) * KNIGHT.getMaterial();
+	    score += board.getPieceTypeAmount(BISHOP) * BISHOP.getMaterial();
+	    score += board.getPieceTypeAmount(ROOK) * ROOK.getMaterial();
+	    score += board.getPieceTypeAmount(QUEEN) * QUEEN.getMaterial();
+		
+		// TODO: possibly implement relative value
 
         return score;
     }
