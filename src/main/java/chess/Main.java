@@ -2,15 +2,23 @@ package chess;
 import static chess.ChessUtils.printBoard;
 import chess.model.Color;
 import chess.model.Move;
+import chess.players.Player;
+import chess.players.RandomBot;
+import chess.players.TerminalPlayer;
 
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.HashMap;
 
 public class Main {
 	public static void main(String[] args) {
 		Board board = new Board();
-		Scanner scanner = new Scanner(System.in);
-		
+
+		HashMap<Color, Player> players = new HashMap<>();
+		players.put(Color.WHITE, new TerminalPlayer());
+		players.put(Color.BLACK, new RandomBot());
+
+		System.out.println("Starting game between " + players.get(Color.WHITE).getDisplayName() + " and " + players.get(Color.BLACK).getDisplayName());
+
 		while (true) {
 			printBoard(board);
 			ArrayList<Move> legalMoves = MoveGenerator.generateLegalMoves(board);
@@ -27,33 +35,14 @@ public class Main {
 				System.out.println("Draw by 50-move rule.");
 				break;
 			}
-			
-			System.out.print("Enter move (e.g. e2e4, e7e8q), or 'moves' to list legal moves, 'quit' to exit: ");
-			String input = scanner.nextLine().trim();
-			
-			if (input.equalsIgnoreCase("quit"))
+
+			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves) : players.get(Color.BLACK).getNextMove(legalMoves);
+			if (chosen == null){
+				System.out.println((board.isWhiteToMove() ? "Black" : "White") + "Forfeited");
 				break;
-			
-			if (input.equalsIgnoreCase("moves")) {
-				for (Move m : legalMoves)
-					System.out.print(m.toLongAlgebraic() + " ");
-				System.out.println();
-				continue;
-			}
-			
-			Move chosen = parseMove(input, legalMoves);
-			if (chosen == null) {
-				System.out.println("Invalid or illegal move: " + input);
-				continue;
 			}
 			board.makeMove(chosen);
+			System.out.println("==============================================================");
 		}
-	}
-	
-	private static Move parseMove(String input, ArrayList<Move> legalMoves) {
-		for (Move m : legalMoves)
-			if (m.toLongAlgebraic().equalsIgnoreCase(input))
-				return m;
-		return null;
 	}
 }
