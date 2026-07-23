@@ -6,7 +6,7 @@ import static chess.model.Color.BLACK;
 import static chess.model.Color.WHITE;
 import static chess.model.PieceType.*;
 
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Stack;
 
 public final class Board {
@@ -250,6 +250,22 @@ public final class Board {
 			movePiece(indexOf(3, rank), indexOf(0, rank));
 	}
 	
+	public HashMap<PieceType, Integer> getPieces() {
+		HashMap<PieceType, Integer> map = new HashMap<>();
+		
+		for (Space space : spaces) {
+			if (space.getType() == EMPTY)
+				continue;
+			
+			if (map.containsKey(space.getType()))
+				map.put(space.getType(), map.get(space.getType()) + 1);
+			else
+				map.put(space.getType(), 1);
+		}
+		
+		return map;
+	}
+	
 	// endregion
 	
 	// region Getters/Setters
@@ -323,10 +339,6 @@ public final class Board {
 	
 	public Stack<MoveState> getHistory() {
 		return history;
-	}
-
-	public int getPieceTypeAmount(PieceType pieceType) {
-		return Math.toIntExact(Arrays.stream(spaces).filter(n -> n.getType() == pieceType).count());
 	}
 	
 	// endregion
