@@ -38,10 +38,12 @@ public class Main {
 
 			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves, board) : players.get(Color.BLACK).getNextMove(legalMoves, board);
 			if (chosen == null){
-				System.out.println((board.isWhiteToMove() ? "Black" : "White") + "Forfeited");
+				System.out.println((board.isWhiteToMove() ? "Black" : "White") + " Forfeited");
 				break;
 			}
+			
 			board.makeMove(chosen);
+			
 			System.out.println("==============================================================");
 		}
 	}

@@ -38,7 +38,6 @@ public final class Board {
 		enPassantTarget = -1;
 		halfMoveClock = 0;
 		fullMoveNumber = 1;
-		history.clear();
 	}
 	
 	public void makeMove(Move move) {
@@ -76,13 +75,35 @@ public final class Board {
 				blackCanCastleKingside = blackCanCastleQueenside = false;
 		}
 		
+		if (type == ROOK) {
+			if (move.from() == indexOf(0, 0))
+				whiteCanCastleQueenside = false;
+			else if (move.from() == indexOf(7, 0))
+				whiteCanCastleKingside = false;
+			else if (move.from() == indexOf(0, 7))
+				blackCanCastleQueenside = false;
+			else if (move.from() == indexOf(7, 7))
+				blackCanCastleKingside = false;
+		}
+		
+		if (state.capturedPieceType() == ROOK) {
+			if (move.to() == indexOf(0, 0))
+				whiteCanCastleQueenside = false;
+			else if (move.to() == indexOf(7, 0))
+				whiteCanCastleKingside = false;
+			else if (move.to() == indexOf(0, 7))
+				blackCanCastleQueenside = false;
+			else if (move.to() == indexOf(7, 7))
+				blackCanCastleKingside = false;
+		}
+		
 		enPassantTarget = (type == PAWN && Math.abs(rankOf(move.to()) - rankOf(move.from())) == 2)
 				? indexOf(fileOf(move.from()), (rankOf(move.from()) + rankOf(move.to())) / 2)
 				: -1;
 		
 		halfMoveClock = (type == PAWN || state.capturedPieceType() != EMPTY) ? 0 : halfMoveClock + 1;
 		
-		if (color == WHITE)
+		if (color == BLACK)
 			fullMoveNumber++;
 		
 		whiteToMove = !whiteToMove;
@@ -123,7 +144,7 @@ public final class Board {
 		enPassantTarget = state.enPassantTarget();
 		halfMoveClock = state.halfMoveClock();
 		
-		if (!whiteToMove)
+		if (movedPiece.getColor() == BLACK)
 			fullMoveNumber--;
 	}
 	
