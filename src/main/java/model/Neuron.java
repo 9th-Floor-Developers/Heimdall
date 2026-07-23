@@ -151,8 +151,8 @@ public class Neuron implements Serializable {
 	
 	public void setWeights(float[] weights) {
 		if (weights.length != this.weights.length)
-			throw new RuntimeException(
-					"Length of weights parameter does not match number of weights: " + weights.length + " != " + this.weights.length);
+			throw new RuntimeException("Length of weights parameter does not match number of weights: " +
+                                               weights.length + " != " + this.weights.length);
 		
 		this.weights = weights;
 	}

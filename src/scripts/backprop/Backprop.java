@@ -1,5 +1,3 @@
-package scripts.backprop;
-
 import model.data.NumberImage;
 import static utils.NumberUtils.getRandomImgs;
 

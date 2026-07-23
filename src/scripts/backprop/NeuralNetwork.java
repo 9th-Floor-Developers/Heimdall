@@ -1,5 +1,3 @@
-package scripts.backprop;
-
 import java.util.Random;
 
 class NeuralNetwork {

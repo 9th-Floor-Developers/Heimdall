@@ -77,8 +77,8 @@ public class DataLogger {
 	 */
 	public void log(int generationNum, float score, int inputsLength, String formatted) throws IOException {
 		if (data == null)
-			throw new NullPointerException(
-					"Logger Has Not Been Initialized, put DataLogger.initLogger(), before DataLogger.log(...).");
+			throw new NullPointerException("Logger Has Not Been Initialized," +
+                                                   "put DataLogger.initLogger(), before DataLogger.log(...).");
 		
 		FileWriter writer = new FileWriter(data, true);
 		writer.write(generationNum + "," + score + "," + inputsLength + "," + formatted + "\n");
