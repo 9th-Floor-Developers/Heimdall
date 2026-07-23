@@ -36,7 +36,7 @@ public class Main {
 				break;
 			}
 
-			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves) : players.get(Color.BLACK).getNextMove(legalMoves);
+			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves, board) : players.get(Color.BLACK).getNextMove(legalMoves, board);
 			if (chosen == null){
 				System.out.println((board.isWhiteToMove() ? "Black" : "White") + "Forfeited");
 				break;

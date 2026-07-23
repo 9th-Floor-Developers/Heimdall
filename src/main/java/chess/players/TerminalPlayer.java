@@ -1,5 +1,6 @@
 package chess.players;
 
+import chess.Board;
 import chess.model.Move;
 
 import java.util.ArrayList;
@@ -13,7 +14,7 @@ public class TerminalPlayer implements Player {
     }
 
     @Override
-    public Move getNextMove(ArrayList<Move> legalMoves) {
+    public Move getNextMove(ArrayList<Move> legalMoves, Board board) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter move (e.g. e2e4, e7e8q), or 'moves' to list legal moves, 'quit' to exit: ");
@@ -26,14 +27,14 @@ public class TerminalPlayer implements Player {
             for (Move m : legalMoves)
                 System.out.print(m.toLongAlgebraic() + " ");
             System.out.println();
-            return getNextMove(legalMoves);
+            return getNextMove(legalMoves, board);
         }
 
         Move chosen = parseMove(input, legalMoves);
         if (chosen == null) {
             System.out.println("Invalid or illegal move: " + input);
             System.out.println("Please try again");
-            return getNextMove(legalMoves);
+            return getNextMove(legalMoves, board);
         }
         return chosen;
     }

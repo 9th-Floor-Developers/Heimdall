@@ -6,6 +6,7 @@ import static chess.model.Color.BLACK;
 import static chess.model.Color.WHITE;
 import static chess.model.PieceType.*;
 
+import java.util.Arrays;
 import java.util.Stack;
 
 public final class Board {
@@ -322,6 +323,10 @@ public final class Board {
 	
 	public Stack<MoveState> getHistory() {
 		return history;
+	}
+
+	public int getPieceTypeAmount(PieceType pieceType) {
+		return Math.toIntExact(Arrays.stream(spaces).filter(n -> n.getType() == pieceType).count());
 	}
 	
 	// endregion

@@ -1,5 +1,6 @@
 package chess.players;
 
+import chess.Board;
 import chess.model.Move;
 
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ public class RandomBot implements Player{
     }
 
     @Override
-    public Move getNextMove(ArrayList<Move> legalMoves) {
+    public Move getNextMove(ArrayList<Move> legalMoves, Board board) {
         Random random = new Random();
         return legalMoves.get(random.nextInt(legalMoves.size()));
     }
