@@ -9,6 +9,8 @@ import chess.players.TerminalPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class GameManager {
 	public static GameManager i;
@@ -43,7 +45,10 @@ public class GameManager {
 				break;
 			}
 			
-			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves, board) : players.get(Color.BLACK).getNextMove(legalMoves, board);
+//			System.out.println("Best Move: " + findBestMove(board, 4).toLongAlgebraic());
+
+//			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves, board) : players.get(Color.BLACK).getNextMove(legalMoves, board);
+			Move chosen = board.isWhiteToMove() ? findBestMove(board, 4) : players.get(Color.BLACK).getNextMove(legalMoves, board);
 			if (chosen == null){
 				System.out.println((board.isWhiteToMove() ? "Black" : "White") + " Forfeited");
 				break;
@@ -55,5 +60,56 @@ public class GameManager {
 		}
 	}
 	
-	// TODO: implement best move selection and multithreading board analysation
+	private static Move findBestMove(Board board, int depth) {
+		AtomicReference<Move> bestMove = new AtomicReference<>();
+		AtomicInteger bestScore = new  AtomicInteger(Integer.MIN_VALUE);
+		ArrayList<Thread> threads = new ArrayList<>();
+		
+		for (Move move : MoveGenerator.generateLegalMoves(board)) {
+			Board child = board.clone();
+			child.makeMove(move);
+			
+			Object lock = new Object();
+			Thread thread = new Thread(() -> {
+				int score = -search(child, depth - 1);
+				
+				synchronized (lock) {
+					if (score > bestScore.get()) {
+						bestScore.set(score);
+						bestMove.set(move);
+					}
+				}
+			});
+			
+			thread.start();
+			threads.add(thread);
+		}
+		
+		for (Thread thread : threads) {
+			try {
+				thread.join();
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			}
+		}
+		
+		return bestMove.get();
+	}
+	
+	private static int search(Board board, int depth) {
+		if (depth == 0)
+			return board.evalBoard();
+		
+		int best = Integer.MIN_VALUE;
+		
+		for (Move move : MoveGenerator.generateLegalMoves(board)) {
+			Board clone = board.clone();
+			clone.makeMove(move);
+			
+			int score = -search(clone, depth - 1);
+			best = Math.max(best, score);
+		}
+		
+		return best;
+	}
 }
