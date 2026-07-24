@@ -3,7 +3,7 @@ package chess.model;
 import static chess.model.Color.NONE;
 import static chess.model.PieceType.EMPTY;
 
-public class Space {
+public class Space implements Cloneable {
 	private final int file, rank;
 	private PieceType type;
 	private Color color;
@@ -20,6 +20,15 @@ public class Space {
 		this.color = color;
 		this.file = file;
 		this.rank = rank;
+	}
+	
+	@Override
+	public Space clone() {
+		try {
+			return (Space) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new AssertionError();
+		}
 	}
 	
 	public boolean isEmpty() {

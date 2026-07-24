@@ -9,9 +9,9 @@ import static chess.model.PieceType.*;
 import java.util.HashSet;
 import java.util.Stack;
 
-public final class Board {
-	private final Space[] spaces;
-	private final Stack<MoveState> history;
+public final class Board implements Cloneable {
+	private Space[] spaces;
+	private Stack<MoveState> history;
 	private boolean whiteCanCastleKingside, whiteCanCastleQueenside,
 			blackCanCastleKingside, blackCanCastleQueenside;
 	private boolean whiteToMove;
@@ -38,6 +38,25 @@ public final class Board {
 		enPassantTarget = -1;
 		halfMoveClock = 0;
 		fullMoveNumber = 1;
+	}
+	
+	@Override
+	public Board clone() {
+		try {
+			Board copy = (Board) super.clone();
+			
+			copy.spaces = new Space[64];
+			
+			for (int i = 0; i < 64; i++)
+				copy.spaces[i] = spaces[i].clone();
+			
+			copy.history = (Stack<MoveState>) history.clone();
+			
+			return copy;
+			
+		} catch (CloneNotSupportedException e) {
+			throw new AssertionError(e);
+		}
 	}
 	
 	public void makeMove(Move move) {
