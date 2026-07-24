@@ -6,7 +6,7 @@ import static chess.model.Color.BLACK;
 import static chess.model.Color.WHITE;
 import static chess.model.PieceType.*;
 
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Stack;
 
 public final class Board {
@@ -148,7 +148,34 @@ public final class Board {
 			fullMoveNumber--;
 	}
 	
-	// region Helper Methods/Functions
+	public int evalBoard() {
+		int score = 0;
+		
+		for (Space space : getPieces()) {
+			PieceType type = space.getType();
+			
+			if (type == EMPTY || type == KING)
+				continue;
+			
+			int index = indexOf(space.getFile(), space.getRank()),
+					color = (space.getColor() == WHITE) ? 1 : -1;
+			
+			int material = type.getMaterial() + switch(type) {
+				case PAWN -> PAWN_TABLE[index];
+				case ROOK -> ROOK_TABLE[index];
+				case KNIGHT -> KNIGHT_TABLE[index];
+				case BISHOP -> BISHOP_TABLE[index];
+				case QUEEN -> QUEEN_TABLE[index];
+				default -> throw new IllegalStateException("Unexpected value: " + type);
+			};
+			
+			score += material * color;
+		}
+		
+		return score;
+	}
+	
+	// region Helper Methods
 	
 	public boolean isSquareAttacked(Space square, Color byColor) {
 		int f = square.getFile(), r = square.getRank();
@@ -244,10 +271,6 @@ public final class Board {
 		return isSquareAttacked(getKing(color), enemy);
 	}
 	
-	// endregion
-	
-	// region Helper Methods
-	
 	private void movePiece(int from, int to) {
 		spaces[to].setPiece(spaces[from].getType(), spaces[from].getColor());
 		spaces[from].setEmpty();
@@ -271,17 +294,13 @@ public final class Board {
 			movePiece(indexOf(3, rank), indexOf(0, rank));
 	}
 	
-	public HashMap<PieceType, Integer> getPieces() {
-		HashMap<PieceType, Integer> map = new HashMap<>();
+	public HashSet<Space> getPieces() {
+		HashSet<Space> map = new HashSet<>();
 		
 		for (Space space : spaces) {
 			if (space.getType() == EMPTY)
 				continue;
-			
-			if (map.containsKey(space.getType()))
-				map.put(space.getType(), map.get(space.getType()) + 1);
-			else
-				map.put(space.getType(), 1);
+			map.add(space);
 		}
 		
 		return map;

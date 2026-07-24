@@ -36,20 +36,4 @@ public class BasicBot implements Player{
          */
         return legalMoves.getFirst();
     }
-
-    public int evalBoard(Board board) {
-        int score = 0;
-		
-		HashMap<PieceType, Integer> pieces = board.getPieces();
-	    
-        score += pieces.get(PAWN);
-        score += pieces.get(KNIGHT) * KNIGHT.getMaterial();
-        score += pieces.get(BISHOP) * BISHOP.getMaterial();
-        score += pieces.get(ROOK) * ROOK.getMaterial();
-        score += pieces.get(QUEEN) * QUEEN.getMaterial();
-		
-		// TODO: possibly implement relative value
-
-        return score;
-    }
 }
