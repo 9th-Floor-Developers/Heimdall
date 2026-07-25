@@ -191,6 +191,14 @@ public final class Board implements Cloneable {
 			score += material * color;
 		}
 		
+		if (isEndgame()) {
+			Space myKing = getKing(whiteToMove ? WHITE : BLACK),
+					enemyKing = getKing(whiteToMove ? BLACK : WHITE);
+			int enemyKingCornerDist = distanceFromCenter(enemyKing);
+			int kingDist = kingDistance(myKing, enemyKing);
+			score += enemyKingCornerDist * 10 - kingDist * 4;
+		}
+		
 		return score;
 	}
 	
@@ -323,6 +331,28 @@ public final class Board implements Cloneable {
 		}
 		
 		return map;
+	}
+	
+	public boolean isEndgame() {
+		int totalMaterial = 0;
+		for (Space piece : getPieces()) {
+			if (piece.getType() != PieceType.KING)
+				totalMaterial += piece.getType().getMaterial();
+		}
+		return totalMaterial <= 20;
+	}
+	
+	private static int distanceFromCenter(Space space) {
+		int file = space.getFile(), rank = space.getRank(),
+				fileDist = Math.max(3 - file, file - 4),
+				rankDist = Math.max(3 - rank, rank - 4);
+		return fileDist + rankDist;
+	}
+	
+	private static int kingDistance(Space king1, Space king2) {
+		int file1 = king1.getFile(), file2 = king2.getFile(),
+				rank1 = king1.getRank(), rank2 = king2.getRank();
+		return Math.max(Math.abs(file1 - file2), Math.abs(rank1 - rank2));  // Chebyshev distance
 	}
 	
 	// endregion

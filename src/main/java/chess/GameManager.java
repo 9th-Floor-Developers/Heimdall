@@ -48,7 +48,8 @@ public class GameManager {
 //			System.out.println("Best Move: " + findBestMove(board, 4).toLongAlgebraic());
 
 //			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves, board) : players.get(Color.BLACK).getNextMove(legalMoves, board);
-			Move chosen = board.isWhiteToMove() ? findBestMove(board, 4) : players.get(Color.BLACK).getNextMove(legalMoves, board);
+			int depth = (board.isEndgame()) ? 6 : 3;
+			Move chosen = board.isWhiteToMove() ? findBestMove(board, depth) : players.get(Color.BLACK).getNextMove(legalMoves, board);
 			if (chosen == null){
 				System.out.println((board.isWhiteToMove() ? "Black" : "White") + " Forfeited");
 				break;
