@@ -61,15 +61,19 @@ public class GameManager {
 	}
 	
 	private static Move findBestMove(Board board, int depth) {
+		ArrayList<Move> moves = MoveGenerator.generateLegalMoves(board);
+		if (moves.isEmpty())
+			return null;
+		
 		AtomicReference<Move> bestMove = new AtomicReference<>();
 		AtomicInteger bestScore = new  AtomicInteger(Integer.MIN_VALUE);
 		ArrayList<Thread> threads = new ArrayList<>();
+		Object lock = new Object();
 		
-		for (Move move : MoveGenerator.generateLegalMoves(board)) {
+		for (Move move : moves) {
 			Board child = board.clone();
 			child.makeMove(move);
 			
-			Object lock = new Object();
 			Thread thread = new Thread(() -> {
 				int score = -search(child, depth - 1);
 				
