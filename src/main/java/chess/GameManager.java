@@ -69,13 +69,14 @@ public class GameManager {
 		AtomicInteger bestScore = new  AtomicInteger(Integer.MIN_VALUE);
 		ArrayList<Thread> threads = new ArrayList<>();
 		Object lock = new Object();
+		int inf = Integer.MAX_VALUE;
 		
 		for (Move move : moves) {
 			Board child = board.clone();
 			child.makeMove(move);
 			
 			Thread thread = new Thread(() -> {
-				int score = -search(child, depth - 1);
+				int score = -search(child, depth - 1, -inf, inf);
 				
 				synchronized (lock) {
 					if (score > bestScore.get()) {
@@ -100,7 +101,7 @@ public class GameManager {
 		return bestMove.get();
 	}
 	
-	private static int search(Board board, int depth) {
+	private static int search(Board board, int depth, int alpha, int beta) {
 		if (depth == 0)
 			return board.evalBoard();
 		
@@ -110,8 +111,12 @@ public class GameManager {
 			Board clone = board.clone();
 			clone.makeMove(move);
 			
-			int score = -search(clone, depth - 1);
+			int score = -search(clone, depth - 1, -beta, -alpha);
 			best = Math.max(best, score);
+			alpha = Math.max(alpha, score);
+			
+			if (alpha >= beta)
+				break;
 		}
 		
 		return best;
