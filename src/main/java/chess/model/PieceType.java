@@ -7,7 +7,7 @@ public enum PieceType {
 	KNIGHT('n', 3),
 	BISHOP('b', 3),
 	QUEEN('q', 9),
-	KING('k', 0);
+	KING('k', 100);
 	
 	private final char letter;
 	private final int material;

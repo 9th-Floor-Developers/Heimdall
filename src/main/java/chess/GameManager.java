@@ -3,6 +3,7 @@ package chess;
 import static chess.ChessUtils.printBoard;
 import chess.model.Color;
 import chess.model.Move;
+import static chess.model.PieceType.KING;
 import chess.players.Player;
 import chess.players.RandomBot;
 import chess.players.TerminalPlayer;
@@ -103,12 +104,18 @@ public class GameManager {
 	}
 	
 	private static int search(Board board, int depth, int alpha, int beta) {
+		ArrayList<Move> moves = MoveGenerator.generateLegalMoves(board);
+		if (moves.isEmpty())
+			return (board.isInCheck(board.isWhiteToMove() ? Color.WHITE : Color.BLACK))
+					? -KING.getMaterial() - depth  // checkmate
+					: 0;  // stalemate
+		
 		if (depth == 0)
 			return board.evalBoard();
 		
 		int best = Integer.MIN_VALUE;
 		
-		for (Move move : MoveGenerator.generateLegalMoves(board)) {
+		for (Move move : moves) {
 			Board clone = board.clone();
 			clone.makeMove(move);
 			
