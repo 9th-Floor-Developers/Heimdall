@@ -355,6 +355,13 @@ public final class Board implements Cloneable {
 		return Math.max(Math.abs(file1 - file2), Math.abs(rank1 - rank2));  // Chebyshev distance
 	}
 	
+	public HashSet<Space> moveToSpace(HashSet<Move> moves) {
+		HashSet<Space> spaces = new HashSet<>();
+		for (Move move : moves)
+			spaces.add(pieceAt(move.to()));
+		return spaces;
+	}
+	
 	// endregion
 	
 	// region Getters/Setters
