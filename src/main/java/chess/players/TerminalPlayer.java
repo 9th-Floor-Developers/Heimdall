@@ -4,7 +4,7 @@ import chess.Board;
 import chess.model.Color;
 import chess.model.Move;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 
@@ -15,7 +15,7 @@ public class TerminalPlayer implements Player {
     }
 
     @Override
-    public Move getNextMove(ArrayList<Move> legalMoves, Board board, Color color) {
+    public Move getNextMove(HashSet<Move> legalMoves, Board board, Color color) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.print("Enter move (e.g. e2e4, e7e8q), or 'moves' to list legal moves, 'quit' to exit: ");
@@ -40,7 +40,7 @@ public class TerminalPlayer implements Player {
         return chosen;
     }
 
-    private static Move parseMove(String input, ArrayList<Move> legalMoves) {
+    private static Move parseMove(String input, HashSet<Move> legalMoves) {
         for (Move m : legalMoves)
             if (m.toLongAlgebraic().equalsIgnoreCase(input))
                 return m;

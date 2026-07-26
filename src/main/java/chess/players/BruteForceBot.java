@@ -6,6 +6,7 @@ import chess.model.Color;
 import chess.model.Move;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,7 +27,7 @@ public class BruteForceBot implements Player{
     }
 
     @Override
-    public Move getNextMove(ArrayList<Move> legalMoves, Board board, Color color) {
+    public Move getNextMove(HashSet<Move> legalMoves, Board board, Color color) {
         int depth = board.isEndgame() ? endgameDepth : baseDepth;
 
         AtomicReference<Move> bestMove = new AtomicReference<>();
@@ -66,7 +67,7 @@ public class BruteForceBot implements Player{
     }
 
     private static int search(Board board, int depth, int alpha, int beta) {
-        ArrayList<Move> moves = MoveGenerator.generateLegalMoves(board);
+        HashSet<Move> moves = MoveGenerator.generateLegalMoves(board);
         if (moves.isEmpty())
             return (board.isInCheck(board.isWhiteToMove() ? Color.WHITE : Color.BLACK))
                     ? -KING.getMaterial() - depth  // checkmate

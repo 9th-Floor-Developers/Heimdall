@@ -8,8 +8,8 @@ import chess.players.BruteForceBot;
 import chess.players.Player;
 import chess.players.RandomBot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 
 public class GameManager {
 	public static GameManager i;
@@ -29,7 +29,7 @@ public class GameManager {
 		
 		while (true) {
 			printBoard(board);
-			ArrayList<Move> legalMoves = MoveGenerator.generateLegalMoves(board);
+			HashSet<Move> legalMoves = MoveGenerator.generateLegalMoves(board);
 			
 			if (legalMoves.isEmpty()) {
 				if (board.isInCheck(board.isWhiteToMove() ? Color.WHITE : Color.BLACK))

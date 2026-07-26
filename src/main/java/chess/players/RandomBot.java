@@ -4,7 +4,7 @@ import chess.Board;
 import chess.model.Color;
 import chess.model.Move;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Random;
 
 public class RandomBot implements Player{
@@ -14,8 +14,8 @@ public class RandomBot implements Player{
     }
 
     @Override
-    public Move getNextMove(ArrayList<Move> legalMoves, Board board, Color color) {
+    public Move getNextMove(HashSet<Move> legalMoves, Board board, Color color) {
         Random random = new Random();
-        return legalMoves.get(random.nextInt(legalMoves.size()));
+		return legalMoves.toArray(new Move[0])[random.nextInt(legalMoves.size())];
     }
 }

@@ -4,7 +4,7 @@ import chess.Board;
 import chess.model.Color;
 import chess.model.Move;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 
 public class BasicBot implements Player{
     @Override
@@ -13,7 +13,7 @@ public class BasicBot implements Player{
     }
 
     @Override
-    public Move getNextMove(ArrayList<Move> legalMoves, Board board, Color color) {
+    public Move getNextMove(HashSet<Move> legalMoves, Board board, Color color) {
         /*
         double bestScore = Double.MIN_NORMAL;
         Move bestMove = legalMoves.getFirst();
@@ -32,6 +32,6 @@ public class BasicBot implements Player{
 
         return bestMove;
          */
-        return legalMoves.getFirst();
+        return legalMoves.stream().findFirst().orElse(null);
     }
 }
