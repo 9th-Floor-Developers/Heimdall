@@ -167,7 +167,7 @@ public final class Board implements Cloneable {
 			fullMoveNumber--;
 	}
 	
-	public int evalBoard(Color positiveColor) {
+	public int evalBoard() {
 		int score = 0;
 		
 		for (Space space : getPieces()) {
@@ -177,7 +177,7 @@ public final class Board implements Cloneable {
 				continue;
 			
 			int index = indexOf(space.getFile(), space.getRank()),
-					color = (space.getColor() == positiveColor) ? 1 : -1;
+					color = (space.getColor() == WHITE) ? 1 : -1;
 			
 			int material = type.getMaterial() + switch(type) {
 				case PAWN -> PAWN_TABLE[index];
