@@ -26,7 +26,7 @@ public class BruteForceBot implements Player{
     }
 
     @Override
-    public Move getNextMove(ArrayList<Move> legalMoves, Board board) {
+    public Move getNextMove(ArrayList<Move> legalMoves, Board board, Color color) {
         int depth = board.isEndgame() ? endgameDepth : baseDepth;
 
         AtomicReference<Move> bestMove = new AtomicReference<>();
@@ -40,7 +40,7 @@ public class BruteForceBot implements Player{
             child.makeMove(move);
 
             Thread thread = new Thread(() -> {
-                int score = -search(child, depth - 1, -inf, inf);
+                int score = -search(child, depth - 1, -inf, inf, color);
 
                 synchronized (lock) {
                     if (score > bestScore.get()) {
@@ -65,7 +65,7 @@ public class BruteForceBot implements Player{
         return bestMove.get();
     }
 
-    private static int search(Board board, int depth, int alpha, int beta) {
+    private static int search(Board board, int depth, int alpha, int beta, Color positiveColor) {
         ArrayList<Move> moves = MoveGenerator.generateLegalMoves(board);
         if (moves.isEmpty())
             return (board.isInCheck(board.isWhiteToMove() ? Color.WHITE : Color.BLACK))
@@ -73,7 +73,7 @@ public class BruteForceBot implements Player{
                     : 0;  // stalemate
 
         if (depth == 0)
-            return board.evalBoard();
+            return board.evalBoard(positiveColor);
 
         int best = Integer.MIN_VALUE;
 
@@ -81,7 +81,7 @@ public class BruteForceBot implements Player{
             Board clone = board.clone();
             clone.makeMove(move);
 
-            int score = -search(clone, depth - 1, -beta, -alpha);
+            int score = -search(clone, depth - 1, -beta, -alpha, positiveColor);
             best = Math.max(best, score);
             alpha = Math.max(alpha, score);
 

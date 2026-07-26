@@ -3,17 +3,13 @@ package chess;
 import static chess.ChessUtils.printBoard;
 import chess.model.Color;
 import chess.model.Move;
-import static chess.model.PieceType.KING;
 
 import chess.players.BruteForceBot;
 import chess.players.Player;
 import chess.players.RandomBot;
-import chess.players.TerminalPlayer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class GameManager {
 	public static GameManager i;
@@ -50,7 +46,9 @@ public class GameManager {
 			
 //			System.out.println("Best Move: " + findBestMove(board, 4).toLongAlgebraic());
 
-			Move chosen = board.isWhiteToMove() ? players.get(Color.WHITE).getNextMove(legalMoves, board) : players.get(Color.BLACK).getNextMove(legalMoves, board);
+			Move chosen = board.isWhiteToMove() ?
+					players.get(Color.WHITE).getNextMove(legalMoves, board, Color.WHITE)
+					: players.get(Color.BLACK).getNextMove(legalMoves, board, Color.BLACK);
 			if (chosen == null){
 				System.out.println((board.isWhiteToMove() ? "Black" : "White") + " Forfeited");
 				break;
