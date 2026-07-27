@@ -6,22 +6,28 @@ import chess.model.Move;
 import chess.model.PieceType;
 import chess.model.Space;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class BoardPanel extends JPanel {
 	private Space selected;
 	private final HashSet<Move> selectedMoves;
 	private final HashSet<Space> selectedMoveSpaces;
+	private final HashMap<String, Image> pieceImages = new HashMap<>();
 	private Board game;
 	
 	public BoardPanel() {
 		selected = null;
 		selectedMoves = new HashSet<>();
 		selectedMoveSpaces = new HashSet<>();
+		
+		loadImages();
 	}
 	
 	@Override
@@ -38,8 +44,24 @@ public class BoardPanel extends JPanel {
 		});
 		
 		drawHighlights(g);
-		
-		// draw pieces
+		drawPieces(g);
+		drawLabels(g);
+	}
+	
+	private void loadImages() {
+		String[] colors = {"white", "black"};
+		String[] types  = {"pawn", "knight", "bishop", "rook", "queen", "king"};
+		for (String color : colors) {
+			for (String type : types) {
+				String key = color + '-' + type;
+				try {
+					Image img = ImageIO.read(getClass().getResource("/pieces/" + key + ".png"));
+					pieceImages.put(key, img);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		}
 	}
 	
 	private void drawBoard(Graphics g) {
@@ -55,6 +77,32 @@ public class BoardPanel extends JPanel {
 						squareSize
 				);
 			}
+		}
+	}
+	
+	private void drawLabels(Graphics g) {
+		int squareSize = getWidth() / 8;
+		g.setFont(g.getFont().deriveFont(Font.BOLD, 18f));
+		FontMetrics fm = g.getFontMetrics();
+		
+		for (int i = 0; i < 8; i++) {
+			// files a-h along the bottom edge
+			char file = (char) ('a' + i);
+			g.setColor(Color.BLACK);
+			g.drawString(
+					String.valueOf(file),
+					i * squareSize + 4,
+					8 * squareSize - 4
+			);
+			
+			// ranks 8-1 down the left edge
+			int rank = 8 - i;
+			g.setColor(Color.BLACK);
+			g.drawString(
+					String.valueOf(rank),
+					4,
+					i * squareSize + fm.getAscent()
+			);
 		}
 	}
 	
@@ -81,6 +129,27 @@ public class BoardPanel extends JPanel {
 					space.getRank() * squareSize,
 					squareSize, squareSize
 			);
+	}
+	
+	private void drawPieces(Graphics g) {
+		int squareSize = getWidth() / 8;
+		
+		for (Space piece : game.getPieces()) {
+			String key = piece.getColor().toString().toLowerCase() + "-"
+					+ piece.getType().toString().toLowerCase();
+			Image img = pieceImages.get(key);
+			if (img == null)
+				throw new RuntimeException("Piece " + key + " not found!");
+			
+			int drawRow = 7 - piece.getRank(); // flip so rank 0 is at bottom, adjust if your model differs
+			g.drawImage(
+					img,
+					piece.getFile() * squareSize,
+					drawRow * squareSize,
+					squareSize, squareSize,
+					this
+			);
+		}
 	}
 	
 	private void handleClick(MouseEvent e) {
