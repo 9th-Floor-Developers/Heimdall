@@ -16,10 +16,9 @@ public class BoardPanel extends JPanel {
 	private Space selected;
 	private final HashSet<Move> selectedMoves;
 	private final HashSet<Space> selectedMoveSpaces;
-	private final Board game;
+	private Board game;
 	
-	public BoardPanel(Board game) {
-		this.game = game;
+	public BoardPanel() {
 		selected = null;
 		selectedMoves = new HashSet<>();
 		selectedMoveSpaces = new HashSet<>();
@@ -120,5 +119,9 @@ public class BoardPanel extends JPanel {
 				repaint();
 			}
 		}
+	}
+	
+	public void setGame(Board game) {
+		this.game = game;
 	}
 }
