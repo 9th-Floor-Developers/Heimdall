@@ -5,7 +5,7 @@ import chess.Board;
 import javax.swing.*;
 import java.awt.*;
 
-public class MainWindow extends JFrame {
+public final class MainWindow extends JFrame {
 	private JPanel rootPanel;
 	private JPanel boardPanel;
 	private JButton saveButton;

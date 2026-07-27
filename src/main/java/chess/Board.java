@@ -46,14 +46,12 @@ public final class Board implements Cloneable {
 			Board copy = (Board) super.clone();
 			
 			copy.spaces = new Space[64];
-			
 			for (int i = 0; i < 64; i++)
 				copy.spaces[i] = spaces[i].clone();
 			
 			copy.history = (Stack<MoveState>) history.clone();
 			
 			return copy;
-			
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
 		}
@@ -179,7 +177,7 @@ public final class Board implements Cloneable {
 			int index = indexOf(space.getFile(), space.getRank()),
 					color = (space.getColor() == WHITE) ? 1 : -1;
 			
-			int material = type.getMaterial() + switch(type) {
+			int material = type.getMaterial() + switch (type) {
 				case PAWN -> PAWN_TABLE[index];
 				case ROOK -> ROOK_TABLE[index];
 				case KNIGHT -> KNIGHT_TABLE[index];
@@ -404,14 +402,13 @@ public final class Board implements Cloneable {
 	public boolean isWhiteToMove() {
 		return whiteToMove;
 	}
-
-	public Color getTurnColor(){
-		return isWhiteToMove() ? Color.WHITE : Color.BLACK;
+	
+	public Color getTurnColor() {
+		return whiteToMove ? Color.WHITE : Color.BLACK;
 	}
-
-
-	public Color getOppositeColor(){
-		return isWhiteToMove() ? Color.BLACK : WHITE;
+	
+	public Color getOppositeColor() {
+		return whiteToMove ? Color.BLACK : WHITE;
 	}
 	
 	public void setWhiteToMove(boolean whiteToMove) {

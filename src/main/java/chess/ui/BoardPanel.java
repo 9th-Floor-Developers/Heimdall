@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public class BoardPanel extends JPanel {
+public final class BoardPanel extends JPanel {
 	private Space selected;
 	private final HashSet<Move> selectedMoves;
 	private final HashSet<Space> selectedMoveSpaces;
@@ -27,6 +27,13 @@ public class BoardPanel extends JPanel {
 		selectedMoves = new HashSet<>();
 		selectedMoveSpaces = new HashSet<>();
 		
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				handleClick(e);
+			}
+		});
+		
 		loadImages();
 	}
 	
@@ -35,14 +42,6 @@ public class BoardPanel extends JPanel {
 		super.paintComponent(g);
 		
 		drawBoard(g);
-		
-		addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				handleClick(e);
-			}
-		});
-		
 		drawHighlights(g);
 		drawPieces(g);
 		drawLabels(g);
@@ -171,22 +170,18 @@ public class BoardPanel extends JPanel {
 				repaint();
 			}
 		} else {
-			if (selectedMoveSpaces.contains(clicked)) {  // clicking a possible move space
-//				Move chosen = selectedMoves.stream()
-//						.filter(m -> m.to() == (clicked))
-//						.findFirst()
-//						.orElseThrow();
-//				game.makeMove(chosen);
-				selected = null;
-				selectedMoves.clear();
-				selectedMoveSpaces.clear();
-				repaint();
-			} else {  // clicking off a piece
-				selected = null;
-				selectedMoves.clear();
-				selectedMoveSpaces.clear();
-				repaint();
+			if (selectedMoveSpaces.contains(clicked)) {
+				Move chosen = selectedMoves.stream()
+						.filter(m -> game.pieceAt(m.to()).equals(clicked))
+						.findFirst()
+						.orElseThrow();
+				game.makeMove(chosen);
 			}
+			
+			selected = null;
+			selectedMoves.clear();
+			selectedMoveSpaces.clear();
+			repaint();
 		}
 	}
 	
