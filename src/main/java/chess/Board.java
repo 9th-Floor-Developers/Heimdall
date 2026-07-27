@@ -404,6 +404,15 @@ public final class Board implements Cloneable {
 	public boolean isWhiteToMove() {
 		return whiteToMove;
 	}
+
+	public Color getTurnColor(){
+		return isWhiteToMove() ? Color.WHITE : Color.BLACK;
+	}
+
+
+	public Color getOppositeColor(){
+		return isWhiteToMove() ? Color.BLACK : WHITE;
+	}
 	
 	public void setWhiteToMove(boolean whiteToMove) {
 		this.whiteToMove = whiteToMove;

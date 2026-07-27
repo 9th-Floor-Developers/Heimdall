@@ -4,26 +4,20 @@ import static chess.ChessUtils.printBoard;
 import chess.model.Color;
 import chess.model.Move;
 
-import chess.players.BruteForceBot;
 import chess.players.Player;
-import chess.players.RandomBot;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class GameManager {
-	public static GameManager i;
+	public static GameManager instance;
 	
 	public GameManager() {
-		i = this;
+		instance = this;
 	}
-	
-	public static void run() {
+
+	public static Color runGame(HashMap<Color, Player> players) {
 		Board board = new Board();
-		
-		HashMap<Color, Player> players = new HashMap<>();
-		players.put(Color.BLACK, new BruteForceBot(3, 6));
-		players.put(Color.WHITE, new RandomBot());
 		
 		System.out.println("Starting game between " + players.get(Color.WHITE).getDisplayName() + " and " + players.get(Color.BLACK).getDisplayName());
 		
@@ -32,26 +26,28 @@ public class GameManager {
 			HashSet<Move> legalMoves = MoveGenerator.generateLegalMoves(board);
 			
 			if (legalMoves.isEmpty()) {
-				if (board.isInCheck(board.isWhiteToMove() ? Color.WHITE : Color.BLACK))
-					System.out.println("Checkmate! " + (board.isWhiteToMove() ? "Black" : "White") + " wins.");
-				else
+				if (board.isInCheck(board.getTurnColor())) {
+					System.out.println("Checkmate! " + (board.getOppositeColor().toString()) + " wins.");
+					return board.getOppositeColor();
+				}
+				else {
 					System.out.println("Stalemate! Draw.");
-				break;
+					return Color.NONE;
+				}
 			}
 			
 			if (board.getHalfMoveClock() >= 100) {
 				System.out.println("Draw by 50-move rule.");
-				break;
+				return Color.NONE;
 			}
 			
 //			System.out.println("Best Move: " + findBestMove(board, 4).toLongAlgebraic());
 
-			Move chosen = board.isWhiteToMove() ?
-					players.get(Color.WHITE).getNextMove(legalMoves, board, Color.WHITE)
-					: players.get(Color.BLACK).getNextMove(legalMoves, board, Color.BLACK);
+			Move chosen = players.get(board.getTurnColor()).getNextMove(legalMoves, board, board.getTurnColor());
+
 			if (chosen == null){
-				System.out.println((board.isWhiteToMove() ? "Black" : "White") + " Forfeited");
-				break;
+				System.out.println((board.getTurnColor().toString() + " Forfeited"));
+				return board.getOppositeColor();//The other side that did not forfeit wins
 			}
 			
 			board.makeMove(chosen);
