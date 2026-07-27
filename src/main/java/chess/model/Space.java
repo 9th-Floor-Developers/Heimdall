@@ -1,7 +1,10 @@
 package chess.model;
 
+import static chess.ChessUtils.squareName;
 import static chess.model.Color.NONE;
 import static chess.model.PieceType.EMPTY;
+
+import java.util.Objects;
 
 public class Space implements Cloneable {
 	private final int file, rank;
@@ -20,6 +23,25 @@ public class Space implements Cloneable {
 		this.color = color;
 		this.file = file;
 		this.rank = rank;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass())
+			return false;
+		
+		Space space = (Space) o;
+		return file == space.getFile() && rank == space.getRank();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(file, rank);
+	}
+	
+	@Override
+	public String toString() {
+		return squareName(this);
 	}
 	
 	@Override
