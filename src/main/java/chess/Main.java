@@ -4,7 +4,6 @@ import chess.model.Color;
 import chess.players.BruteForceBot;
 import chess.players.Player;
 import chess.players.RandomBot;
-import chess.ui.MainWindow;
 
 import java.util.HashMap;
 
@@ -15,7 +14,7 @@ public class Main {
 		players.put(Color.WHITE, new RandomBot());
 
 
-		GameManager.runGame(players);
+		GameManager.runGameBatch(players, 100);
 //		MainWindow window = new MainWindow();
 	}
 }

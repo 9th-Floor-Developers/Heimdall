@@ -6,14 +6,30 @@ import chess.model.Move;
 
 import chess.players.Player;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class GameManager {
 	public static GameManager instance;
 	
 	public GameManager() {
 		instance = this;
+	}
+
+	public static void runGameBatch(HashMap<Color, Player> players, int amount){
+		List<Color> winners = new ArrayList<>();
+
+		for (int i = 0; i < amount; i++){
+			winners.add(runGame(players));
+		}
+
+		System.out.println("============================================");
+		System.out.println("Final tally");
+		System.out.println("White: " + winners.stream().filter(n -> n.equals(Color.WHITE)).count());
+		System.out.println("Black: " + winners.stream().filter(n -> n.equals(Color.BLACK)).count());
+		System.out.println("Draw: " + winners.stream().filter(n -> n.equals(Color.NONE)).count());
 	}
 
 	public static Color runGame(HashMap<Color, Player> players) {
