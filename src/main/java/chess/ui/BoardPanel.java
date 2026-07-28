@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -21,6 +22,7 @@ public final class BoardPanel extends JPanel {
 	private final HashSet<Space> selectedMoveSpaces;
 	private final HashMap<String, Image> pieceImages = new HashMap<>();
 	private Board game;
+	private int squareSize;
 	
 	public BoardPanel() {
 		selected = null;
@@ -41,34 +43,49 @@ public final class BoardPanel extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		
+		squareSize = Math.min(getWidth(), getHeight()) / 8;
+		
 		drawBoard(g);
+		
+		if (game == null)
+			return;
+		
 		drawHighlights(g);
 		drawPieces(g);
 		drawLabels(g);
 	}
 	
 	private void loadImages() {
-		String[] colors = {"white", "black"};
-		String[] types  = {"pawn", "knight", "bishop", "rook", "queen", "king"};
-		for (String color : colors) {
-			for (String type : types) {
-				String key = color + '-' + type;
+		for (chess.model.Color color : chess.model.Color.values()) {
+			if (color == chess.model.Color.NONE)
+				continue;
+			
+			for (PieceType type : PieceType.values()) {
+				if (type == PieceType.EMPTY)
+					continue;
+				
+				String key = color.toString().toLowerCase() + '-' + type.toString().toLowerCase(), path = "/pieces/" + key + ".png";
+				URL resource = getClass().getResource(path);
+				if (resource == null)
+					throw new RuntimeException("Resource not found: " + path);
 				try {
-					Image img = ImageIO.read(getClass().getResource("/pieces/" + key + ".png"));
-					pieceImages.put(key, img);
+					pieceImages.put(key, ImageIO.read(resource));
 				} catch (IOException e) {
-					throw new RuntimeException(e);
+					throw new RuntimeException("Failed to load piece image " + path, e);
 				}
 			}
 		}
 	}
 	
+	// region Drawing Methods
+	
 	private void drawBoard(Graphics g) {
-		int squareSize = getWidth() / 8;
+		if (squareSize == 0)
+			return;
+		
 		for (int row = 0; row < 8; row++) {
 			for (int col = 0; col < 8; col++) {
 				g.setColor(((row + col) % 2 == 0) ? Color.WHITE : Color.GRAY);
-				
 				g.fillRect(
 						col * squareSize,
 						row * squareSize,
@@ -80,14 +97,16 @@ public final class BoardPanel extends JPanel {
 	}
 	
 	private void drawLabels(Graphics g) {
-		int squareSize = getWidth() / 8;
+		if (squareSize == 0)
+			return;
+		
 		g.setFont(g.getFont().deriveFont(Font.BOLD, 18f));
 		FontMetrics fm = g.getFontMetrics();
+		g.setColor(Color.BLACK);
 		
 		for (int i = 0; i < 8; i++) {
 			// files a-h along the bottom edge
 			char file = (char) ('a' + i);
-			g.setColor(Color.BLACK);
 			g.drawString(
 					String.valueOf(file),
 					i * squareSize + 4,
@@ -96,7 +115,6 @@ public final class BoardPanel extends JPanel {
 			
 			// ranks 8-1 down the left edge
 			int rank = 8 - i;
-			g.setColor(Color.BLACK);
 			g.drawString(
 					String.valueOf(rank),
 					4,
@@ -106,41 +124,40 @@ public final class BoardPanel extends JPanel {
 	}
 	
 	private void drawHighlights(Graphics g) {
-		if (selected == null) {
+		if (selected == null || squareSize == 0)
 			return;
-		}
-		
-		int squareSize = getWidth() / 8;
 		
 		// selected piece space
 		g.setColor(Color.RED);
-		g.drawRect(
+		g.fillRect(
 				selected.getFile() * squareSize,
-				selected.getRank() * squareSize,
+				(7 - selected.getRank()) * squareSize,
 				squareSize, squareSize
 		);
 		
 		// selected piece possible spaces
 		g.setColor(Color.BLUE);
 		for (Space space : selectedMoveSpaces)
-			g.drawRect(
+			g.fillRect(
 					space.getFile() * squareSize,
-					space.getRank() * squareSize,
+					(7 - space.getRank()) * squareSize,
 					squareSize, squareSize
 			);
 	}
 	
 	private void drawPieces(Graphics g) {
-		int squareSize = getWidth() / 8;
+		if (squareSize == 0)
+			return;
 		
 		for (Space piece : game.getPieces()) {
 			String key = piece.getColor().toString().toLowerCase() + "-"
 					+ piece.getType().toString().toLowerCase();
 			Image img = pieceImages.get(key);
+			
 			if (img == null)
 				throw new RuntimeException("Piece " + key + " not found!");
 			
-			int drawRow = 7 - piece.getRank(); // flip so rank 0 is at bottom, adjust if your model differs
+			int drawRow = 7 - piece.getRank();
 			g.drawImage(
 					img,
 					piece.getFile() * squareSize,
@@ -151,9 +168,13 @@ public final class BoardPanel extends JPanel {
 		}
 	}
 	
+	// endregion
+	
 	private void handleClick(MouseEvent e) {
-		int squareSize = getWidth() / 8,
-				row = e.getY() / squareSize,
+		if (game == null || squareSize == 0)
+			return;
+		
+		int row = 7 - (e.getY() / squareSize),
 				col = e.getX() / squareSize;
 		
 		if (row < 0 || row >= 8 || col < 0 || col >= 8)
@@ -161,28 +182,28 @@ public final class BoardPanel extends JPanel {
 		
 		Space clicked = game.pieceAt(row, col);
 		
-		if (selected == null) {  // clicking any square
-			if (clicked.getType() != PieceType.EMPTY) {  // clicking any piece
-				selected = clicked;
-				HashSet<Move> moves = MoveGenerator.generateLegalMoves(game, selected);
-				selectedMoves.addAll(moves);
-				selectedMoveSpaces.addAll(game.moveToSpace(moves));
-				repaint();
-			}
-		} else {
-			if (selectedMoveSpaces.contains(clicked)) {
-				Move chosen = selectedMoves.stream()
-						.filter(m -> game.pieceAt(m.to()).equals(clicked))
-						.findFirst()
-						.orElseThrow();
-				game.makeMove(chosen);
-			}
-			
-			selected = null;
-			selectedMoves.clear();
-			selectedMoveSpaces.clear();
-			repaint();
-		}
+		if (selected != null && selectedMoveSpaces.contains(clicked)) {
+			game.makeMove(selectedMoves.stream()
+					.filter(m -> game.pieceAt(m.to()).equals(clicked))
+					.findFirst()
+					.orElseThrow());
+			clearSelection();
+		} else if (clicked.getType() != PieceType.EMPTY) {
+			clearSelection();
+			selected = clicked;
+			HashSet<Move> moves = MoveGenerator.generateLegalMoves(game, selected);
+			selectedMoves.addAll(moves);
+			selectedMoveSpaces.addAll(game.moveToSpace(moves));
+		} else
+			clearSelection();
+		
+		repaint();
+	}
+	
+	private void clearSelection() {
+		selected = null;
+		selectedMoves.clear();
+		selectedMoveSpaces.clear();
 	}
 	
 	public void setGame(Board game) {
