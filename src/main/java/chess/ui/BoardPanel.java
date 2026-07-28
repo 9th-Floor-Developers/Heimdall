@@ -195,7 +195,7 @@ public final class BoardPanel extends JPanel {
 							.orElseThrow());
 			clearSelection();
 		} else if (clicked.getType() != PieceType.EMPTY
-				&& clicked.getColor() == (game.isWhiteToMove() ? Color.WHITE : Color.BLACK)) {
+				&& clicked.getColor() == game.toMoveColor()) {
 			// select a new piece
 			clearSelection();
 			selected = clicked;

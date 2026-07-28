@@ -12,12 +12,12 @@ import java.util.HashSet;
 public final class MoveGenerator {
 	public static HashSet<Move> generateLegalMoves(Board board) {
 		HashSet<Move> legal = new HashSet<>(), pseudoLegal = generatePseudoLegalMoves(board);
-		boolean white = board.isWhiteToMove();
+		Color color = board.toMoveColor();
 		
 		for (Move move : pseudoLegal) {
 			board.makeMove(move);
 			
-			if (!board.isInCheck(white ? WHITE : BLACK))
+			if (!board.isInCheck(color))
 				legal.add(move);
 			
 			board.undoMove();
@@ -29,11 +29,12 @@ public final class MoveGenerator {
 	public static HashSet<Move> generateLegalMoves(Board board, Space piece) {
 		boolean white = board.isWhiteToMove();
 		HashSet<Move> legal = new HashSet<>(), pseudoLegal = generatePieceMoves(board, piece, white);
+		Color color = board.toMoveColor();
 		
 		for (Move move : pseudoLegal) {
 			board.makeMove(move);
 			
-			if (!board.isInCheck(white ? WHITE : BLACK))
+			if (!board.isInCheck(color))
 				legal.add(move);
 			
 			board.undoMove();
@@ -45,9 +46,10 @@ public final class MoveGenerator {
 	public static HashSet<Move> generatePseudoLegalMoves(Board board) {
 		HashSet<Move> moves = new HashSet<>();
 		boolean white = board.isWhiteToMove();
+		Color color = board.toMoveColor();
 		
 		for (Space piece : board.getPieces()) {
-			if ((piece.getColor() == WHITE) != white)
+			if (piece.getColor() != color)
 				continue;
 			
 			moves.addAll(generatePieceMoves(board, piece, white));

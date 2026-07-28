@@ -148,7 +148,7 @@ public final class Board implements Cloneable {
 		if (move.isEnPassant()) {
 			int capturedIndex = indexOf(fileOf(toIndex), rankOf(fromIndex));
 			spaces[toIndex].setEmpty();
-			spaces[capturedIndex].setPiece(PAWN, whiteToMove ? BLACK : WHITE);
+			spaces[capturedIndex].setPiece(PAWN, toMoveColor().getOpposite());
 		}
 		
 		if (move.isCastle())
@@ -190,8 +190,8 @@ public final class Board implements Cloneable {
 		}
 		
 		if (isEndgame()) {
-			Space myKing = getKing(whiteToMove ? WHITE : BLACK),
-					enemyKing = getKing(whiteToMove ? BLACK : WHITE);
+			Space myKing = getKing(toMoveColor()),
+					enemyKing = getKing(toMoveColor().getOpposite());
 			int enemyKingCornerDist = distanceFromCenter(enemyKing);
 			int kingDist = kingDistance(myKing, enemyKing);
 			score += enemyKingCornerDist * 10 - kingDist * 4;
@@ -358,6 +358,10 @@ public final class Board implements Cloneable {
 		for (Move move : moves)
 			spaces.add(pieceAt(move.to()));
 		return spaces;
+	}
+	
+	public Color toMoveColor() {
+		return whiteToMove ? WHITE : BLACK;
 	}
 	
 	// endregion
