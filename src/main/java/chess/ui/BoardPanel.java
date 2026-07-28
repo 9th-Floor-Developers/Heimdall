@@ -1,6 +1,7 @@
 package chess.ui;
 
 import chess.Board;
+import static chess.ChessUtils.BOARD_SIZE;
 import chess.MoveGenerator;
 import chess.model.Move;
 import chess.model.PieceType;
@@ -83,9 +84,9 @@ public final class BoardPanel extends JPanel {
 		if (squareSize == 0)
 			return;
 		
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
 				g.setColor(((row + col) % 2 == 0) ? Color.WHITE : Color.GRAY);
+		for (int row = 0; row < BOARD_SIZE; row++) {
+			for (int col = 0; col < BOARD_SIZE; col++) {
 				g.fillRect(
 						col * squareSize,
 						row * squareSize,
@@ -104,17 +105,17 @@ public final class BoardPanel extends JPanel {
 		FontMetrics fm = g.getFontMetrics();
 		g.setColor(Color.BLACK);
 		
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
 			// files a-h along the bottom edge
 			char file = (char) ('a' + i);
 			g.drawString(
 					String.valueOf(file),
 					i * squareSize + 4,
-					8 * squareSize - 4
+					BOARD_SIZE * squareSize - 4
 			);
 			
 			// ranks 8-1 down the left edge
-			int rank = 8 - i;
+			int rank = BOARD_SIZE - i;
 			g.drawString(
 					String.valueOf(rank),
 					4,

@@ -4,6 +4,8 @@ import static chess.model.Color.WHITE;
 import chess.model.Space;
 
 public class ChessUtils {
+	public static final int BOARD_SIZE = 8;
+	
 	public static final int[][] DIAG_DIRS = {
 			{ 1, -1 },      { 1, 1 },
 			
@@ -87,19 +89,19 @@ public class ChessUtils {
 	
 	
 	public static int fileOf(int index) {
-		return index % 8;
+		return index % BOARD_SIZE;
 	}
 	
 	public static int rankOf(int index) {
-		return index / 8;
+		return index / BOARD_SIZE;
 	}
 	
 	public static int indexOf(int file, int rank) {
-		return rank * 8 + file;
+		return rank * BOARD_SIZE + file;
 	}
 	
 	public static boolean onBoard(int file, int rank) {
-		return file >= 0 && file < 8 && rank >= 0 && rank < 8;
+		return file >= 0 && file < BOARD_SIZE && rank >= 0 && rank < BOARD_SIZE;
 	}
 	
 	public static String squareName(Space space) {
@@ -111,7 +113,7 @@ public class ChessUtils {
 			StringBuilder sb = new StringBuilder();
 			sb.append(rank + 1).append(" ");
 			
-			for (int file = 0; file < 8; file++) {
+			for (int file = 0; file < BOARD_SIZE; file++) {
 				Space space = board.pieceAt(file, rank);
 				char letter = space.getType().getLetter();
 				

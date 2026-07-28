@@ -22,14 +22,14 @@ public final class Board implements Cloneable {
 		history = new Stack<>();
 		
 		for (int i = 0; i < spaces.length; i++)
-			spaces[i] = new Space(i % 8, i / 8);
+			spaces[i] = new Space(i % BOARD_SIZE, i / BOARD_SIZE);
 		
 		PieceType[] backRank = { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK };
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < BOARD_SIZE; i++) {
 			spaces[i] = new Space(backRank[i], WHITE, i, 0);
-			spaces[i + 8] = new Space(PAWN, WHITE, i, 1);
-			spaces[i + 48] = new Space(PAWN, BLACK, i, 6);
-			spaces[i + 56] = new Space(backRank[i], BLACK, i, 7);
+			spaces[i + BOARD_SIZE] = new Space(PAWN, WHITE, i, 1);
+			spaces[i + BOARD_SIZE * 6] = new Space(PAWN, BLACK, i, 6);
+			spaces[i + BOARD_SIZE * 7] = new Space(backRank[i], BLACK, i, 7);
 		}
 		
 		whiteToMove = true;
