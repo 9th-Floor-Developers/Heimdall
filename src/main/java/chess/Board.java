@@ -128,7 +128,7 @@ public final class Board implements Cloneable {
 	
 	public void undoMove() {
 		if (history.isEmpty())
-			throw new IllegalStateException("No move to undo");
+			return;
 		
 		MoveState state = history.pop();
 		Move move = state.move();
@@ -175,7 +175,7 @@ public final class Board implements Cloneable {
 				continue;
 			
 			int index = indexOf(space.getFile(), space.getRank()),
-					color = (space.getColor() == WHITE) ? 1 : -1;
+					color = space.isWhite() ? 1 : -1;
 			
 			int material = type.getMaterial() + switch (type) {
 				case PAWN -> PAWN_TABLE[index];
@@ -198,6 +198,14 @@ public final class Board implements Cloneable {
 		}
 		
 		return score;
+	}
+	
+	public void clear() {
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			for (int j = 0; j < BOARD_SIZE; j++) {
+				spaces[indexOf(i, j)] = new Space(i, j);
+			}
+		}
 	}
 	
 	// region Helper Methods
@@ -369,6 +377,10 @@ public final class Board implements Cloneable {
 	// region Getters/Setters
 	public Space[] getSpaces() {
 		return spaces;
+	}
+	
+	public void setSpace(int file, int rank, Space space) {
+		spaces[indexOf(file, rank)] = space;
 	}
 	
 	public boolean isWhiteCanCastleKingside() {

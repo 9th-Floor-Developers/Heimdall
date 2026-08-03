@@ -1,6 +1,7 @@
 package chess.ui;
 
 import chess.Board;
+import chess.FenUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ public final class MainWindow extends JFrame {
 	private JButton importButton;
 	private JButton undoButton;
 	private JButton quitButton;
+	private JLabel statusLabel;
 	
 	public MainWindow(Board game) {
 		setTitle("Heimdall | Chess");
@@ -25,10 +27,34 @@ public final class MainWindow extends JFrame {
 		
 		((BoardPanel) boardPanel).setGame(game);
 		
+		undoButton.addActionListener(e -> {
+			game.undoMove();
+			boardPanel.repaint();
+		});
+		saveButton.addActionListener(e -> {
+			JOptionPane.showMessageDialog(
+					this,
+					FenUtils.exportFen(game)
+			);
+		});
+		importButton.addActionListener(e -> {
+			String fenString = JOptionPane.showInputDialog(
+					this,
+					"Enter FEN String"
+			);
+			if (fenString != null && !fenString.trim().isEmpty()) {
+				FenUtils.importFen(game, fenString);
+				boardPanel.repaint();
+			}
+		});
 		quitButton.addActionListener(e -> System.exit(0));
 	}
 	
 	private void createUIComponents() {
 		boardPanel = new BoardPanel();
+	}
+	
+	public void setStatusLabel(String text) {
+		statusLabel.setText("Status: " + text);
 	}
 }

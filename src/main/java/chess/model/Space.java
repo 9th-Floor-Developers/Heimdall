@@ -2,6 +2,7 @@ package chess.model;
 
 import static chess.ChessUtils.squareName;
 import static chess.model.Color.NONE;
+import static chess.model.Color.WHITE;
 import static chess.model.PieceType.EMPTY;
 
 import java.util.Objects;
@@ -55,6 +56,10 @@ public class Space implements Cloneable {
 	
 	public boolean isEmpty() {
 		return type == EMPTY;
+	}
+	
+	public boolean isWhite() {
+		return color == WHITE;
 	}
 	
 	public void setEmpty() {

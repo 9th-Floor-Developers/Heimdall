@@ -39,6 +39,7 @@ public class GameManager {
 		
 		while (true) {
 			printBoard(board);
+			window.setStatusLabel(board.toMoveColor() + " To Move");
 			HashSet<Move> legalMoves = MoveGenerator.generateLegalMoves(board);
 			
 			if (legalMoves.isEmpty()) {

@@ -117,7 +117,7 @@ public class ChessUtils {
 				Space space = board.pieceAt(file, rank);
 				char letter = space.getType().getLetter();
 				
-				if (space.getColor() == WHITE)
+				if (space.isWhite())
 					letter = Character.toUpperCase(letter);
 				
 				sb.append(letter).append(" ");
