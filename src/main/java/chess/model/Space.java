@@ -8,9 +8,9 @@ import static chess.model.PieceType.EMPTY;
 import java.util.Objects;
 
 public class Space implements Cloneable {
-	private final int file, rank;
-	private PieceType type;
-	private Color color;
+	protected final int file, rank;
+	protected PieceType type;
+	protected Color color;
 	
 	public Space(int file, int rank) {
 		type = EMPTY;
@@ -60,16 +60,6 @@ public class Space implements Cloneable {
 	
 	public boolean isWhite() {
 		return color == WHITE;
-	}
-	
-	public void setEmpty() {
-		type = EMPTY;
-		color = NONE;
-	}
-	
-	public void setPiece(PieceType type, Color color) {
-		this.type = type;
-		this.color = color;
 	}
 	
 	// region Getters/Setters
