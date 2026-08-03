@@ -27,9 +27,8 @@ public final class MoveGenerator {
 	}
 	
 	public static HashSet<Move> generateLegalMoves(Board board, Space piece) {
-		boolean white = board.isWhiteToMove();
-		HashSet<Move> legal = new HashSet<>(), pseudoLegal = generatePieceMoves(board, piece, white);
 		Color color = board.toMoveColor();
+		HashSet<Move> legal = new HashSet<>(), pseudoLegal = generatePieceMoves(board, piece, color);
 		
 		for (Move move : pseudoLegal) {
 			board.makeMove(move);
@@ -45,42 +44,43 @@ public final class MoveGenerator {
 	
 	public static HashSet<Move> generatePseudoLegalMoves(Board board) {
 		HashSet<Move> moves = new HashSet<>();
-		boolean white = board.isWhiteToMove();
 		Color color = board.toMoveColor();
 		
 		for (Space piece : board.getPieces()) {
 			if (piece.getColor() != color)
 				continue;
 			
-			moves.addAll(generatePieceMoves(board, piece, white));
+			moves.addAll(generatePieceMoves(board, piece, color));
 		}
 		
 		return moves;
 	}
 	
-	private static HashSet<Move> generatePieceMoves(Board board, Space piece, boolean white) {
+	private static HashSet<Move> generatePieceMoves(Board board, Space piece, Color color) {
 		if (piece.isEmpty())
 			return new HashSet<>();
 		
 		int index = indexOf(piece.getFile(), piece.getRank());
 		return switch (piece.getType()) {
-			case PAWN -> generatePawnMoves(board, index, white);
-			case KNIGHT -> generateKnightMoves(board, index, white);
-			case BISHOP -> generateSlidingMoves(board, index, white, DIAG_DIRS);
-			case ROOK -> generateSlidingMoves(board, index, white, ORTHO_DIRS);
-			case QUEEN -> generateSlidingMoves(board, index, white, ALL_DIRS);
-			case KING -> generateKingMoves(board, index, white);
+			case PAWN -> generatePawnMoves(board, index, color);
+			case KNIGHT -> generateKnightMoves(board, index, color);
+			case BISHOP -> generateSlidingMoves(board, index, color, DIAG_DIRS);
+			case ROOK -> generateSlidingMoves(board, index, color, ORTHO_DIRS);
+			case QUEEN -> generateSlidingMoves(board, index, color, ALL_DIRS);
+			case KING -> generateKingMoves(board, index, color);
 			default -> new HashSet<>();
 		};
 	}
 	
 	// region Piece Move Generations
 	
-	private static HashSet<Move> generatePawnMoves(Board board, int index, boolean white) {
-		int f = fileOf(index), r = rankOf(index);
-		int dir = white ? 1 : -1;
-		int startRank = white ? 1 : 6;
-		int promoRank = white ? 7 : 0;
+	private static HashSet<Move> generatePawnMoves(Board board, int index, Color color) {
+		boolean white = color == WHITE;
+		int f = fileOf(index),
+				r = rankOf(index),
+				dir = white ? 1 : -1,
+				startRank = white ? 1 : 6,
+				promoRank = white ? 7 : 0;
 		HashSet<Move> moves = new HashSet<>();
 		
 		// pushes
@@ -104,7 +104,7 @@ public final class MoveGenerator {
 			int to = indexOf(cf, cr);
 			Space toPiece = board.pieceAt(to);
 			
-			if (toPiece.getType() != EMPTY && toPiece.getColor() == (white ? BLACK : WHITE))
+			if (toPiece.getType() != EMPTY && toPiece.getColor() == color.getOpposite())
 				addPawnMoveWithPromotion(index, to, cr == promoRank, moves);
 			else if (to == board.getEnPassantTarget())
 				moves.add(new Move(index, to, EMPTY, false, true));
@@ -124,7 +124,7 @@ public final class MoveGenerator {
 			moves.add(new Move(from, to));
 	}
 	
-	private static HashSet<Move> generateKnightMoves(Board board, int sq, boolean white) {
+	private static HashSet<Move> generateKnightMoves(Board board, int sq, Color color) {
 		int f = fileOf(sq), r = rankOf(sq);
 		HashSet<Move> moves = new HashSet<>();
 		
@@ -137,14 +137,14 @@ public final class MoveGenerator {
 			int to = indexOf(nf, nr);
 			Space toPiece = board.pieceAt(to);
 			
-			if (toPiece.isEmpty() || toPiece.getColor() == (white ? BLACK : WHITE))
+			if (toPiece.isEmpty() || toPiece.getColor() == color.getOpposite())
 				moves.add(new Move(sq, to));
 		}
 		
 		return moves;
 	}
 	
-	private static HashSet<Move> generateSlidingMoves(Board board, int sq, boolean white, int[][] dirs) {
+	private static HashSet<Move> generateSlidingMoves(Board board, int sq, Color color, int[][] dirs) {
 		int f = fileOf(sq), r = rankOf(sq);
 		HashSet<Move> moves = new HashSet<>();
 		
@@ -158,7 +158,7 @@ public final class MoveGenerator {
 				if (toPiece.isEmpty())
 					moves.add(new Move(sq, to));
 				else {
-					if (toPiece.getColor() == (white ? BLACK : WHITE))
+					if (toPiece.getColor() == color.getOpposite())
 						moves.add(new Move(sq, to));
 					break;
 				}
@@ -171,9 +171,10 @@ public final class MoveGenerator {
 		return moves;
 	}
 	
-	private static HashSet<Move> generateKingMoves(Board board, int sq, boolean white) {
+	private static HashSet<Move> generateKingMoves(Board board, int sq, Color color) {
 		Space piece = board.pieceAt(sq);
 		HashSet<Move> moves = new HashSet<>();
+		Color enemy = color.getOpposite();
 		int f = piece.getFile(), r = piece.getRank();
 		
 		for (int df : new int[] { -1, 0, 1 }) {
@@ -189,21 +190,19 @@ public final class MoveGenerator {
 				int to = indexOf(nf, nr);
 				Space toPiece = board.pieceAt(to);
 				
-				if (toPiece.isEmpty() || toPiece.getColor() == (white ? BLACK : WHITE))
+				if (toPiece.isEmpty() || toPiece.getColor() == enemy)
 					moves.add(new Move(sq, to));
 			}
 		}
 		
-		Color enemy = white ? BLACK : WHITE;
 		boolean inCheck = board.isSquareAttacked(piece, enemy);
 		
 		if (!inCheck) {
-			int rank = white ? 0 : 7;
-			Color color = white ? BLACK : WHITE;
+			int rank = (color == WHITE) ? 0 : 7;
 			
-			if (canCastleKingSide(board, rank, color, enemy))
+			if (canCastleKingSide(board, rank, enemy, enemy))
 				moves.add(new Move(sq, indexOf(6, rank), EMPTY, true, false));
-			if (canCastleQueenSide(board, rank, color, enemy))
+			if (canCastleQueenSide(board, rank, enemy, enemy))
 				moves.add(new Move(sq, indexOf(2, rank), EMPTY, true, false));
 		}
 		

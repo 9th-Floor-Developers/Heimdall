@@ -20,7 +20,6 @@ public final class MainWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setVisible(true);
-		setBackground(Color.BLUE);
 		pack();
 //		setResizable(false);
 		setContentPane(rootPanel);
