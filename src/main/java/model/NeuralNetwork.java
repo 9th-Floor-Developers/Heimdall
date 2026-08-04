@@ -71,6 +71,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	
 	/**
 	 * Apply back propagation process to neural network.
+	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[])} needs to be run first
 	 *
 	 * @param target desired output values
 	 * @see Layer
@@ -99,6 +100,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	
 	/**
 	 * Runs {@link Neuron#applyWeightChange(float)} function to all {@link Neuron} objects in network.
+	 * Is used after the changes have been calculated from running {@link NeuralNetwork#backProp(float[])}
 	 *
 	 * @param learningRate difference to modify weights (0.0-0.5)
 	 * @see Layer
