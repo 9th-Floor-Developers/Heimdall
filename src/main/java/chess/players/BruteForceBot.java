@@ -69,7 +69,7 @@ public class BruteForceBot implements Player{
     private static int search(Board board, int depth, int alpha, int beta) {
         HashSet<Move> moves = MoveGenerator.generateLegalMoves(board);
         if (moves.isEmpty())
-            return (board.isInCheck(board.isWhiteToMove() ? Color.WHITE : Color.BLACK))
+            return (board.isInCheck(board.toMoveColor()))
                     ? -KING.getMaterial() - depth  // checkmate
                     : 0;  // stalemate
 

@@ -1,12 +1,16 @@
 package chess.model;
 
+import static chess.ChessUtils.squareName;
 import static chess.model.Color.NONE;
+import static chess.model.Color.WHITE;
 import static chess.model.PieceType.EMPTY;
 
+import java.util.Objects;
+
 public class Space implements Cloneable {
-	private final int file, rank;
-	private PieceType type;
-	private Color color;
+	protected final int file, rank;
+	protected PieceType type;
+	protected Color color;
 	
 	public Space(int file, int rank) {
 		type = EMPTY;
@@ -23,6 +27,25 @@ public class Space implements Cloneable {
 	}
 	
 	@Override
+	public boolean equals(Object o) {
+		if (o == null || getClass() != o.getClass())
+			return false;
+		
+		Space space = (Space) o;
+		return file == space.getFile() && rank == space.getRank();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(file, rank);
+	}
+	
+	@Override
+	public String toString() {
+		return squareName(this);
+	}
+	
+	@Override
 	public Space clone() {
 		try {
 			return (Space) super.clone();
@@ -35,14 +58,8 @@ public class Space implements Cloneable {
 		return type == EMPTY;
 	}
 	
-	public void setEmpty() {
-		type = EMPTY;
-		color = NONE;
-	}
-	
-	public void setPiece(PieceType type, Color color) {
-		this.type = type;
-		this.color = color;
+	public boolean isWhite() {
+		return color == WHITE;
 	}
 	
 	// region Getters/Setters

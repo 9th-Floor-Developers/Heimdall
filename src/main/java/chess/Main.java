@@ -13,8 +13,6 @@ public class Main {
 		players.put(Color.BLACK, new BruteForceBot(3, 6));
 		players.put(Color.WHITE, new RandomBot());
 
-
-		GameManager.runGameBatch(players, 100);
-//		MainWindow window = new MainWindow();
+		GameManager.runGame(players);
 	}
 }

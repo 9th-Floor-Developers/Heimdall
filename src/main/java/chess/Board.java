@@ -22,19 +22,17 @@ public final class Board implements Cloneable {
 		history = new Stack<>();
 		
 		for (int i = 0; i < spaces.length; i++)
-			spaces[i] = new Space(i % 8, i / 8);
+			spaces[i] = new Space(i % BOARD_SIZE, i / BOARD_SIZE);
 		
 		PieceType[] backRank = { ROOK, KNIGHT, BISHOP, QUEEN, KING, BISHOP, KNIGHT, ROOK };
-		for (int i = 0; i < 8; i++) {
-			spaces[i] = new Space(backRank[i], WHITE, i, 0);
-			spaces[i + 8] = new Space(PAWN, WHITE, i, 1);
-			spaces[i + 48] = new Space(PAWN, BLACK, i, 6);
-			spaces[i + 56] = new Space(backRank[i], BLACK, i, 7);
+		for (int i = 0; i < BOARD_SIZE; i++) {
+			spaces[i] = new Piece(backRank[i], WHITE, i, 0);
+			spaces[i + BOARD_SIZE] = new Piece(PAWN, WHITE, i, 1);
+			spaces[i + BOARD_SIZE * 6] = new Piece(PAWN, BLACK, i, 6);
+			spaces[i + BOARD_SIZE * 7] = new Piece(backRank[i], BLACK, i, 7);
 		}
 		
-		whiteToMove = true;
-		whiteCanCastleKingside = whiteCanCastleQueenside = true;
-		blackCanCastleKingside = blackCanCastleQueenside = true;
+		whiteToMove = whiteCanCastleKingside = whiteCanCastleQueenside = blackCanCastleKingside = blackCanCastleQueenside = true;
 		enPassantTarget = -1;
 		halfMoveClock = 0;
 		fullMoveNumber = 1;
@@ -46,21 +44,20 @@ public final class Board implements Cloneable {
 			Board copy = (Board) super.clone();
 			
 			copy.spaces = new Space[64];
-			
 			for (int i = 0; i < 64; i++)
 				copy.spaces[i] = spaces[i].clone();
 			
 			copy.history = (Stack<MoveState>) history.clone();
 			
 			return copy;
-			
 		} catch (CloneNotSupportedException e) {
 			throw new AssertionError(e);
 		}
 	}
 	
 	public void makeMove(Move move) {
-		Space capturedSpace = spaces[move.to()];
+		int toIdx = move.to(), fromIdx = move.from();
+		Space capturedSpace = spaces[toIdx];
 		MoveState state = new MoveState(
 				move, capturedSpace.getType(), capturedSpace.getColor(),
 				whiteCanCastleKingside, whiteCanCastleQueenside,
@@ -69,23 +66,22 @@ public final class Board implements Cloneable {
 		);
 		history.push(state);
 		
-		Space piece = spaces[move.from()];
-		PieceType type = piece.getType();
-		Color color = piece.getColor();
+		PieceType type = spaces[fromIdx].getType();
+		Color color = spaces[fromIdx].getColor();
 		
-		if (move.isEnPassant()) {
-			int capturedPawnSquare = indexOf(fileOf(move.to()), rankOf(move.from()));
-			spaces[capturedPawnSquare].setEmpty();
-		}
+		int toFile = fileOf(toIdx), toRank = rankOf(toIdx),
+				fromRank = rankOf(fromIdx), fromFile = fileOf(fromIdx);
+		if (move.isEnPassant())
+			spaces[indexOf(toFile, fromRank)] = new Space(toFile, fromRank);
 		
-		capturedSpace.setPiece(type, color);
-		spaces[move.from()].setEmpty();
+		spaces[toIdx] = new Piece(type, color, toFile, toRank);
+		spaces[fromIdx] = new Space(fromFile, fromRank);
 		
 		if (move.promotionPiece() != EMPTY)
-			capturedSpace.setPiece(move.promotionPiece(), color);
+			spaces[toIdx] = new Piece(move.promotionPiece(), color, toFile, toRank);
 		
 		if (move.isCastle())
-			moveCastleRook(move.to(), color);
+			moveCastleRook(toIdx, color);
 		
 		if (type == KING) {
 			if (color == WHITE)
@@ -95,29 +91,29 @@ public final class Board implements Cloneable {
 		}
 		
 		if (type == ROOK) {
-			if (move.from() == indexOf(0, 0))
+			if (fromIdx == indexOf(0, 0))
 				whiteCanCastleQueenside = false;
-			else if (move.from() == indexOf(7, 0))
+			else if (fromIdx == indexOf(7, 0))
 				whiteCanCastleKingside = false;
-			else if (move.from() == indexOf(0, 7))
+			else if (fromIdx == indexOf(0, 7))
 				blackCanCastleQueenside = false;
-			else if (move.from() == indexOf(7, 7))
+			else if (fromIdx == indexOf(7, 7))
 				blackCanCastleKingside = false;
 		}
 		
 		if (state.capturedPieceType() == ROOK) {
-			if (move.to() == indexOf(0, 0))
+			if (toIdx == indexOf(0, 0))
 				whiteCanCastleQueenside = false;
-			else if (move.to() == indexOf(7, 0))
+			else if (toIdx == indexOf(7, 0))
 				whiteCanCastleKingside = false;
-			else if (move.to() == indexOf(0, 7))
+			else if (toIdx == indexOf(0, 7))
 				blackCanCastleQueenside = false;
-			else if (move.to() == indexOf(7, 7))
+			else if (toIdx == indexOf(7, 7))
 				blackCanCastleKingside = false;
 		}
 		
-		enPassantTarget = (type == PAWN && Math.abs(rankOf(move.to()) - rankOf(move.from())) == 2)
-				? indexOf(fileOf(move.from()), (rankOf(move.from()) + rankOf(move.to())) / 2)
+		enPassantTarget = (type == PAWN && Math.abs(toRank - fromRank) == 2)
+				? indexOf(fromFile, (fromRank + toRank) / 2)
 				: -1;
 		
 		halfMoveClock = (type == PAWN || state.capturedPieceType() != EMPTY) ? 0 : halfMoveClock + 1;
@@ -130,27 +126,29 @@ public final class Board implements Cloneable {
 	
 	public void undoMove() {
 		if (history.isEmpty())
-			throw new IllegalStateException("No move to undo");
+			return;
 		
 		MoveState state = history.pop();
 		Move move = state.move();
 		
 		whiteToMove = !whiteToMove;
 		
-		int fromIndex = move.from();
-		int toIndex = move.to();
-		Space movedPiece = spaces[toIndex];
+		int fromIdx = move.from(), toIdx = move.to();
+		Space movedPiece = spaces[toIdx];
 		
 		if (move.promotionPiece() != EMPTY)
 			movedPiece.setType(PAWN);
 		
-		spaces[fromIndex].setPiece(movedPiece.getType(), movedPiece.getColor());
-		spaces[toIndex].setPiece(state.capturedPieceType(), state.capturedColor());
+		int fromFile = fileOf(fromIdx), fromRank = rankOf(fromIdx), toFile = fileOf(toIdx), toRank = rankOf(toIdx);
+		spaces[fromIdx] = new Piece(movedPiece.getType(), movedPiece.getColor(), fromFile, fromRank);
+		
+		spaces[toIdx] = (state.capturedPieceType() == EMPTY)
+				? new Space(toFile, toRank)
+				: new Piece(state.capturedPieceType(), state.capturedColor(), toFile, toRank);
 		
 		if (move.isEnPassant()) {
-			int capturedIndex = indexOf(fileOf(toIndex), rankOf(fromIndex));
-			spaces[toIndex].setEmpty();
-			spaces[capturedIndex].setPiece(PAWN, whiteToMove ? BLACK : WHITE);
+			int capturedIndex = indexOf(toFile, fromRank);
+			spaces[capturedIndex] = new Piece(PAWN, toMoveColor().getOpposite(), fileOf(capturedIndex), rankOf(capturedIndex));
 		}
 		
 		if (move.isCastle())
@@ -177,9 +175,9 @@ public final class Board implements Cloneable {
 				continue;
 			
 			int index = indexOf(space.getFile(), space.getRank()),
-					color = (space.getColor() == WHITE) ? 1 : -1;
+					color = space.isWhite() ? 1 : -1;
 			
-			int material = type.getMaterial() + switch(type) {
+			int material = type.getMaterial() + switch (type) {
 				case PAWN -> PAWN_TABLE[index];
 				case ROOK -> ROOK_TABLE[index];
 				case KNIGHT -> KNIGHT_TABLE[index];
@@ -192,14 +190,20 @@ public final class Board implements Cloneable {
 		}
 		
 		if (isEndgame()) {
-			Space myKing = getKing(whiteToMove ? WHITE : BLACK),
-					enemyKing = getKing(whiteToMove ? BLACK : WHITE);
+			Space myKing = getKing(toMoveColor()),
+					enemyKing = getKing(toMoveColor().getOpposite());
 			int enemyKingCornerDist = distanceFromCenter(enemyKing);
 			int kingDist = kingDistance(myKing, enemyKing);
 			score += enemyKingCornerDist * 10 - kingDist * 4;
 		}
 		
 		return score;
+	}
+	
+	public void clear() {
+		for (int i = 0; i < BOARD_SIZE; i++)
+			for (int j = 0; j < BOARD_SIZE; j++)
+				spaces[indexOf(i, j)] = new Space(i, j);
 	}
 	
 	// region Helper Methods
@@ -299,8 +303,9 @@ public final class Board implements Cloneable {
 	}
 	
 	private void movePiece(int from, int to) {
-		spaces[to].setPiece(spaces[from].getType(), spaces[from].getColor());
-		spaces[from].setEmpty();
+		Space piece = spaces[from];
+		spaces[to] = new Piece(piece.getType(), piece.getColor(), fileOf(to), rankOf(to));
+		spaces[from] = new Space(fileOf(from), rankOf(from));
 	}
 	
 	private void moveCastleRook(int kingTo, Color color) {
@@ -335,10 +340,9 @@ public final class Board implements Cloneable {
 	
 	public boolean isEndgame() {
 		int totalMaterial = 0;
-		for (Space piece : getPieces()) {
+		for (Space piece : getPieces())
 			if (piece.getType() != PieceType.KING)
 				totalMaterial += piece.getType().getMaterial();
-		}
 		return totalMaterial <= 20;
 	}
 	
@@ -362,11 +366,19 @@ public final class Board implements Cloneable {
 		return spaces;
 	}
 	
+	public Color toMoveColor() {
+		return whiteToMove ? WHITE : BLACK;
+	}
+	
 	// endregion
 	
 	// region Getters/Setters
 	public Space[] getSpaces() {
 		return spaces;
+	}
+	
+	public void setSpace(int file, int rank, Space space) {
+		spaces[indexOf(file, rank)] = space;
 	}
 	
 	public boolean isWhiteCanCastleKingside() {
@@ -404,14 +416,13 @@ public final class Board implements Cloneable {
 	public boolean isWhiteToMove() {
 		return whiteToMove;
 	}
-
-	public Color getTurnColor(){
-		return isWhiteToMove() ? Color.WHITE : Color.BLACK;
+	
+	public Color getTurnColor() {
+		return whiteToMove ? Color.WHITE : Color.BLACK;
 	}
-
-
-	public Color getOppositeColor(){
-		return isWhiteToMove() ? Color.BLACK : WHITE;
+	
+	public Color getOppositeColor() {
+		return whiteToMove ? Color.BLACK : WHITE;
 	}
 	
 	public void setWhiteToMove(boolean whiteToMove) {
