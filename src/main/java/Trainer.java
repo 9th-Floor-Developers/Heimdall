@@ -88,7 +88,6 @@ public class Trainer {
 	 */
 	private int trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
 	                       int[] outputs, float learningRate) {
-		float[] MSE = new float[targets[0].length];
 		int score = 0;
 		
 		for (int i = 0; i < inputs.length; i++) {
@@ -105,13 +104,8 @@ public class Trainer {
 				score++;
 			
 			float[] outputErrors = agent.backProp(targets[i]);
-			for (int j = 0; j < outputErrors.length; j++)
-				MSE[j] += (float) Math.pow(outputErrors[j], 2);
 		}
 		agent.applyWeightsChange(learningRate);
-		
-		for (int i = 0; i < MSE.length; i++)
-			MSE[i] /= inputs.length;
 
 //        System.out.println("MSE | " + Arrays.toString(MSE));
 		
