@@ -1,5 +1,6 @@
 import model.NeuralNetwork;
 import utils.DataLogger;
+import utils.DataUtils;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
@@ -87,7 +88,7 @@ public class Trainer {
 	 * @return number of data points the agent got correct
 	 */
 	private int trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
-	                       int[] outputs, float learningRate) {
+	                       int[] outputs, float learningRate, boolean showErrorRate) {
 		int score = 0;
 		
 		for (int i = 0; i < inputs.length; i++) {
@@ -104,10 +105,13 @@ public class Trainer {
 				score++;
 			
 			float[] outputErrors = agent.backProp(targets[i]);
+			if (showErrorRate){
+				System.out.println("Error rate " + DataUtils.getAverage(outputErrors));
+			}
 		}
 		agent.applyWeightsChange(learningRate);
 
-//        System.out.println("MSE | " + Arrays.toString(MSE));
+		//System.out.println("MSE | " + Arrays.toString(MSE));
 		
 		return score;
 	}
@@ -125,7 +129,7 @@ public class Trainer {
 	 */
 	public void regularTrain(float[][] inputs, float[][] targets, int[] outputs,
 	                         float learningRate, int generationNum) {
-		int score = trainAgent(agents[0], inputs, targets, outputs, learningRate);
+		int score = trainAgent(agents[0], inputs, targets, outputs, learningRate, false);
 		
 		float percent = (float) score / inputs.length * 100;
 		String formatted = new DecimalFormat("###.##").format(percent);
