@@ -16,13 +16,15 @@ import java.util.Arrays;
  * @see #trainAgent(DataSet)
  */
 public class FeedForwardTrainer extends AbstractTrainer{
-	public NeuralNetwork agent;
-	public float learningRate;
-	public boolean showErrorRate;
+	private NeuralNetwork agent;
+	private float learningRate;
+	private boolean showErrorRate;
 
 
-	public FeedForwardTrainer(int[] layerLengths, int seed){
+	public FeedForwardTrainer(int[] layerLengths, float learningRate, boolean showErrorRate, int seed){
 		agent = new NeuralNetwork(layerLengths, seed);
+		this.learningRate = learningRate;
+		this.showErrorRate = showErrorRate;
 	}
 
 
