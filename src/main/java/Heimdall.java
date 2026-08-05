@@ -25,7 +25,7 @@ public class Heimdall {
 			outputs[i] = image.value();
 		}
 		
-		Trainer trainer = new Trainer(
+		FeedForwardTrainer feedForwardTrainer = new FeedForwardTrainer(
 				10,  // number of agents per round, more possibilities to evolve
 				new int[] {  // layers format
 						inputs[0].length,  // input layer - must match input count
@@ -35,7 +35,7 @@ public class Heimdall {
 		).addLogger();//.loadBestAgent("./src/training-results/35");
 		
 		for (int generation = 1; generation <= 20000; generation++) {
-			trainer.regularTrain(
+			feedForwardTrainer.regularTrain(
 					inputs,
 					targets,
 					outputs,
@@ -44,7 +44,7 @@ public class Heimdall {
 			);
 		}
 		
-		System.out.println("Best Score: " + trainer.getBestScore());
+		System.out.println("Best Score: " + feedForwardTrainer.getBestScore());
 		
 //		trainer.saveAgent("agent");
 	}

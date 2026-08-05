@@ -13,8 +13,8 @@ import java.io.IOException;
 import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 
-class TrainerTest {
-	private static Trainer trainer;
+class FeedForwardTrainerTest {
+	private static FeedForwardTrainer feedForwardTrainer;
 	private static int counter = 0;
 	private static float[][] targets, inputs;
 	private static int[] outputs;
@@ -35,7 +35,7 @@ class TrainerTest {
 			outputs[i] = image.value();
 		}
 		
-		trainer = new Trainer(
+		feedForwardTrainer = new FeedForwardTrainer(
 				10,
 				new int[] {
 						inputs[0].length,
@@ -87,22 +87,22 @@ class TrainerTest {
 		int length = files.length;
 		
 		//noinspection AssertWithSideEffects
-		assert trainer.addLogger() != null;
+		assert feedForwardTrainer.addLogger() != null;
 		
 		//noinspection DataFlowIssue
 		assert resultsDirectory.listFiles().length == length + 1;
 		
-		trainer.saveAgent("testAgent.ser");
+		feedForwardTrainer.saveAgent("testAgent.ser");
 		counter++;
-		assert trainer.loadAgent("./src/training-results/" + (length + 1) + "/testAgent.ser") != null;
+		assert feedForwardTrainer.loadAgent("./src/training-results/" + (length + 1) + "/testAgent.ser") != null;
 	}
 	
 	@Test
 	void regularTrain() throws Exception {
-		NeuralNetwork[] agents = (NeuralNetwork[]) TestingUtils.getPrivate(trainer, "agents");
+		NeuralNetwork[] agents = (NeuralNetwork[]) TestingUtils.getPrivate(feedForwardTrainer, "agents");
 		
 		int score = (int) TestingUtils.invokePrivate(
-				trainer, "trainAgent",
+				feedForwardTrainer, "trainAgent",
 				new Class[] {
 						NeuralNetwork.class, float[][].class,
 						float[][].class, int[].class, float.class
@@ -115,6 +115,6 @@ class TrainerTest {
 	
 	@Test
 	void getBestScore() {
-		assert trainer.getBestScore() >= 0;
+		assert feedForwardTrainer.getBestScore() >= 0;
 	}
 }

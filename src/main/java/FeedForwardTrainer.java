@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see #saveAgent(String)
  * @see #loadAgent(String)
  */
-public class Trainer {
+public class FeedForwardTrainer {
 	private final AtomicReference<NeuralNetwork> bestAgent;
 	private final NeuralNetwork[] agents;
 	private final AtomicLong bestScore;
@@ -30,7 +30,7 @@ public class Trainer {
 	 * @param layerLengths   arraylist containing lengths of each layer
 	 *                       ({@code layerLengths.length} will be used to create number of layers)
 	 */
-	public Trainer(int agentsPerRound, int[] layerLengths) {
+	public FeedForwardTrainer(int agentsPerRound, int[] layerLengths) {
 		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths, 123));
 		bestScore = new AtomicLong(0);
 		logger = null;
@@ -45,7 +45,7 @@ public class Trainer {
 	 * @return current object, allowing for inheritance chain and one-line setup
 	 * @throws Exception if error occurs in {@link DataLogger#initLogger()}
 	 */
-	public Trainer addLogger() throws Exception {
+	public FeedForwardTrainer addLogger() throws Exception {
 		logger = new DataLogger("./src/training-results");
 		logger.initLogger();
 		return this;
@@ -59,7 +59,7 @@ public class Trainer {
 	 * @param path path to serialized file
 	 * @return current trainer object, allowing for inheritance chain and one-line setup.
 	 */
-	public Trainer loadAgent(String path) {
+	public FeedForwardTrainer loadAgent(String path) {
 		NeuralNetwork loaded = logger.loadAgent(path);
 		bestAgent.set(loaded);
 		Arrays.fill(agents, loaded);
