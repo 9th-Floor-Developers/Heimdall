@@ -1,9 +1,12 @@
 import exceptions.FileNotDeleted;
 import model.NeuralNetwork;
-import model.data.NumberImage;
+import data.custom.NumberImage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import trainer.FeedForwardTrainer;
+import utils.DataLogger;
+
 import static utils.NumberUtils.getAllImgs;
 import static utils.NumberUtils.getRandomImgs;
 
@@ -34,15 +37,9 @@ class FeedForwardTrainerTest {
 			targets[i] = image.toTarget();
 			outputs[i] = image.value();
 		}
-		
-		feedForwardTrainer = new FeedForwardTrainer(
-				10,
-				new int[] {
-						inputs[0].length,
-						100,
-						targets[0].length
-				}
-		);
+
+
+		feedForwardTrainer = new FeedForwardTrainer();
 	}
 	
 	@AfterAll
@@ -94,7 +91,7 @@ class FeedForwardTrainerTest {
 		
 		feedForwardTrainer.saveAgent("testAgent.ser");
 		counter++;
-		assert feedForwardTrainer.loadAgent("./src/training-results/" + (length + 1) + "/testAgent.ser") != null;
+		assert DataLogger.loadAgent("./src/training-results/" + (length + 1) + "/testAgent.ser") != null;
 	}
 	
 	@Test

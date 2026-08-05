@@ -111,7 +111,7 @@ public class DataLogger {
 	 * @param folder path of folder that serialized agent object is located in
 	 * @return {@link NeuralNetwork} object loaded from a serialized function
 	 */
-	public NeuralNetwork loadAgent(String folder) {
+	public static NeuralNetwork loadAgent(String folder) {
 		try (FileInputStream fileIn = new FileInputStream(folder);
 		     ObjectInputStream in = new ObjectInputStream(fileIn)) {
 			NeuralNetwork agent = (NeuralNetwork) in.readObject();

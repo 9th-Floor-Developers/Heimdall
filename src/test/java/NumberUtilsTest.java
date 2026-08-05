@@ -1,5 +1,5 @@
 import exceptions.IsDirectoryException;
-import model.data.NumberImage;
+import data.custom.NumberImage;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import utils.NumberUtils;

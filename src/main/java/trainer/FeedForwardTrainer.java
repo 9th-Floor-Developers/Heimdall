@@ -1,3 +1,5 @@
+package trainer;
+
 import model.NeuralNetwork;
 import utils.DataLogger;
 import utils.DataUtils;
@@ -14,69 +16,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @see #addLogger()
  * @see #getBestScore()
  * @see #regularTrain(float[][], float[][], int[], float, int)
- * @see #saveAgent(String)
- * @see #loadAgent(String)
  */
-public class FeedForwardTrainer {
-	private final AtomicReference<NeuralNetwork> bestAgent;
-	private final NeuralNetwork[] agents;
-	private final AtomicLong bestScore;
-	private DataLogger logger;
-	
-	/**
-	 * Initialize trainer and all agents ({@link NeuralNetwork} objects) within.
-	 *
-	 * @param agentsPerRound number of agents to train with per round
-	 * @param layerLengths   arraylist containing lengths of each layer
-	 *                       ({@code layerLengths.length} will be used to create number of layers)
-	 */
-	public FeedForwardTrainer(int agentsPerRound, int[] layerLengths) {
-		bestAgent = new AtomicReference<>(new NeuralNetwork(layerLengths, 123));
-		bestScore = new AtomicLong(0);
-		logger = null;
-		agents = new NeuralNetwork[agentsPerRound];
-		for (int i = 0; i < agentsPerRound; i++)
-			agents[i] = new NeuralNetwork(layerLengths, 123);
-	}
-	
-	/**
-	 * initializes a {@link DataLogger} object to the current Trainer object.
-	 *
-	 * @return current object, allowing for inheritance chain and one-line setup
-	 * @throws Exception if error occurs in {@link DataLogger#initLogger()}
-	 */
-	public FeedForwardTrainer addLogger() throws Exception {
-		logger = new DataLogger("./src/training-results");
-		logger.initLogger();
-		return this;
-	}
-	
-	/**
-	 * Loads an agent from a serialized file.
-	 * <p>
-	 * Agent can be saved using {@link #saveAgent(String)}.
-	 *
-	 * @param path path to serialized file
-	 * @return current trainer object, allowing for inheritance chain and one-line setup.
-	 */
-	public FeedForwardTrainer loadAgent(String path) {
-		NeuralNetwork loaded = logger.loadAgent(path);
-		bestAgent.set(loaded);
-		Arrays.fill(agents, loaded);
-		return this;
-	}
-	
-	/**
-	 * Saves an agent to a serialized object.
-	 * <p>
-	 * Agent can be loaded using {@link #loadAgent(String)}.
-	 *
-	 * @param agentName name of serialized agent file
-	 */
-	public void saveAgent(String agentName) {
-		logger.saveAgent(bestAgent.get(), agentName);
-	}
-	
+public class FeedForwardTrainer extends AbstractTrainer{
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
 	 *
@@ -129,6 +70,7 @@ public class FeedForwardTrainer {
 	 */
 	public void regularTrain(float[][] inputs, float[][] targets, int[] outputs,
 	                         float learningRate, int generationNum) {
+		/*
 		int score = trainAgent(agents[0], inputs, targets, outputs, learningRate, false);
 		
 		float percent = (float) score / inputs.length * 100;
@@ -136,9 +78,18 @@ public class FeedForwardTrainer {
 		
 		System.out.println("Generation: " + generationNum + " | Best: [" +
 				                   score + "/" + inputs.length + "] (" + formatted + "%)");
+
+		 */
 	}
-	
+
+
+	@Override
+	public void trainAgent() {
+
+	}
+
+	@Override
 	public float getBestScore() {
-		return bestScore.get();
+		return 0;
 	}
 }

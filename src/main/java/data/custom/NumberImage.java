@@ -1,4 +1,4 @@
-package model.data;
+package data.custom;
 
 /**
  * A record class representing an image of a number from the dataset.

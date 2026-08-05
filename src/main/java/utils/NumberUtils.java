@@ -1,7 +1,7 @@
 package utils;
 
 import exceptions.IsDirectoryException;
-import model.data.NumberImage;
+import data.custom.NumberImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Random;
 import java.util.zip.DataFormatException;
 

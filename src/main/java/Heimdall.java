@@ -1,4 +1,6 @@
-import model.data.NumberImage;
+import data.custom.NumberImage;
+import trainer.FeedForwardTrainer;
+
 import static utils.NumberUtils.getAllImgs;
 import static utils.NumberUtils.getRandomImgs;
 
@@ -25,14 +27,9 @@ public class Heimdall {
 			outputs[i] = image.value();
 		}
 		
-		FeedForwardTrainer feedForwardTrainer = new FeedForwardTrainer(
-				10,  // number of agents per round, more possibilities to evolve
-				new int[] {  // layers format
-						inputs[0].length,  // input layer - must match input count
-						100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
-						targets[0].length  // output layer - number of possible answers (0.0-1.0 inclusive)
-				}
-		).addLogger();//.loadBestAgent("./src/training-results/35");
+		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer().addLogger();
+
+		//.loadBestAgent("./src/training-results/35");
 		
 		for (int generation = 1; generation <= 20000; generation++) {
 			feedForwardTrainer.regularTrain(
