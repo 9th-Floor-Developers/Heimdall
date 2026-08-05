@@ -1,5 +1,10 @@
+import data.base.DataPoint;
+import data.base.DataSet;
 import data.custom.NumberImage;
 import trainer.FeedForwardTrainer;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static utils.NumberUtils.getAllImgs;
 import static utils.NumberUtils.getRandomImgs;
@@ -16,33 +21,31 @@ public class Heimdall {
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
 		NumberImage[] images = getRandomImgs(allImages, 1000, 123);
-		float[][] targets = new float[images.length][],
-				inputs = new float[images.length][];
-		int[] outputs = new int[images.length];
+
+		ArrayList<DataPoint> dataPoints = new ArrayList<>();
 		
-		for (int i = 0; i < images.length; i++) {
-			NumberImage image = images[i];
-			inputs[i] = image.to1D();
-			targets[i] = image.toTarget();
-			outputs[i] = image.value();
+		for (NumberImage image : images) {
+			dataPoints.add(image.getDataPoint());
 		}
-		
-		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer().addLogger();
+		DataSet dataSet = new DataSet(dataPoints);
+
+		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
+			// number of agents per round, more possibilities to evolve
+			new int[] {  // layers format
+				dataSet.getInputLength(),  // input layer - must match input count
+				100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
+				dataSet.getOutputLength()  // output layer - number of possible answers (0.0-1.0 inclusive)
+			},
+			67
+		).addLogger();//.loadBestAgent("./src/training-results/35");
+
+		feedForwardTrainer.trainAgent(dataSet);
 
 		//.loadBestAgent("./src/training-results/35");
-		
-		for (int generation = 1; generation <= 20000; generation++) {
-			feedForwardTrainer.regularTrain(
-					inputs,
-					targets,
-					outputs,
-					.01f,
-					generation
-			);
-		}
-		
+		/*
 		System.out.println("Best Score: " + feedForwardTrainer.getBestScore());
 		
-//		trainer.saveAgent("agent");
+		trainer.saveAgent("agent");
+		 */
 	}
 }

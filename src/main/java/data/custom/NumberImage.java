@@ -1,5 +1,7 @@
 package data.custom;
 
+import data.base.DataPoint;
+
 /**
  * A record class representing an image of a number from the dataset.
  *
@@ -33,7 +35,7 @@ public record NumberImage(float[][] pixels,
 	 *
 	 * @return float array with length 10, representing target value
 	 */
-	public float[] toTarget() {
+	public float[] toTargetValues() {
 		float[] target = new float[10];  // 10 representing digits 0-9
 		target[value] = 1;
 		return target;
@@ -78,5 +80,9 @@ public record NumberImage(float[][] pixels,
 			}
 			System.out.println();
 		}
+	}
+
+	public DataPoint getDataPoint(){
+		return new DataPoint(to1D(), toTargetValues(), value);
 	}
 }

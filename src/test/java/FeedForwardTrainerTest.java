@@ -34,12 +34,19 @@ class FeedForwardTrainerTest {
 		for (int i = 0; i < images.length; i++) {
 			NumberImage image = images[i];
 			inputs[i] = image.to1D();
-			targets[i] = image.toTarget();
+			targets[i] = image.toTargetValues();
 			outputs[i] = image.value();
 		}
 
 
-		feedForwardTrainer = new FeedForwardTrainer();
+		feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
+			new int[] {
+				inputs[0].length,
+				100,
+				targets[0].length
+			},
+			67
+		).addLogger();
 	}
 	
 	@AfterAll
@@ -108,10 +115,5 @@ class FeedForwardTrainerTest {
 		);
 		
 		assert score >= 0;
-	}
-	
-	@Test
-	void getBestScore() {
-		assert feedForwardTrainer.getBestScore() >= 0;
 	}
 }

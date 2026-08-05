@@ -1,6 +1,6 @@
 package trainer;
 
-import model.NeuralNetwork;
+import data.base.DataSet;
 import org.jetbrains.annotations.Nullable;
 import utils.DataLogger;
 
@@ -11,9 +11,7 @@ public abstract class AbstractTrainer {
 
 
 
-    abstract public void trainAgent();
-
-    abstract public float getBestScore();
+    abstract public void trainAgent(DataSet dataSet);
 
 
     /**
@@ -36,5 +34,7 @@ public abstract class AbstractTrainer {
      *
      * @param agentName name of serialized agent file
      */
-    abstract public void saveAgent(String agentName);
+    public void saveAgent(String agentName){
+
+    }
 }

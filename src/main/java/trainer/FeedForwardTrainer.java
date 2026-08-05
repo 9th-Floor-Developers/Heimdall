@@ -1,39 +1,39 @@
 package trainer;
 
+import data.base.DataPoint;
+import data.base.DataSet;
 import model.NeuralNetwork;
-import utils.DataLogger;
 import utils.DataUtils;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * A class representing a trainer object that contains an array of agents
  * ({@link NeuralNetwork} objects) and all methods required to train them.
  *
  * @see #addLogger()
- * @see #getBestScore()
- * @see #regularTrain(float[][], float[][], int[], float, int)
+ * @see #trainAgent(DataSet)
  */
 public class FeedForwardTrainer extends AbstractTrainer{
+	public NeuralNetwork agent;
+	public float learningRate;
+	public boolean showErrorRate;
+
+
+	public FeedForwardTrainer(int[] layerLengths, int seed){
+		agent = new NeuralNetwork(layerLengths, seed);
+	}
+
+
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
-	 *
-	 * @param agent        {@link NeuralNetwork} object to train with
-	 * @param inputs       values neural network is trained on
-	 * @param targets      calculated values of output layer
-	 * @param outputs      desired values of the output layer
-	 * @param learningRate difference to modify weights (0.0-0.5)
-	 * @return number of data points the agent got correct
 	 */
-	private int trainAgent(NeuralNetwork agent, float[][] inputs, float[][] targets,
-	                       int[] outputs, float learningRate, boolean showErrorRate) {
+	private int trainAgentRound(DataSet dataSet) {
 		int score = 0;
 		
-		for (int i = 0; i < inputs.length; i++) {
-			float[] calcOutputs = agent.calcOutputs(inputs[i]);
+		for (DataPoint dataPoint : dataSet.dataPoints()) {
+			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs());
 			
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {
@@ -42,10 +42,10 @@ public class FeedForwardTrainer extends AbstractTrainer{
 					maxIndex = j;
 				}
 			}
-			if (maxIndex == outputs[i])
+			if (maxIndex == dataPoint.targetResult())
 				score++;
-			
-			float[] outputErrors = agent.backProp(targets[i]);
+
+			float[] outputErrors = agent.backProp(dataPoint.targetValues());
 			if (showErrorRate){
 				System.out.println("Error rate " + DataUtils.getAverage(outputErrors));
 			}
@@ -56,40 +56,17 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		
 		return score;
 	}
-	
-	/**
-	 * Train a single agent using back propagation, single threaded.
-	 * <p>
-	 * Outputs generation information.
-	 *
-	 * @param inputs        values neural network is trained on
-	 * @param targets       calculated values of output layer
-	 * @param outputs       desired values of the output layer
-	 * @param learningRate  difference to modify weights (0.0-0.5)
-	 * @param generationNum current generation number, used only for displaying information
-	 */
-	public void regularTrain(float[][] inputs, float[][] targets, int[] outputs,
-	                         float learningRate, int generationNum) {
-		/*
-		int score = trainAgent(agents[0], inputs, targets, outputs, learningRate, false);
-		
-		float percent = (float) score / inputs.length * 100;
-		String formatted = new DecimalFormat("###.##").format(percent);
-		
-		System.out.println("Generation: " + generationNum + " | Best: [" +
-				                   score + "/" + inputs.length + "] (" + formatted + "%)");
-
-		 */
-	}
-
 
 	@Override
-	public void trainAgent() {
+	public void trainAgent(DataSet dataSet) {
+		for (int generation = 1; generation <= 20000; generation++) {
+			int score = trainAgentRound(dataSet);
 
-	}
+			float percent = (float) score / dataSet.getSize() * 100;
+			String formatted = new DecimalFormat("###.##").format(percent);
 
-	@Override
-	public float getBestScore() {
-		return 0;
+			System.out.println("Generation: " + generation + " | Best: [" +
+					score + "/" + dataSet.getSize() + "] (" + formatted + "%)");
+		}
 	}
 }
