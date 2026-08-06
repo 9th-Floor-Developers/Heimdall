@@ -26,7 +26,7 @@ public class TerminalPlayer implements Player {
 
         if (input.equalsIgnoreCase("moves")) {
             for (Move m : legalMoves)
-                System.out.print(m.toLongAlgebraic() + " ");
+                System.out.print(m + " ");
             System.out.println();
             return getNextMove(legalMoves, board, color);
         }
@@ -42,7 +42,7 @@ public class TerminalPlayer implements Player {
 
     private static Move parseMove(String input, HashSet<Move> legalMoves) {
         for (Move m : legalMoves)
-            if (m.toLongAlgebraic().equalsIgnoreCase(input))
+            if (m.toString().equalsIgnoreCase(input))
                 return m;
         return null;
     }

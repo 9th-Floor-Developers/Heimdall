@@ -2,6 +2,7 @@ package chess.model;
 
 import static chess.ChessUtils.*;
 import static chess.model.PieceType.EMPTY;
+import org.jetbrains.annotations.NotNull;
 
 public record Move(int from,
                    int to,
@@ -17,7 +18,9 @@ public record Move(int from,
 		this(from, to, promotionPiece, false, false);
 	}
 	
-	public String toLongAlgebraic() {
+	@NotNull
+	@Override
+	public String toString() {
 		Space fromSpace = new Space(fileOf(from), rankOf(from)),
 				toSpace = new Space(fileOf(to), rankOf(to));
 		String algebraic = squareName(fromSpace) + squareName(toSpace);
