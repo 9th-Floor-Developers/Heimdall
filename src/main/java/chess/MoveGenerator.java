@@ -1,7 +1,6 @@
 package chess;
 import static chess.ChessUtils.*;
 import chess.model.Color;
-import static chess.model.Color.BLACK;
 import static chess.model.Color.WHITE;
 import chess.model.Move;
 import static chess.model.PieceType.*;

@@ -7,6 +7,7 @@ import chess.model.Color;
 import chess.model.Move;
 import chess.model.PieceType;
 import chess.model.Space;
+import chess.players.UiPlayer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -24,6 +25,7 @@ public final class BoardPanel extends JPanel {
 	private final HashSet<Space> selectedMoveSpaces;
 	private final EnumMap<Color, EnumMap<PieceType, Image>> pieceImages;
 	private Board game;
+	private UiPlayer uiPlayer;
 	
 	public BoardPanel() {
 		selected = null;
@@ -187,12 +189,14 @@ public final class BoardPanel extends JPanel {
 		Space clicked = game.pieceAt(col, row);
 		
 		if (selected != null && selectedMoveSpaces.contains(clicked)) {
-			// complete the move to the clicked destination
-			game.makeMove(
-					selectedMoves.stream()
-							.filter(m -> game.pieceAt(m.to()).equals(clicked))
-							.findFirst()
-							.orElseThrow());
+			Move chosen = selectedMoves.stream()
+					.filter(m -> game.pieceAt(m.to()).equals(clicked))
+					.findFirst()
+					.orElseThrow();
+			
+			if (uiPlayer != null)
+				uiPlayer.submitMove(chosen);
+			
 			clearSelection();
 		} else if (clicked.getType() != PieceType.EMPTY
 				&& clicked.getColor() == game.toMoveColor()) {
@@ -218,5 +222,9 @@ public final class BoardPanel extends JPanel {
 	public void setGame(Board game) {
 		this.game = game;
 		repaint();
+	}
+	
+	public void setUiPlayer(UiPlayer uiPlayer) {
+		this.uiPlayer = uiPlayer;
 	}
 }

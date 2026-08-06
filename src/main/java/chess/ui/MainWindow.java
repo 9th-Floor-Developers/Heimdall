@@ -2,9 +2,9 @@ package chess.ui;
 
 import chess.Board;
 import chess.FenUtils;
+import chess.players.UiPlayer;
 
 import javax.swing.*;
-import java.awt.*;
 
 public final class MainWindow extends JFrame {
 	private JPanel rootPanel;
@@ -55,5 +55,9 @@ public final class MainWindow extends JFrame {
 	
 	public void setStatusLabel(String text) {
 		statusLabel.setText("Status: " + text);
+	}
+	
+	public void setBoardPanelUiPlayer(UiPlayer player) {
+		((BoardPanel) boardPanel).setUiPlayer(player);
 	}
 }
