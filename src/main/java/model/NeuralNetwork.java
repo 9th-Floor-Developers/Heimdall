@@ -3,6 +3,9 @@ package model;
 import utils.DataLogger;
 
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -59,14 +62,32 @@ public class NeuralNetwork implements Serializable, Cloneable {
 					neuron.setValue(inputs[j]);
 					continue;
 				}
-				
+
 				neuron.calcValue(layers[i - 1]);
-				if (i == outputLayerIdx)
-					outputs[j] = neuron.getValue();
+			}
+
+			if (i == outputLayerIdx) {
+				focusOutput(neurons);
+
+				for (int j = 0; j < neurons.length; j++) {
+					outputs[j] = neurons[j].getValue();
+				}
 			}
 		}
 		
 		return outputs;
+	}
+
+	public void focusOutput(Neuron[] outputNeurons){
+		Neuron maxNeron = Arrays.stream(outputNeurons).max(Comparator.comparingDouble(Neuron::getValue)).orElseThrow();
+		for (Neuron outputNeron: outputNeurons){
+			if (outputNeron != maxNeron){
+				outputNeron.setValue(0);
+			}
+			else {
+				outputNeron.setValue(1);
+			}
+		}
 	}
 	
 	/**
