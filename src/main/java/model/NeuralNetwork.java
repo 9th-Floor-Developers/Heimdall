@@ -5,7 +5,6 @@ import utils.DataLogger;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -57,7 +56,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 		for (int i = 0; i < layers.length; i++) {
 			Neuron[] neurons = layers[i].getNeurons();
 			for (int j = 0; j < neurons.length; j++) {
-				Neuron neuron = getNeuron(i, j);
+				Neuron neuron = neurons[j];
 				if (i == 0) {
 					neuron.setValue(inputs[j]);
 					continue;
@@ -81,13 +80,13 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	public void focusOutput(Neuron[] outputNeurons){
 		Neuron maxNeron = Arrays.stream(outputNeurons).max(Comparator.comparingDouble(Neuron::getValue)).orElseThrow();
 		for (Neuron outputNeron: outputNeurons){
-			if (outputNeron != maxNeron){
-				outputNeron.setValue(0);
-			}
+            if (outputNeron == maxNeron) {
+                outputNeron.setValue(1);
+            }
 			else {
-				outputNeron.setValue(1);
-			}
-		}
+                outputNeron.setValue(0);
+            }
+        }
 	}
 	
 	/**
