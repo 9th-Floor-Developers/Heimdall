@@ -78,14 +78,14 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	 * @see Neuron
 	 */
 	public float[] backProp(float[] target) {
-		float[] outputError = new float[target.length];
+		float[] outputErrors = new float[target.length];
 		
 		for (int i = layers.length - 1; i >= 1; i--) {
 			for (int j = 0; j < layers[i].getNumNeurons(); j++) {
 				Neuron neuron = getNeuron(i, j);
 				if (i == layers.length - 1) {  // output layer
 					neuron.calcError(target[j]);
-					outputError[j] = neuron.getError();
+					outputErrors[j] = Math.abs(neuron.getError());
 				}
 				
 				Layer prevLayer = layers[i - 1];
@@ -95,7 +95,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 			}
 		}
 		
-		return outputError;
+		return outputErrors;
 	}
 	
 	/**
