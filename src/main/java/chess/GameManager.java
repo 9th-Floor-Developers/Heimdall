@@ -5,6 +5,7 @@ import chess.model.Color;
 import chess.model.Move;
 
 import chess.players.Player;
+import chess.players.UiPlayer;
 import chess.ui.MainWindow;
 
 import java.util.ArrayList;
@@ -34,6 +35,10 @@ public final class GameManager {
 	public static Color runGame(HashMap<Color, Player> players) {
 		Board board = new Board();
 		MainWindow window = new MainWindow(board);
+		
+		for (Player player : players.values())
+			if (player instanceof UiPlayer uiPlayer)
+				window.setBoardPanelUiPlayer(uiPlayer);
 		
 		System.out.println("Starting game between " + players.get(Color.WHITE).getDisplayName() + " and " + players.get(Color.BLACK).getDisplayName());
 		
