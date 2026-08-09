@@ -49,7 +49,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public float[] calcOutputs(float[] inputs) {
+	public float[] calcOutputs(float[] inputs, boolean focusOutputs) {
 		int outputLayerIdx = layers.length - 1;
 		float[] outputs = new float[layers[outputLayerIdx].getNumNeurons()];
 		
@@ -66,7 +66,9 @@ public class NeuralNetwork implements Serializable, Cloneable {
 			}
 
 			if (i == outputLayerIdx) {
-				focusOutput(neurons);
+				if (focusOutputs){
+					focusOutputs(neurons);
+				}
 
 				for (int j = 0; j < neurons.length; j++) {
 					outputs[j] = neurons[j].getValue();
@@ -77,7 +79,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 		return outputs;
 	}
 
-	public void focusOutput(Neuron[] outputNeurons){
+	public void focusOutputs(Neuron[] outputNeurons){
 		Neuron maxNeron = Arrays.stream(outputNeurons).max(Comparator.comparingDouble(Neuron::getValue)).orElseThrow();
 		for (Neuron outputNeron: outputNeurons){
             if (outputNeron == maxNeron) {
@@ -91,7 +93,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	
 	/**
 	 * Apply back propagation process to neural network.
-	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[])} needs to be run first
+	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[], boolean)} needs to be run first
 	 *
 	 * @param target desired output values
 	 * @see Layer

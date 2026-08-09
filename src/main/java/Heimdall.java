@@ -20,7 +20,7 @@ public class Heimdall {
 	public static void numberTrain() throws Exception {
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
-		NumberImage[] images = getRandomImgs(allImages, 2000, 123);
+		NumberImage[] images = getRandomImgs(allImages, 20000, 123);
 
 		ArrayList<DataPoint> dataPoints = new ArrayList<>();
 		
@@ -36,7 +36,8 @@ public class Heimdall {
 				100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
 				dataSet.getOutputLength()  // output layer - number of possible answers (0.0-1.0 inclusive)
 			},
-				0.001f,
+				0.00003f,
+				true,
 				true,
 			69
 		).addLogger();//.loadBestAgent("./src/training-results/35");

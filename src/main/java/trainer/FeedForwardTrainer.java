@@ -6,7 +6,6 @@ import model.NeuralNetwork;
 import utils.DataUtils;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
 
 /**
  * A class representing a trainer object that contains an array of agents
@@ -16,15 +15,17 @@ import java.util.Arrays;
  * @see #trainAgent(DataSet)
  */
 public class FeedForwardTrainer extends AbstractTrainer{
-	private NeuralNetwork agent;
-	private float learningRate;
-	private boolean showErrorRate;
+	private final NeuralNetwork agent;
+	private final float learningRate;
+	private final boolean showErrorRate;
+	private final boolean focusOutput;
 
 
-	public FeedForwardTrainer(int[] layerLengths, float learningRate, boolean showErrorRate, int seed){
+	public FeedForwardTrainer(int[] layerLengths, float learningRate, boolean showErrorRate, boolean focusOutput, int seed){
 		agent = new NeuralNetwork(layerLengths, seed);
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
+		this.focusOutput = focusOutput;
 	}
 
 
@@ -36,7 +37,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		float errorSum = 0;
 		
 		for (DataPoint dataPoint : dataSet.dataPoints()) {
-			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs());
+			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs(), focusOutput);
 			
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {

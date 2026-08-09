@@ -47,6 +47,7 @@ class FeedForwardTrainerTest {
 			},
 			0.01f,
 			false,
+			false,
 			67
 		).addLogger();
 	}

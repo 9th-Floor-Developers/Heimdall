@@ -38,7 +38,7 @@ class NeuralNetworkTest {
 
     @Test
 	void calcOutputs() {
-        network.calcOutputs(new float[]{1, 0});
+        network.calcOutputs(new float[]{1, 0}, false);
 
         Layer layer = network.getLayer(network.getLayers().length - 1);
         for (Neuron neuron : layer.getNeurons())
