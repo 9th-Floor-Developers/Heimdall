@@ -35,7 +35,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		float errorSum = 0;
 		
 		for (DataPoint dataPoint : dataSet.dataPoints()) {
-			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs());
+			float[] calcOutputs = agent.calcOutputs(dataPoint.getInputs());
 			
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {
@@ -44,10 +44,10 @@ public class FeedForwardTrainer extends AbstractTrainer{
 					maxIndex = j;
 				}
 			}
-			if (maxIndex == dataPoint.targetResult())
+			if (maxIndex == dataPoint.getTargetResult())
 				score++;
 
-			errorSum += DataUtils.getAverage(agent.backProp(dataPoint.targetValues()));
+			errorSum += DataUtils.getAverage(agent.backProp(dataPoint.getTargetValues()));
 		}
 		agent.applyWeightsChange(learningRate / dataSet.getSize());
 

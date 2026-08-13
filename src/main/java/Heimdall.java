@@ -4,6 +4,7 @@ import data.custom.NumberImage;
 import trainer.FeedForwardTrainer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static utils.NumberUtils.getAllImgs;
@@ -20,14 +21,9 @@ public class Heimdall {
 	public static void numberTrain() throws Exception {
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
-		NumberImage[] images = getRandomImgs(allImages, 20000, 123);
+		NumberImage[] images = getRandomImgs(allImages, 200, 123);
 
-		ArrayList<DataPoint> dataPoints = new ArrayList<>();
-		
-		for (NumberImage image : images) {
-			dataPoints.add(image.getDataPoint());
-		}
-		DataSet dataSet = new DataSet(dataPoints);
+		DataSet dataSet = new DataSet(new ArrayList<>(Arrays.asList(images)));
 
 		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
 			// number of agents per round, more possibilities to evolve
@@ -36,7 +32,7 @@ public class Heimdall {
 				100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
 				dataSet.getOutputLength()  // output layer - number of possible answers (0.0-1.0 inclusive)
 			},
-			0.00003f,
+			0.5f,
 			true,
 			69
 		).addLogger();//.loadBestAgent("./src/training-results/35");

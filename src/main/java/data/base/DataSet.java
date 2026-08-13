@@ -8,10 +8,10 @@ public record DataSet(List<DataPoint> dataPoints) {
     }
 
     public int getInputLength(){
-        return dataPoints.getFirst().inputs().length;
+        return dataPoints.getFirst().getInputs().length;
     }
 
     public int getOutputLength(){
-        return dataPoints.getFirst().targetValues().length;
+        return dataPoints.getFirst().getTargetValues().length;
     }
 }

@@ -9,7 +9,7 @@ import data.base.DataPoint;
  * @param value  actual value of the image, assigned dynamically, not guessed
  */
 public record NumberImage(float[][] pixels,
-                          int value) {
+                          int value) implements DataPoint {
 	/**
 	 * Converts image from 2D pixel array into longer 1D array of same values, essentially "flattening" values
 	 *
@@ -81,8 +81,19 @@ public record NumberImage(float[][] pixels,
 			System.out.println();
 		}
 	}
+	
+	@Override
+	public float[] getInputs() {
+		return to1D();
+	}
 
-	public DataPoint getDataPoint(){
-		return new DataPoint(to1D(), toTargetValues(), value);
+	@Override
+	public float[] getTargetValues() {
+		return toTargetValues();
+	}
+
+	@Override
+	public int getTargetResult() {
+		return value;
 	}
 }
