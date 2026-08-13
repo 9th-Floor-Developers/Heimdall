@@ -1,35 +1,35 @@
 import exceptions.IsDirectoryException;
-import data.custom.NumberImage;
+import data.numberRecognizer.NumberImage;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
-import utils.NumberUtils;
+import data.numberRecognizer.NumberImageLoader;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
 
-class NumberUtilsTest {
+class NumberImageLoaderTest {
 	@Test
 	void getAllImgs() throws Exception {
-		NumberImage[] images = NumberUtils.getAllImgs("./src/main/resources/numbers/");
+		NumberImage[] images = NumberImageLoader.getAllImgs("./src/main/resources/numbers/");
 		for (NumberImage image : images)
 			assert image != null;
 		
-		assertThrows(NotDirectoryException.class, () -> NumberUtils.getAllImgs("./src/main/java/Heimdall.java"));
-		assertThrows(FileNotFoundException.class, () -> NumberUtils.getAllImgs("./src/DOESNT_EXIST/"));
+		assertThrows(NotDirectoryException.class, () -> NumberImageLoader.getAllImgs("./src/main/java/Heimdall.java"));
+		assertThrows(FileNotFoundException.class, () -> NumberImageLoader.getAllImgs("./src/DOESNT_EXIST/"));
 	}
 	
 	@Test
 	void getRandomImgs() throws Exception {
 		int numImages = 50, seed = 123;
 		
-		NumberImage[] images = NumberUtils.getRandomImgs("./src/main/resources/numbers/", numImages, seed);
+		NumberImage[] images = NumberImageLoader.getRandomImgs("./src/main/resources/numbers/", numImages, seed);
 		for (NumberImage image : images)
 			assert image != null;
 		assert images.length == numImages;
 		
-		images = NumberUtils.getRandomImgs(images, numImages / 2, seed);
+		images = NumberImageLoader.getRandomImgs(images, numImages / 2, seed);
 		for (NumberImage image : images)
 			assert image != null;
 		assert images.length == numImages / 2;
@@ -37,16 +37,16 @@ class NumberUtilsTest {
 	
 	@Test
 	void getImg() throws Exception {
-		NumberUtils.getImg("./src/main/resources/numbers/0/Zero_full (1).jpg");
+		NumberImageLoader.getImg("./src/main/resources/numbers/0/Zero_full (1).jpg");
 		
-		assertThrows(FileNotFoundException.class, () -> NumberUtils.getImg("./src/DOESNT_EXIST.png"));
-		assertThrows(IsDirectoryException.class, () -> NumberUtils.getImg("./src/main/resources/numbers/"));
+		assertThrows(FileNotFoundException.class, () -> NumberImageLoader.getImg("./src/DOESNT_EXIST.png"));
+		assertThrows(IsDirectoryException.class, () -> NumberImageLoader.getImg("./src/main/resources/numbers/"));
 	}
 	
 	@Test
 	void imgToFloatArr() throws Exception {
 		float[][] greyscaleVals = (float[][]) TestingUtils.invokePrivate(
-				NumberUtils.class, "imgToFloatArr",
+				NumberImageLoader.class, "imgToFloatArr",
 				new Class[] { File.class },
 				new File("./src/main/resources/numbers/0/Zero_full (1).jpg")
 		);
@@ -60,7 +60,7 @@ class NumberUtilsTest {
 	void searchDir() throws Exception {
 		//noinspection unchecked
 		ArrayList<NumberImage> images = (ArrayList<NumberImage>) TestingUtils.invokePrivate(
-				NumberUtils.class, "searchDir",
+				NumberImageLoader.class, "searchDir",
 				new Class[]{ File.class },
 				new File("./src/main/resources/numbers/0/")
 		);

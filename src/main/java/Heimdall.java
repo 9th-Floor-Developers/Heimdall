@@ -1,12 +1,12 @@
 import data.base.DataSet;
-import data.custom.NumberImage;
+import data.numberRecognizer.NumberImage;
 import trainer.FeedForwardTrainer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static utils.NumberUtils.getAllImgs;
-import static utils.NumberUtils.getRandomImgs;
+import static data.numberRecognizer.NumberImageLoader.getAllImgs;
+import static data.numberRecognizer.NumberImageLoader.getRandomImgs;
 
 public class Heimdall {
 	/**

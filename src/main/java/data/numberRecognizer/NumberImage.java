@@ -1,4 +1,4 @@
-package data.custom;
+package data.numberRecognizer;
 
 import data.base.DataPoint;
 

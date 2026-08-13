@@ -1,7 +1,6 @@
-package utils;
+package data.numberRecognizer;
 
 import exceptions.IsDirectoryException;
-import data.custom.NumberImage;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -15,7 +14,7 @@ import java.util.zip.DataFormatException;
 /**
  * A class containing all operations and processes relating to converting an image of a number into a {@link NumberImage}.
  */
-public class NumberUtils {
+public class NumberImageLoader {
 	/**
 	 * Converts all image pixels to array of floats. Floats are calculated by
 	 * converting RBG value into a single greyscale value.
