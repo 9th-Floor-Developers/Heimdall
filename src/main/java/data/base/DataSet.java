@@ -1,8 +1,8 @@
 package data.base;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public record DataSet(List<DataPoint> trainingDataPoints, List<DataPoint> testingDataPoints) {
+public record DataSet(ArrayList<DataPoint> trainingDataPoints, ArrayList<DataPoint> testingDataPoints) {
     public int getTrainingSize(){
         return trainingDataPoints().size();
     }
