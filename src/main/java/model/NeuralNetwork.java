@@ -18,7 +18,7 @@ import java.util.Random;
  * @see DataLogger#saveAgent(NeuralNetwork, String)
  * @see DataLogger#loadAgent(String)
  */
-public class NeuralNetwork implements Serializable, Cloneable {
+public class NeuralNetwork implements Serializable {
 	private final Layer[] layers;
 	private final int[] layerLengths;
 	
