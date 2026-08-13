@@ -65,16 +65,19 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	public void trainAgent(DataSet dataSet) {
 		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths), seed);
 
-		for (int generation = 1; generation <= 20000; generation++) {
+		for (int round = 1; round <= 20000; round++) {
+			System.out.println("=========== Round: " + round + " =============");
+
 			int score = trainAgentRound(agent, dataSet);
 
 			float percent = (float) score / dataSet.getTrainingSize() * 100;
 			String formatted = new DecimalFormat("###.##").format(percent);
 
-			System.out.println("Round: " + generation + " | [" +
-					score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
+			System.out.println("Training: [" + score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
 
 			agent.testAgent(dataSet);
+
+			System.out.println("===================================");
 		}
 	}
 }

@@ -135,7 +135,7 @@ public class NeuralNetwork implements Serializable {
 		float percent = (float) score / dataSet.getTestingSize() * 100;
 		String formatted = new DecimalFormat("###.##").format(percent);
 
-		System.out.println("TESTING: [" + score + "/" + dataSet.getTestingSize() + "] (" + formatted + "%)");
+		System.out.println("Testing: [" + score + "/" + dataSet.getTestingSize() + "] (" + formatted + "%)");
 	}
 	
 	// region Getters/Setters
