@@ -61,8 +61,8 @@ public class NeuralNetwork implements Serializable, Cloneable {
 				}
 
 				neuron.calcValue(layers[i - 1]);
-
-				outputs[j] = neurons[j].getValue();
+				if (i == layers.length - 1)
+					outputs[j] = neuron.getValue();
 			}
 		}
 		
