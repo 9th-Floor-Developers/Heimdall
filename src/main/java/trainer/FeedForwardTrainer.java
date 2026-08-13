@@ -15,22 +15,24 @@ import java.text.DecimalFormat;
  * @see #trainAgent(DataSet)
  */
 public class FeedForwardTrainer extends AbstractTrainer{
-	private final NeuralNetwork agent;
+	private final int[] hiddenLayerLengths;
 	private final float learningRate;
 	private final boolean showErrorRate;
+	private final int seed;
 
 
-	public FeedForwardTrainer(int[] layerLengths, float learningRate, boolean showErrorRate, int seed){
-		agent = new NeuralNetwork(layerLengths, seed);
+	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int seed){
+		this.hiddenLayerLengths = hiddenLayerLengths;
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
+		this.seed = seed;
 	}
 
 
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
 	 */
-	private int trainAgentRound(DataSet dataSet) {
+	private int trainAgentRound(NeuralNetwork agent, DataSet dataSet) {
 		int score = 0;
 		float errorSum = 0;
 		
@@ -61,8 +63,10 @@ public class FeedForwardTrainer extends AbstractTrainer{
 
 	@Override
 	public void trainAgent(DataSet dataSet) {
+		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths), seed);
+
 		for (int generation = 1; generation <= 20000; generation++) {
-			int score = trainAgentRound(dataSet);
+			int score = trainAgentRound(agent, dataSet);
 
 			float percent = (float) score / dataSet.getSize() * 100;
 			String formatted = new DecimalFormat("###.##").format(percent);
