@@ -1,8 +1,12 @@
 package model;
 
+import data.base.DataPoint;
+import data.base.DataSet;
 import utils.DataLogger;
+import utils.DataUtils;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.Random;
 
 /**
@@ -109,6 +113,29 @@ public class NeuralNetwork implements Serializable, Cloneable {
 		for (int i = 0; i < layers.length; i++)
 			for (int j = 0; j < layers[i].getNumNeurons(); j++)
 				getNeuron(i, j).applyWeightChange(learningRate);
+	}
+
+	public void testAgent(DataSet dataSet){
+		int score = 0;
+
+		for (DataPoint dataPoint : dataSet.testingDataPoints()) {
+			float[] calcOutputs = calcOutputs(dataPoint.getInputs());
+
+			int maxIndex = 0;
+			for (int j = 0; j < calcOutputs.length; j++) {
+				if (calcOutputs[j] > calcOutputs[maxIndex]) {
+					calcOutputs[maxIndex] = calcOutputs[j];
+					maxIndex = j;
+				}
+			}
+			if (maxIndex == dataPoint.getTargetResult())
+				score++;
+		}
+
+		float percent = (float) score / dataSet.getTestingSize() * 100;
+		String formatted = new DecimalFormat("###.##").format(percent);
+
+		System.out.println("TESTING: [" + score + "/" + dataSet.getTestingSize() + "] (" + formatted + "%)");
 	}
 	
 	// region Getters/Setters

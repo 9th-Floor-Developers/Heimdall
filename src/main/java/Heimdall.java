@@ -19,9 +19,10 @@ public class Heimdall {
 	public static void numberTrain() throws Exception {
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
-		NumberImage[] images = getRandomImgs(allImages, 200, 123);
+		NumberImage[] trainingImages = getRandomImgs(allImages, 200, 123);
+		NumberImage[] testingImages = getRandomImgs(allImages, 100, 456);
 
-		DataSet dataSet = new DataSet(new ArrayList<>(Arrays.asList(images)));
+		DataSet dataSet = new DataSet(new ArrayList<>(Arrays.asList(trainingImages)), Arrays.asList(testingImages));
 
 		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
 			// number of agents per round, more possibilities to evolve

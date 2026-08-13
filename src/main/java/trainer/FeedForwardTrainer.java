@@ -36,7 +36,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		int score = 0;
 		float errorSum = 0;
 		
-		for (DataPoint dataPoint : dataSet.dataPoints()) {
+		for (DataPoint dataPoint : dataSet.trainingDataPoints()) {
 			float[] calcOutputs = agent.calcOutputs(dataPoint.getInputs());
 			
 			int maxIndex = 0;
@@ -51,11 +51,11 @@ public class FeedForwardTrainer extends AbstractTrainer{
 
 			errorSum += DataUtils.getAverage(agent.backProp(dataPoint.getTargetValues()));
 		}
-		agent.applyWeightsChange(learningRate / dataSet.getSize());
+		agent.applyWeightsChange(learningRate / dataSet.getTrainingSize());
 
 		//System.out.println("MSE | " + Arrays.toString(MSE));
 		if (showErrorRate){
-			System.out.println("Error rate " + errorSum / dataSet.getSize());
+			System.out.println("Error rate " + errorSum / dataSet.getTrainingSize());
 		}
 		
 		return score;
@@ -68,11 +68,13 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		for (int generation = 1; generation <= 20000; generation++) {
 			int score = trainAgentRound(agent, dataSet);
 
-			float percent = (float) score / dataSet.getSize() * 100;
+			float percent = (float) score / dataSet.getTrainingSize() * 100;
 			String formatted = new DecimalFormat("###.##").format(percent);
 
-			System.out.println("Generation: " + generation + " | Best: [" +
-					score + "/" + dataSet.getSize() + "] (" + formatted + "%)");
+			System.out.println("Round: " + generation + " | [" +
+					score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
+
+			agent.testAgent(dataSet);
 		}
 	}
 }
