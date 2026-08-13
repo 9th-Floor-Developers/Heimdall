@@ -36,9 +36,8 @@ public class Heimdall {
 				100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
 				dataSet.getOutputLength()  // output layer - number of possible answers (0.0-1.0 inclusive)
 			},
-				0.00003f,
-				true,
-				true,
+			0.00003f,
+			true,
 			69
 		).addLogger();//.loadBestAgent("./src/training-results/35");
 

@@ -3,8 +3,6 @@ package model;
 import utils.DataLogger;
 
 import java.io.Serializable;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Random;
 
 /**
@@ -49,7 +47,7 @@ public class NeuralNetwork implements Serializable, Cloneable {
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public float[] calcOutputs(float[] inputs, boolean focusOutputs) {
+	public float[] calcOutputs(float[] inputs) {
 		int outputLayerIdx = layers.length - 1;
 		float[] outputs = new float[layers[outputLayerIdx].getNumNeurons()];
 		
@@ -63,37 +61,17 @@ public class NeuralNetwork implements Serializable, Cloneable {
 				}
 
 				neuron.calcValue(layers[i - 1]);
-			}
 
-			if (i == outputLayerIdx) {
-				if (focusOutputs){
-					focusOutputs(neurons);
-				}
-
-				for (int j = 0; j < neurons.length; j++) {
-					outputs[j] = neurons[j].getValue();
-				}
+				outputs[j] = neurons[j].getValue();
 			}
 		}
 		
 		return outputs;
 	}
 
-	public void focusOutputs(Neuron[] outputNeurons){
-		Neuron maxNeron = Arrays.stream(outputNeurons).max(Comparator.comparingDouble(Neuron::getValue)).orElseThrow();
-		for (Neuron outputNeron: outputNeurons){
-            if (outputNeron == maxNeron) {
-                outputNeron.setValue(1);
-            }
-			else {
-                outputNeron.setValue(0);
-            }
-        }
-	}
-	
 	/**
 	 * Apply back propagation process to neural network.
-	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[], boolean)} needs to be run first
+	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[])} needs to be run first
 	 *
 	 * @param target desired output values
 	 * @see Layer

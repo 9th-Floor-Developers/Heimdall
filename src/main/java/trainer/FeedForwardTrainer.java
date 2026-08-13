@@ -18,14 +18,12 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	private final NeuralNetwork agent;
 	private final float learningRate;
 	private final boolean showErrorRate;
-	private final boolean focusOutput;
 
 
-	public FeedForwardTrainer(int[] layerLengths, float learningRate, boolean showErrorRate, boolean focusOutput, int seed){
+	public FeedForwardTrainer(int[] layerLengths, float learningRate, boolean showErrorRate, int seed){
 		agent = new NeuralNetwork(layerLengths, seed);
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
-		this.focusOutput = focusOutput;
 	}
 
 
@@ -37,7 +35,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		float errorSum = 0;
 		
 		for (DataPoint dataPoint : dataSet.dataPoints()) {
-			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs(), focusOutput);
+			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs());
 			
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {
