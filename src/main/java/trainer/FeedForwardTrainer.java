@@ -51,7 +51,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 
 			errorSum += DataUtils.getAverage(agent.backProp(dataPoint.targetValues()));
 		}
-		agent.applyWeightsChange(learningRate);
+		agent.applyWeightsChange(learningRate / dataSet.getSize());
 
 		//System.out.println("MSE | " + Arrays.toString(MSE));
 		if (showErrorRate){
