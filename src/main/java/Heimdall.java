@@ -39,7 +39,6 @@ public class Heimdall {
 		Quick way to create a new dataset:
 
 		DataSet dataSet = CustomDataSetLoader.loadFromList(List.of(...))
-				.setSrc("./src/main/resources/numbers/")
 				.setTrainingSize(100)
 				.setTestingSize(50)
 				.load();
