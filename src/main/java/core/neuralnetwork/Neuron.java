@@ -1,4 +1,4 @@
-package model;
+package core.neuralnetwork;
 
 import java.io.Serializable;
 import java.util.Random;

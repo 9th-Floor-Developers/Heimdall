@@ -1,9 +1,9 @@
-package model;
+package core.neuralnetwork;
 
-import data.base.DataPoint;
-import data.base.DataSet;
-import utils.DataLogger;
-import utils.DataUtils;
+import core.data.DataPoint;
+import core.data.DataSet;
+import core.utils.DataLogger;
+import core.utils.DataUtils;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;

@@ -1,6 +1,6 @@
-package data.numberRecognizer;
+package numberrecognizer;
 
-import data.base.DataPoint;
+import core.data.DataPoint;
 
 /**
  * A record class representing an image of a number from the dataset.

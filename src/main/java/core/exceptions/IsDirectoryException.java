@@ -1,4 +1,4 @@
-package exceptions;
+package core.exceptions;
 
 /**
  * Exception to throw if a {@link java.io.File} is a directory and not a file.

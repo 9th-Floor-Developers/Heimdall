@@ -1,8 +1,8 @@
-import exceptions.IsDirectoryException;
-import data.numberRecognizer.NumberImage;
+import core.exceptions.IsDirectoryException;
+import numberrecognizer.NumberImage;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
-import data.numberRecognizer.NumberImageLoader;
+import numberrecognizer.NumberImageLoader;
 
 import java.io.File;
 import java.io.FileNotFoundException;

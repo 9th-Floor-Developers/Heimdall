@@ -1,6 +1,6 @@
-import model.Layer;
-import model.NeuralNetwork;
-import model.Neuron;
+import core.neuralnetwork.Layer;
+import core.neuralnetwork.NeuralNetwork;
+import core.neuralnetwork.Neuron;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

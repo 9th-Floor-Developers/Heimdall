@@ -1,4 +1,4 @@
-package exceptions;
+package core.exceptions;
 
 /**
  * Exception to throw if file fails to delete.

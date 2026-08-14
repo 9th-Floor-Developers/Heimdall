@@ -1,4 +1,4 @@
-package utils;
+package core.utils;
 
 public class DataUtils {
     public static int universalSeed = 116117102;

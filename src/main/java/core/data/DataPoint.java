@@ -1,4 +1,4 @@
-package data.base;
+package core.data;
 
 public interface DataPoint{
     float[] getInputs();

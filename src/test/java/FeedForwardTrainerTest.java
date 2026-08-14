@@ -1,14 +1,14 @@
-import exceptions.FileNotDeleted;
-import model.NeuralNetwork;
-import data.numberRecognizer.NumberImage;
+import core.exceptions.FileNotDeleted;
+import core.neuralnetwork.NeuralNetwork;
+import numberrecognizer.NumberImage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import trainer.FeedForwardTrainer;
-import utils.DataLogger;
+import core.trainers.FeedForwardTrainer;
+import core.utils.DataLogger;
 
-import static data.numberRecognizer.NumberImageLoader.getAllImgs;
-import static data.numberRecognizer.NumberImageLoader.getRandomImgs;
+import static numberrecognizer.NumberImageLoader.getAllImgs;
+import static numberrecognizer.NumberImageLoader.getRandomImgs;
 
 import java.io.File;
 import java.io.FileNotFoundException;

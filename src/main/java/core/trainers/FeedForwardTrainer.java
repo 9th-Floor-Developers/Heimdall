@@ -1,9 +1,9 @@
-package trainer;
+package core.trainers;
 
-import data.base.DataPoint;
-import data.base.DataSet;
-import model.NeuralNetwork;
-import utils.DataUtils;
+import core.data.DataPoint;
+import core.data.DataSet;
+import core.neuralnetwork.NeuralNetwork;
+import core.utils.DataUtils;
 
 import java.text.DecimalFormat;
 

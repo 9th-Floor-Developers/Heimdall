@@ -1,4 +1,4 @@
-import model.data.NumberImage;
+import core.data.NumberImage;
 import static utils.NumberUtils.getRandomImgs;
 
 import java.text.DecimalFormat;

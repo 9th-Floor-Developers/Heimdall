@@ -1,8 +1,8 @@
-package trainer;
+package core.trainers;
 
-import data.base.DataSet;
+import core.data.DataSet;
 import org.jetbrains.annotations.Nullable;
-import utils.DataLogger;
+import core.utils.DataLogger;
 
 public abstract class AbstractTrainer {
     @Nullable

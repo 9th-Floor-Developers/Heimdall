@@ -1,7 +1,7 @@
-package data.numberRecognizer;
+package numberrecognizer;
 
-import exceptions.IsDirectoryException;
-import utils.DataUtils;
+import core.exceptions.IsDirectoryException;
+import core.utils.DataUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

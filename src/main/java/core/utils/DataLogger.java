@@ -1,6 +1,6 @@
-package utils;
+package core.utils;
 
-import model.NeuralNetwork;
+import core.neuralnetwork.NeuralNetwork;
 
 import java.io.*;
 

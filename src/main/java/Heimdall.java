@@ -1,12 +1,12 @@
-import data.base.DataSet;
-import data.numberRecognizer.NumberImage;
-import trainer.FeedForwardTrainer;
+import core.data.DataSet;
+import numberrecognizer.NumberImage;
+import core.trainers.FeedForwardTrainer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static data.numberRecognizer.NumberImageLoader.getAllImgs;
-import static data.numberRecognizer.NumberImageLoader.getRandomImgs;
+import static numberrecognizer.NumberImageLoader.getAllImgs;
+import static numberrecognizer.NumberImageLoader.getRandomImgs;
 
 public class Heimdall {
 	/**
@@ -19,8 +19,8 @@ public class Heimdall {
 	public static void numberTrain() throws Exception {
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
-		NumberImage[] trainingImages = getRandomImgs(allImages, 5000);
-		NumberImage[] testingImages = getRandomImgs(allImages, 400);
+		NumberImage[] trainingImages = getRandomImgs(allImages, 500);
+		NumberImage[] testingImages = getRandomImgs(allImages, 100);
 
 		DataSet dataSet = new DataSet(new ArrayList<>(Arrays.asList(trainingImages)), new ArrayList<>(Arrays.asList(testingImages)));
 
