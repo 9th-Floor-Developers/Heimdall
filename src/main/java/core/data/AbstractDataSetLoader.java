@@ -1,6 +1,7 @@
 package core.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 abstract public class AbstractDataSetLoader {
@@ -71,6 +72,8 @@ abstract public class AbstractDataSetLoader {
             throw new IllegalArgumentException("Training size and testing size must be greater than 0, " +
                     ", could be caused by the usage of size as remaining when there is no data left");
         }
+
+        Collections.shuffle(dataPoints);
 
         DataSet dataSet = new DataSet(
                 new ArrayList<>(dataPoints.subList(0, trainingSize)),

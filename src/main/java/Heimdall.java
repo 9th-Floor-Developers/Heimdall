@@ -16,8 +16,8 @@ public class Heimdall {
 	public static void numberTrain() throws Exception {
 		DataSet dataSet = NumberImageLoader.createLoader()
 				.setSrc("./src/main/resources/numbers/")
-				.setTrainingSize(20000)
-				.setTestingSizeAsRemaining()
+				.setTrainingSize(1000)
+				.setTestingSize(100)
 				.load();
 
 		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
