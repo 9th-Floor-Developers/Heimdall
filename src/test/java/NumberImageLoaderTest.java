@@ -22,14 +22,14 @@ class NumberImageLoaderTest {
 	
 	@Test
 	void getRandomImgs() throws Exception {
-		int numImages = 50, seed = 123;
+		int numImages = 50;
 		
-		NumberImage[] images = NumberImageLoader.getRandomImgs("./src/main/resources/numbers/", numImages, seed);
+		NumberImage[] images = NumberImageLoader.getRandomImgs("./src/main/resources/numbers/", numImages);
 		for (NumberImage image : images)
 			assert image != null;
 		assert images.length == numImages;
 		
-		images = NumberImageLoader.getRandomImgs(images, numImages / 2, seed);
+		images = NumberImageLoader.getRandomImgs(images, numImages / 2);
 		for (NumberImage image : images)
 			assert image != null;
 		assert images.length == numImages / 2;

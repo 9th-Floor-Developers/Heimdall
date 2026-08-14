@@ -18,14 +18,12 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	private final int[] hiddenLayerLengths;
 	private final float learningRate;
 	private final boolean showErrorRate;
-	private final int seed;
 
 
-	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int seed){
+	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate){
 		this.hiddenLayerLengths = hiddenLayerLengths;
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
-		this.seed = seed;
 	}
 
 
@@ -63,9 +61,9 @@ public class FeedForwardTrainer extends AbstractTrainer{
 
 	@Override
 	public void trainAgent(DataSet dataSet) {
-		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths), seed);
+		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths));
 
-		for (int round = 1; round <= 20000; round++) {
+		for (int round = 1; round <= 600; round++) {
 			System.out.println("=========== Round: " + round + " =============");
 
 			int score = trainAgentRound(agent, dataSet);

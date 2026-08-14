@@ -1,6 +1,7 @@
 package data.numberRecognizer;
 
 import exceptions.IsDirectoryException;
+import utils.DataUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -86,11 +87,11 @@ public class NumberImageLoader {
 	 * random images from {@code src} directory and subdirectories.
 	 * @throws Exception if directory is not found, empty, or is not a directory.
 	 */
-	public static NumberImage[] getRandomImgs(String src, int numImages, int seed) throws Exception {
+	public static NumberImage[] getRandomImgs(String src, int numImages) throws Exception {
 		NumberImage[] allImages = getAllImgs(src),
 				randomImages = new NumberImage[numImages];
 		
-		Random random = new Random(seed);
+		Random random = new Random(DataUtils.universalSeed);
 		for (int i = 0; i < numImages; i++)
 			randomImages[i] = allImages[random.nextInt(allImages.length)];
 		
@@ -107,10 +108,10 @@ public class NumberImageLoader {
 	 * @return {@link NumberImage} array representing {@code numImages}
 	 * random images from {@code allImages} array.
 	 */
-	public static NumberImage[] getRandomImgs(NumberImage[] allImages, int numImages, int seed) {
+	public static NumberImage[] getRandomImgs(NumberImage[] allImages, int numImages) {
 		NumberImage[] randomImages = new NumberImage[numImages];
 		
-		Random random = new Random(seed);
+		Random random = new Random(DataUtils.universalSeed);
 		for (int i = 0; i < numImages; i++)
 			randomImages[i] = allImages[random.nextInt(allImages.length)];
 		

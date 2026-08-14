@@ -21,18 +21,15 @@ import java.util.Random;
 public class NeuralNetwork implements Serializable {
 	private final Layer[] layers;
 	private final int[] layerLengths;
-	
-	// TODO: create alternative without seed parameter
+
 	/**
 	 * Creates a neural network and initializes all layers, neurons, and weights within
 	 *
 	 * @param layerLengths array containing number of {@link Neuron} objects in each {@link Layer},
 	 *                     {@code layerLengths.length} should be total number of layers in network.
-	 * @param seed         initial value of the internal state of the pseudorandom number generator used in
-	 *                     {@link Neuron} objects inside this network
 	 */
-	public NeuralNetwork(int[] layerLengths, int seed) {
-        Random random = new Random(seed);
+	public NeuralNetwork(int[] layerLengths) {
+        Random random = new Random(DataUtils.universalSeed);
 
 		layers = new Layer[layerLengths.length];
 		this.layerLengths = layerLengths;

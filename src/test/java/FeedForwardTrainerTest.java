@@ -26,7 +26,7 @@ class FeedForwardTrainerTest {
 	static void initTrainer() throws Exception {
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
-		NumberImage[] images = getRandomImgs(allImages, 1000, 67);
+		NumberImage[] images = getRandomImgs(allImages, 1000);
 		targets = new float[images.length][];
 		inputs = new float[images.length][];
 		outputs = new int[images.length];
@@ -46,8 +46,7 @@ class FeedForwardTrainerTest {
 				targets[0].length
 			},
 			0.01f,
-			false,
-			67
+			false
 		).addLogger();
 	}
 	

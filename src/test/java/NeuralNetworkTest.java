@@ -19,7 +19,7 @@ class NeuralNetworkTest {
 				10
 		};
 		
-		network = new NeuralNetwork(layerLengths, 123);
+		network = new NeuralNetwork(layerLengths);
 		layers = (Layer[]) TestingUtils.getPrivate(network, "layers");
 	}
 	
