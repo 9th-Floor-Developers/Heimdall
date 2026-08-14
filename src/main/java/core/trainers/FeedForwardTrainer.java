@@ -63,6 +63,9 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	public void trainAgent(DataSet dataSet) {
 		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths));
 
+		System.out.println("=========== Initial testing =============");
+		agent.testAgent(dataSet);
+
 		for (int round = 1; round <= 600; round++) {
 			System.out.println("=========== Round: " + round + " =============");
 
