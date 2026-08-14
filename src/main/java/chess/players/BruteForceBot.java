@@ -7,6 +7,7 @@ import chess.model.Move;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -32,7 +33,7 @@ public class BruteForceBot implements Player{
 
         AtomicReference<Move> bestMove = new AtomicReference<>();
         AtomicInteger bestScore = new  AtomicInteger(Integer.MIN_VALUE);
-        ArrayList<Thread> threads = new ArrayList<>();
+        List<Thread> threads = new ArrayList<>();
         Object lock = new Object();
         int inf = Integer.MAX_VALUE;
 

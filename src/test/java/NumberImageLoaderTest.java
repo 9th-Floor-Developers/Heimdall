@@ -60,7 +60,7 @@ class NumberImageLoaderTest {
 	@Test
 	void searchDir() throws Exception {
 		//noinspection unchecked
-		ArrayList<NumberImage> images = (ArrayList<NumberImage>) TestingUtils.invokePrivate(
+		List<NumberImage> images = (List<NumberImage>) TestingUtils.invokePrivate(
 				NumberImageLoader.class, "searchDir",
 				new Class[]{ File.class },
 				new File("./src/main/resources/numbers/0/")

@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 /**
  * A class containing all operations and processes relating to converting an image of a number into a {@link NumberImage}.
@@ -64,7 +64,7 @@ public class NumberImageLoader extends AbstractDataSetLoader {
 	 */
 
 	@Override
-	protected ArrayList<DataPoint> loadDataPoints(int loadLimit) throws Exception {
+	protected List<DataPoint> loadDataPoints(int loadLimit) throws Exception {
 		if (src == null)
 			throw new IllegalStateException("Source is not specified");
 
@@ -75,10 +75,10 @@ public class NumberImageLoader extends AbstractDataSetLoader {
 		else if (!dir.isDirectory())
 			throw new NotDirectoryException("Selected path is not a directory.");
 
-		ArrayList<NumberImage> numberImgs = searchDir(dir);
+		List<NumberImage> numberImgs = searchDir(dir);
 		System.out.println("\rImage Parsing Complete, for " + numberImgs.size() + " images");
 
-		return numberImgs.stream().map(n -> (DataPoint) n).collect(Collectors.toCollection(ArrayList::new));
+		return numberImgs.stream().map(n -> (DataPoint) n).toList();
 	}
 	
 	/**
@@ -119,11 +119,11 @@ public class NumberImageLoader extends AbstractDataSetLoader {
      *
 	 * @throws Exception if a problem occurs when converting image to float array
 	 */
-	private ArrayList<NumberImage> searchDir(File dir) throws Exception {
-		ArrayList<NumberImage> allImgs = new ArrayList<>();
-        ArrayList<ArrayList<NumberImage>> allSublists = new ArrayList<>();
+	private List<NumberImage> searchDir(File dir) throws Exception {
+		List<NumberImage> allImgs = new ArrayList<>();
+        List<List<NumberImage>> allSublists = new ArrayList<>();
 
-		ArrayList<Thread> threads = new ArrayList<>();
+		List<Thread> threads = new ArrayList<>();
 
 		File[] files = dir.listFiles();
 		if (files == null)
@@ -158,10 +158,10 @@ public class NumberImageLoader extends AbstractDataSetLoader {
 				continue;
 			}
 
-            ArrayList<NumberImage> newSubList = new ArrayList<>();
+            List<NumberImage> newSubList = new ArrayList<>();
 			
 			Thread thread = new Thread(() -> {
-				ArrayList<NumberImage> subDirImgs;
+				List<NumberImage> subDirImgs;
 				try {
 					subDirImgs = searchDir(file);
 				} catch (Exception e) {

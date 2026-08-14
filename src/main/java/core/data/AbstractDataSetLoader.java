@@ -1,6 +1,6 @@
 package core.data;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -40,7 +40,7 @@ abstract public class AbstractDataSetLoader {
         return setTestingSize(Integer.MAX_VALUE);
     }
 
-    abstract protected ArrayList<DataPoint> loadDataPoints(int loadLimit) throws Exception;
+    abstract protected List<DataPoint> loadDataPoints(int loadLimit) throws Exception;
 
     private Boolean usingRemainingSize(){
         return (trainingSize == Integer.MAX_VALUE || testingSize == Integer.MAX_VALUE);
@@ -55,7 +55,7 @@ abstract public class AbstractDataSetLoader {
         }
 
         loadLimit = usingRemainingSize() ? Integer.MAX_VALUE : trainingSize + testingSize;
-        ArrayList<DataPoint> dataPoints = loadDataPoints(loadLimit);
+        List<DataPoint> dataPoints = loadDataPoints(loadLimit);
 
         if (dataPoints.size() < loadLimit && !usingRemainingSize()){
             throw new IllegalStateException("There is no few datapoints, compared to the combined data requested");
@@ -76,8 +76,8 @@ abstract public class AbstractDataSetLoader {
         Collections.shuffle(dataPoints);
 
         DataSet dataSet = new DataSet(
-                new ArrayList<>(dataPoints.subList(0, trainingSize)),
-                new ArrayList<>(dataPoints.subList(trainingSize, trainingSize + testingSize)));
+                dataPoints.subList(0, trainingSize),
+                dataPoints.subList(trainingSize, trainingSize + testingSize));
 
         System.out.println("Data set being created with training size " + dataSet.getTrainingSize() + " and testing size " + dataSet.getTestingSize());
         return dataSet;

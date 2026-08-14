@@ -11,6 +11,7 @@ import chess.ui.MainWindow;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public final class GameManager {
 	public static GameManager instance;
@@ -20,7 +21,7 @@ public final class GameManager {
 	}
 
 	public static void runGameBatch(HashMap<Color, Player> players, int amount){
-		ArrayList<Color> winners = new ArrayList<>();
+		List<Color> winners = new ArrayList<>();
 
 		for (int i = 0; i < amount; i++)
 			winners.add(runGame(players));
