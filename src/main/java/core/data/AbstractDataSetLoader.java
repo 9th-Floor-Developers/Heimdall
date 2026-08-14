@@ -31,12 +31,12 @@ abstract public class AbstractDataSetLoader {
         return this;
     }
 
-    public void setTrainingSizeAsRemaining() {
-        setTrainingSize(Integer.MAX_VALUE);
+    public AbstractDataSetLoader setTrainingSizeAsRemaining() {
+        return setTrainingSize(Integer.MAX_VALUE);
     }
 
-    public void setTestingSizeAsRemaining() {
-        setTestingSize(Integer.MAX_VALUE);
+    public AbstractDataSetLoader setTestingSizeAsRemaining() {
+        return setTestingSize(Integer.MAX_VALUE);
     }
 
     abstract protected ArrayList<DataPoint> loadDataPoints(int loadLimit) throws Exception;
@@ -74,7 +74,7 @@ abstract public class AbstractDataSetLoader {
 
         DataSet dataSet = new DataSet(
                 new ArrayList<>(dataPoints.subList(0, trainingSize)),
-                new ArrayList<>(dataPoints.subList(trainingSize, testingSize)));
+                new ArrayList<>(dataPoints.subList(trainingSize, trainingSize + testingSize)));
 
         System.out.println("Data set being created with training size " + dataSet.getTrainingSize() + " and testing size " + dataSet.getTestingSize());
         return dataSet;
