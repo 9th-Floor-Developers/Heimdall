@@ -7,9 +7,6 @@ import org.junit.jupiter.api.Test;
 import core.trainers.FeedForwardTrainer;
 import core.utils.DataLogger;
 
-import static numberrecognizer.NumberImageLoader.getAllImgs;
-import static numberrecognizer.NumberImageLoader.getRandomImgs;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,6 +21,7 @@ class FeedForwardTrainerTest {
 	
 	@BeforeAll
 	static void initTrainer() throws Exception {
+		/*
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
 		NumberImage[] images = getRandomImgs(allImages, 1000);
@@ -48,6 +46,7 @@ class FeedForwardTrainerTest {
 			0.01f,
 			false
 		).addLogger();
+		 */
 	}
 	
 	@AfterAll

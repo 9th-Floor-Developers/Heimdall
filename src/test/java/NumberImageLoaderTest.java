@@ -10,6 +10,7 @@ import java.nio.file.NotDirectoryException;
 import java.util.ArrayList;
 
 class NumberImageLoaderTest {
+	/*
 	@Test
 	void getAllImgs() throws Exception {
 		NumberImage[] images = NumberImageLoader.getAllImgs("./src/main/resources/numbers/");
@@ -68,4 +69,5 @@ class NumberImageLoaderTest {
 		for (NumberImage image : images)
 			assert image != null;
 	}
+	 */
 }

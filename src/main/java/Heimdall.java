@@ -1,22 +1,28 @@
 import core.data.DataSet;
 import numberrecognizer.NumberImage;
 import core.trainers.FeedForwardTrainer;
+import numberrecognizer.NumberImageLoader;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static numberrecognizer.NumberImageLoader.getAllImgs;
-import static numberrecognizer.NumberImageLoader.getRandomImgs;
 
 public class Heimdall {
 	/**
 	 * Entry point
 	 */
 	public static void main(String[] args) throws Exception {
+		NumberImageLoader.createLoader()
+				.setSrc("./src/main/resources/numbers/")
+				.setTrainingSize(100)
+				.setTestingSize(200)
+				.load();
+
 		numberTrain();
 	}
 	
 	public static void numberTrain() throws Exception {
+		/*
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
 		NumberImage[] trainingImages = getRandomImgs(allImages, 500);
@@ -34,5 +40,7 @@ public class Heimdall {
 		).addLogger();//.loadBestAgent("./src/training-results/35");
 
 		feedForwardTrainer.trainAgent(dataSet);
+
+		 */
 	}
 }
