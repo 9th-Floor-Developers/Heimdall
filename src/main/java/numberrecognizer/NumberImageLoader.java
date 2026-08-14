@@ -141,10 +141,12 @@ public class NumberImageLoader extends AbstractDataSetLoader {
 			if (!file.isDirectory()) {  // file
 				float[][] pixels = imgToFloatArr(file);
 				NumberImage image = new NumberImage(pixels, dirValue);
-				allImgs.add(image);
-				if (loadAmount.incrementAndGet() >= loadLimit){
+
+				if (loadAmount.get() >= loadLimit){
 					return allImgs;
 				}
+				allImgs.add(image);
+				loadAmount.incrementAndGet();
 				continue;
 			}
 			
