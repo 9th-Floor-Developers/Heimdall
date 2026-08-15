@@ -50,7 +50,8 @@ public class Heimdall {
 				15,
 			},
 			5f,
-			true
+			true,
+			600
 		).addLogger();
 
 		feedForwardTrainer.trainAgent(dataSet);

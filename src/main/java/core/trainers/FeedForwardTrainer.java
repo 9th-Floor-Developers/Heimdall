@@ -19,12 +19,14 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	private final int[] hiddenLayerLengths;
 	private final float learningRate;
 	private final boolean showErrorRate;
+	private final int roundAmount;
 
 
-	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate){
+	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int roundAmount){
 		this.hiddenLayerLengths = hiddenLayerLengths;
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
+		this.roundAmount = roundAmount;
 	}
 
 
@@ -67,7 +69,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		System.out.println("=========== Initial testing =============");
 		agent.testAgent(dataSet);
 
-		for (int round = 1; round <= 600; round++) {
+		for (int round = 1; round <= roundAmount; round++) {
 			System.out.println("=========== Round: " + round + " =============");
 
 			int score = trainAgentRound(agent, dataSet);
