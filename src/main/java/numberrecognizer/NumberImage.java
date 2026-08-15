@@ -75,11 +75,6 @@ public record NumberImage(float[][] pixels,
 	}
 
 	@Override
-	public float[] getTargetValues() {
-		return toTargetValues();
-	}
-
-	@Override
 	public int getTargetResult() {
 		return value;
 	}
