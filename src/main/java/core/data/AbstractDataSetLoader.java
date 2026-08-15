@@ -1,5 +1,6 @@
 package core.data;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -55,7 +56,7 @@ abstract public class AbstractDataSetLoader {
         }
 
         loadLimit = usingRemainingSize() ? Integer.MAX_VALUE : trainingSize + testingSize;
-        List<DataPoint> dataPoints = loadDataPoints(loadLimit);
+        ArrayList<DataPoint> dataPoints = new ArrayList<>(loadDataPoints(loadLimit));
 
         if (dataPoints.size() < loadLimit && !usingRemainingSize()){
             throw new IllegalStateException("There is no few datapoints, compared to the combined data requested");
