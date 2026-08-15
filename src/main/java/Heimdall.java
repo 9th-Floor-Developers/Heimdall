@@ -1,9 +1,7 @@
-import core.data.CustomDataSetLoader;
 import core.data.DataSet;
 import core.trainers.FeedForwardTrainer;
 import numberrecognizer.NumberImageLoader;
 
-import java.util.List;
 
 
 public class Heimdall {
@@ -11,10 +9,10 @@ public class Heimdall {
 	 * Entry point
 	 */
 	public static void main(String[] args) throws Exception {
-		numberTrain();
+		trainNumberRecognizer();
 	}
 	
-	public static void numberTrain() throws Exception {
+	public static void trainNumberRecognizer() throws Exception {
 		/*
 		To create a dataset, extend the AbstractDataSetLoader class
 		AbstractDataSetLoader provides ability to adjust the dataset used in training and testing
@@ -51,7 +49,7 @@ public class Heimdall {
 				30,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
 				15,
 			},
-			5f,
+			10f,
 			true
 		).addLogger();//.loadBestAgent("./src/training-results/35");
 
