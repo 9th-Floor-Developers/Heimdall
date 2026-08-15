@@ -29,19 +29,6 @@ public record NumberImage(float[][] pixels,
 	}
 	
 	/**
-	 * Creates empty array except for actual value.
-	 * <p>
-	 * Example: {@code 2 = [0, 0, 1, 0, 0, 0, 0, 0, 0, 0]}
-	 *
-	 * @return float array with length 10, representing target value
-	 */
-	public float[] toTargetValues() {
-		float[] target = new float[10];  // 10 representing digits 0-9
-		target[value] = 1;
-		return target;
-	}
-	
-	/**
 	 * Scales image down by a specified factor,
 	 * creating an image with same contents but smaller size.
 	 *
