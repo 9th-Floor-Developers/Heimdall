@@ -49,9 +49,9 @@ public class Heimdall {
 				30,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
 				15,
 			},
-			10f,
+			5f,
 			true
-		).addLogger();//.loadBestAgent("./src/training-results/35");
+		).addLogger();
 
 		feedForwardTrainer.trainAgent(dataSet);
 	}

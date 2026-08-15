@@ -4,6 +4,8 @@ import core.data.DataSet;
 import org.jetbrains.annotations.Nullable;
 import core.utils.DataLogger;
 
+import java.io.IOException;
+
 public abstract class AbstractTrainer {
     @Nullable
     protected DataLogger logger;
@@ -11,7 +13,7 @@ public abstract class AbstractTrainer {
 
 
 
-    abstract public void trainAgent(DataSet dataSet);
+    abstract public void trainAgent(DataSet dataSet) throws IOException;
 
 
     /**

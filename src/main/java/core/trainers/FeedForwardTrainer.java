@@ -5,6 +5,7 @@ import core.data.DataSet;
 import core.neuralnetwork.NeuralNetwork;
 import core.utils.DataUtils;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 
 /**
@@ -60,7 +61,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	}
 
 	@Override
-	public void trainAgent(DataSet dataSet) {
+	public void trainAgent(DataSet dataSet) throws IOException {
 		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths));
 
 		System.out.println("=========== Initial testing =============");
@@ -76,9 +77,13 @@ public class FeedForwardTrainer extends AbstractTrainer{
 
 			System.out.println("Training: [" + score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
 
-			agent.testAgent(dataSet);
+			float testPercent = agent.testAgent(dataSet);
 
 			System.out.println("===================================");
+
+			if (logger != null){
+				logger.logRound(round, testPercent);
+			}
 		}
 	}
 }

@@ -112,7 +112,7 @@ public class NeuralNetwork implements Serializable {
 				getNeuron(i, j).applyWeightChange(learningRate);
 	}
 
-	public void testAgent(DataSet dataSet){
+	public float testAgent(DataSet dataSet){
 		int score = 0;
 
 		for (DataPoint dataPoint : dataSet.testingDataPoints()) {
@@ -133,6 +133,8 @@ public class NeuralNetwork implements Serializable {
 		String formatted = new DecimalFormat("###.##").format(percent);
 
 		System.out.println("Testing: [" + score + "/" + dataSet.getTestingSize() + "] (" + formatted + "%)");
+
+		return percent;
 	}
 	
 	// region Getters/Setters

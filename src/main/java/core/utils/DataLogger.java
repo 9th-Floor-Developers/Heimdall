@@ -7,7 +7,7 @@ import java.io.*;
 /**
  * Data Utility Class, contains several data management saving utility classes.
  *
- * @see #log(int, float, int, String)
+ * @see #logRound(int, float)
  * @see #saveAgent(NeuralNetwork, String)
  * @see #loadAgent(String)
  */
@@ -20,7 +20,7 @@ public class DataLogger {
 	 *
 	 * @param path folder path to store data in;
 	 *             child folders will be made for better organization
-	 * @see #log(int, float, int, String)
+	 * @see #logRound(int, float)
 	 * @see #saveAgent(NeuralNetwork, String)
 	 * @see #loadAgent(String)
 	 */
@@ -32,7 +32,7 @@ public class DataLogger {
 	/**
 	 * Initializes data logging, to {@code selectedFolder/subFolder/training-data.csv}.
 	 * <p>
-	 * {@link #log(int, float, int, String)} can now be called to log training data.
+	 * {@link #logRound(int, float)} can now be called to log training data.
 	 *
 	 * @throws IOException            if file writer error occurs
 	 * @throws InstantiationException if error occurs when creating subfolder
@@ -69,19 +69,16 @@ public class DataLogger {
 	/**
 	 * Logs a generation's data to {@code selectedFolder/subFolder/training-data.csv}.
 	 *
-	 * @param generationNum generation index
-	 * @param score         number of images network correctly identified
-	 * @param inputsLength  total number of input images in inputs
-	 * @param formatted     percent of images guessed correctly in {@link String} format
+	 * @param roundNum generation index
 	 * @throws IOException if file writing error occurs
 	 */
-	public void log(int generationNum, float score, int inputsLength, String formatted) throws IOException {
+	public void logRound(int roundNum, float scorePercent) throws IOException {
 		if (data == null)
 			throw new NullPointerException("Logger Has Not Been Initialized," +
                                                    "put DataLogger.initLogger(), before DataLogger.log(...).");
 		
 		FileWriter writer = new FileWriter(data, true);
-		writer.write(generationNum + "," + score + "," + inputsLength + "," + formatted + "\n");
+		writer.write(roundNum + "," + scorePercent);
 		writer.close();
 	}
 	
