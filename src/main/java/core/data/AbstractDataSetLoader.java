@@ -25,7 +25,7 @@ abstract public class AbstractDataSetLoader {
             throw new IllegalArgumentException("Random training size must be greater than 0");
         }
         if (randomTrainingSize > allTrainingSize){
-            throw new IllegalArgumentException("Training size must be set, Random training size must be less than training size");
+            throw new IllegalArgumentException("Training size must be set before random training Size and Random training size must be less than training size");
         }
         this.randomTrainingSize = randomTrainingSize;
         return this;
