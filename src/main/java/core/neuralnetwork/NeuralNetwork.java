@@ -27,6 +27,8 @@ public class NeuralNetwork implements Serializable {
 	 *
 	 * @param layerLengths array containing number of {@link Neuron} objects in each {@link Layer},
 	 *                     {@code layerLengths.length} should be total number of layers in network.
+	 * @param seed         initial value of the internal state of the pseudorandom number generator used in
+	 *                     {@link Neuron} objects inside this network
 	 */
 	public NeuralNetwork(int[] layerLengths) {
         Random random = new Random(DataUtils.universalSeed);
@@ -62,17 +64,37 @@ public class NeuralNetwork implements Serializable {
 				}
 
 				neuron.calcValue(layers[i - 1]);
-				if (i == layers.length - 1)
-					outputs[j] = neuron.getValue();
+			}
+
+			if (i == outputLayerIdx) {
+				if (focusOutputs){
+					focusOutputs(neurons);
+				}
+
+				for (int j = 0; j < neurons.length; j++) {
+					outputs[j] = neurons[j].getValue();
+				}
 			}
 		}
 		
 		return outputs;
 	}
 
+	public void focusOutputs(Neuron[] outputNeurons){
+		Neuron maxNeron = Arrays.stream(outputNeurons).max(Comparator.comparingDouble(Neuron::getValue)).orElseThrow();
+		for (Neuron outputNeron: outputNeurons){
+            if (outputNeron == maxNeron) {
+                outputNeron.setValue(1);
+            }
+			else {
+                outputNeron.setValue(0);
+            }
+        }
+	}
+
 	/**
 	 * Apply back propagation process to neural network.
-	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[])} needs to be run first
+	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[], boolean)} needs to be run first
 	 *
 	 * @param target desired output values
 	 * @see Layer
@@ -136,7 +158,7 @@ public class NeuralNetwork implements Serializable {
 
 		return percent;
 	}
-	
+
 	// region Getters/Setters
 	public Layer[] getLayers() {
 		return layers;
