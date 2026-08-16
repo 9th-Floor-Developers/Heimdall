@@ -1,54 +1,60 @@
-import data.base.DataPoint;
-import data.base.DataSet;
-import data.custom.NumberImage;
-import trainer.FeedForwardTrainer;
+import core.data.DataSet;
+import core.trainers.FeedForwardTrainer;
+import numberrecognizer.NumberImageLoader;
 
-import java.util.ArrayList;
-import java.util.List;
 
-import static utils.NumberUtils.getAllImgs;
-import static utils.NumberUtils.getRandomImgs;
 
 public class Heimdall {
 	/**
 	 * Entry point
 	 */
 	public static void main(String[] args) throws Exception {
-		numberTrain();
+		trainNumberRecognizer();
 	}
-	
-	public static void numberTrain() throws Exception {
-		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
-		
-		NumberImage[] images = getRandomImgs(allImages, 20000, 123);
 
-		ArrayList<DataPoint> dataPoints = new ArrayList<>();
-		
-		for (NumberImage image : images) {
-			dataPoints.add(image.getDataPoint());
-		}
-		DataSet dataSet = new DataSet(dataPoints);
+	public static void trainNumberRecognizer() throws Exception {
+		/*
+		To create a dataset, extend the AbstractDataSetLoader class
+		AbstractDataSetLoader provides ability to adjust the dataset used in training and testing
+
+		Here is an example using NumberImageLoader a loader from our number recognizer library:
+		 */
+		DataSet dataSet = NumberImageLoader.createLoader()
+				.setSrc("./src/main/resources/numbers/")
+				.setTrainingSize(10000)
+				.setTestingSize(500)
+				.load();
+		/*
+		Alternate example
+		Loads 20K training data point and use remaining for testing:
+
+		DataSet dataSet = NumberImageLoader.createLoader()
+				.setSrc("./src/main/resources/numbers/")
+				.setTrainingSize(20000)
+				.setTestingSizeAsRemaining()
+				.load();
+
+		Quick way to create a new dataset:
+
+		DataSet dataSet = CustomDataSetLoader.loadFromList(List.of(...))
+				.setTrainingSize(100)
+				.setTestingSize(50)
+				.load();
+		 */
+
 
 		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
-			// number of agents per round, more possibilities to evolve
-			new int[] {  // layers format
-				dataSet.getInputLength(),  // input layer - must match input count
-				100,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
-				dataSet.getOutputLength()  // output layer - number of possible answers (0.0-1.0 inclusive)
-			},
-				0.00003f,
+				// number of agents per round, more possibilities to evolve
+				new int[] {  // layers format
+						30,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
+						15,
+				},
+				5f,
 				true,
-				true,
-			69
-		).addLogger();//.loadBestAgent("./src/training-results/35");
+				600,
+				false
+		).addLogger();
 
 		feedForwardTrainer.trainAgent(dataSet);
-
-		//.loadBestAgent("./src/training-results/35");
-		/*
-		System.out.println("Best Score: " + feedForwardTrainer.getBestScore());
-		
-		trainer.saveAgent("agent");
-		 */
 	}
 }

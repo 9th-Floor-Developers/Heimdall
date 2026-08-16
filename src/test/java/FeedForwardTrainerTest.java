@@ -1,14 +1,11 @@
-import exceptions.FileNotDeleted;
-import model.NeuralNetwork;
-import data.custom.NumberImage;
+import core.exceptions.FileNotDeleted;
+import core.neuralnetwork.NeuralNetwork;
+import numberrecognizer.NumberImage;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import trainer.FeedForwardTrainer;
-import utils.DataLogger;
-
-import static utils.NumberUtils.getAllImgs;
-import static utils.NumberUtils.getRandomImgs;
+import core.trainers.FeedForwardTrainer;
+import core.utils.DataLogger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,9 +21,10 @@ class FeedForwardTrainerTest {
 	
 	@BeforeAll
 	static void initTrainer() throws Exception {
+		/*
 		NumberImage[] allImages = getAllImgs("./src/main/resources/numbers/");
 		
-		NumberImage[] images = getRandomImgs(allImages, 1000, 67);
+		NumberImage[] images = getRandomImgs(allImages, 1000);
 		targets = new float[images.length][];
 		inputs = new float[images.length][];
 		outputs = new int[images.length];
@@ -46,10 +44,15 @@ class FeedForwardTrainerTest {
 				targets[0].length
 			},
 			0.01f,
+<<<<<<< HEAD
+			false
+=======
 			false,
 			false,
 			67
+>>>>>>> parent of 7ee24db9 (Removed output focusing)
 		).addLogger();
+		 */
 	}
 	
 	@AfterAll

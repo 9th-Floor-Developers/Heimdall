@@ -20,15 +20,16 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	private final float learningRate;
 	private final boolean showErrorRate;
 	private final int roundAmount;
+	private final boolean focusOutput;
 
 
-	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int roundAmount){
+	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int roundAmount, boolean focusOutput){
 		this.hiddenLayerLengths = hiddenLayerLengths;
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
 		this.roundAmount = roundAmount;
+		this.focusOutput = focusOutput;
 	}
-
 
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
@@ -38,7 +39,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		float errorSum = 0;
 		
 		for (DataPoint dataPoint : dataSet.trainingDataPoints()) {
-			float[] calcOutputs = agent.calcOutputs(dataPoint.getInputs());
+			float[] calcOutputs = agent.calcOutputs(dataPoint.getInputs(), focusOutput);
 			
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {
@@ -67,7 +68,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths));
 
 		System.out.println("=========== Initial testing =============");
-		agent.testAgent(dataSet);
+		agent.testAgent(dataSet, focusOutput);
 
 		for (int round = 1; round <= roundAmount; round++) {
 			System.out.println("=========== Round: " + round + " =============");
@@ -79,7 +80,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 
 			System.out.println("Training: [" + score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
 
-			float testPercent = agent.testAgent(dataSet);
+			float testPercent = agent.testAgent(dataSet, focusOutput);
 
 			System.out.println("===================================");
 

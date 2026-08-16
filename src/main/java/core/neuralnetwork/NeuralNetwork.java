@@ -7,6 +7,8 @@ import core.utils.DataUtils;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 /**
@@ -26,9 +28,7 @@ public class NeuralNetwork implements Serializable {
 	 * Creates a neural network and initializes all layers, neurons, and weights within
 	 *
 	 * @param layerLengths array containing number of {@link Neuron} objects in each {@link Layer},
-	 *                     {@code layerLengths.length} should be total number of layers in network.
-	 * @param seed         initial value of the internal state of the pseudorandom number generator used in
-	 *                     {@link Neuron} objects inside this network
+	 *                     {@code layerLengths.length} should be total number of layers in network.k
 	 */
 	public NeuralNetwork(int[] layerLengths) {
         Random random = new Random(DataUtils.universalSeed);
@@ -50,7 +50,7 @@ public class NeuralNetwork implements Serializable {
 	 * @see Layer
 	 * @see Neuron
 	 */
-	public float[] calcOutputs(float[] inputs) {
+	public float[] calcOutputs(float[] inputs, boolean focusOutputs) {
 		int outputLayerIdx = layers.length - 1;
 		float[] outputs = new float[layers[outputLayerIdx].getNumNeurons()];
 		
@@ -134,11 +134,11 @@ public class NeuralNetwork implements Serializable {
 				getNeuron(i, j).applyWeightChange(learningRate);
 	}
 
-	public float testAgent(DataSet dataSet){
+	public float testAgent(DataSet dataSet, boolean focusOutputs){
 		int score = 0;
 
 		for (DataPoint dataPoint : dataSet.testingDataPoints()) {
-			float[] calcOutputs = calcOutputs(dataPoint.getInputs());
+			float[] calcOutputs = calcOutputs(dataPoint.getInputs(), focusOutputs);
 
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {
