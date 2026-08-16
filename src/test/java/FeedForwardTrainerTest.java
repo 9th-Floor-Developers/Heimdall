@@ -101,8 +101,6 @@ class FeedForwardTrainerTest {
 		
 		//noinspection DataFlowIssue
 		assert resultsDirectory.listFiles().length == length + 1;
-		
-		feedForwardTrainer.saveAgent("testAgent.ser");
 		counter++;
 		assert DataLogger.loadAgent("./src/training-results/" + (length + 1) + "/testAgent.ser") != null;
 	}
