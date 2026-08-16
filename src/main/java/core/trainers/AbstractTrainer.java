@@ -9,9 +9,15 @@ import java.io.IOException;
 public abstract class AbstractTrainer {
     @Nullable
     protected DataLogger logger;
+    protected int printPerRoundAmount = 1;
 
-
-
+    public AbstractTrainer setPrintPerRoundAmount(int printPerRoundAmount) {
+        if (printPerRoundAmount < 1){
+            throw new IllegalArgumentException("Print per round amount must be 1 or greater");
+        }
+        this.printPerRoundAmount = printPerRoundAmount;
+        return this;
+    }
 
     abstract public void trainAgent(DataSet dataSet) throws IOException;
 
@@ -27,16 +33,5 @@ public abstract class AbstractTrainer {
         logger.initLogger();
 
         return this;
-    }
-
-    /**
-     * Saves an agent to a serialized object.
-     * <p>
-     * Agent can be loaded using {@link DataLogger#loadAgent(String)}.
-     *
-     * @param agentName name of serialized agent file
-     */
-    public void saveAgent(String agentName){
-
     }
 }

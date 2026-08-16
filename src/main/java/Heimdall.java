@@ -46,16 +46,17 @@ public class Heimdall {
 		dataSet.printSize(); //Method just to double-check that the size is correct
 
 		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
-				// number of agents per round, more possibilities to evolve
-				new int[] {  // layers format
-						30,  // hidden layer - number of middle layer nodes, more opportunities per agent to learn
-						15,
+				new int[] {
+					30,  //Hidden layer lengths - how deep can the agent think, for higher
+					15,
 				},
 				5f,
 				true,
-				600,
+				100,
 				false
-		).addLogger();
+		)
+		.addLogger() //Logs the result of every training round on to a file
+		.setPrintPerRoundAmount(5); //Will print out the training results for every X round
 
 		feedForwardTrainer.trainAgent(dataSet);
 	}

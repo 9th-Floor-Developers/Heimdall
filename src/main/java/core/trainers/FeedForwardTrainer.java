@@ -34,7 +34,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
 	 */
-	private int trainAgentRound(NeuralNetwork agent, DataSet dataSet) {
+	private int trainAgentRound(NeuralNetwork agent, DataSet dataSet, boolean isPrinted) {
 		int score = 0;
 		float errorSum = 0;
 		
@@ -56,7 +56,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		agent.applyWeightsChange(learningRate / dataSet.getTrainingSize());
 
 		//System.out.println("MSE | " + Arrays.toString(MSE));
-		if (showErrorRate){
+		if (showErrorRate && isPrinted){
 			System.out.println("Error rate " + errorSum / dataSet.getTrainingSize());
 		}
 		
@@ -71,21 +71,25 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		agent.testAgent(dataSet, focusOutput);
 
 		for (int round = 1; round <= roundAmount; round++) {
-			System.out.println("=========== Round: " + round + " =============");
+			if (round % printPerRoundAmount == 0) {
+				System.out.println("=========== Round: " + round + " =============");
+			}
 
-			int score = trainAgentRound(agent, dataSet);
+			int score = trainAgentRound(agent, dataSet, round % printPerRoundAmount == 0);
 
-			float percent = (float) score / dataSet.getTrainingSize() * 100;
-			String formatted = new DecimalFormat("###.##").format(percent);
+			if (round % printPerRoundAmount == 0){
+				float percent = (float) score / dataSet.getTrainingSize() * 100;
+				String formatted = new DecimalFormat("###.##").format(percent);
 
-			System.out.println("Training: [" + score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
+				System.out.println("Training: [" + score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
 
-			float testPercent = agent.testAgent(dataSet, focusOutput);
+				float testPercent = agent.testAgent(dataSet, focusOutput);
 
-			System.out.println("===================================");
+				System.out.println("===================================");
 
-			if (logger != null){
-				logger.logRound(round, testPercent);
+				if (logger != null){
+					logger.logRound(round, testPercent);
+				}
 			}
 		}
 	}
