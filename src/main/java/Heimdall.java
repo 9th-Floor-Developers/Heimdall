@@ -21,7 +21,7 @@ public class Heimdall {
 		 */
 		DataSet dataSet = NumberImageLoader.createLoader()
 				.setSrc("./src/main/resources/numbers/")
-				.setTrainingSize(10000)
+				.setAllTrainingSize(10000)
 				.setTestingSize(500)
 				.load();
 		/*
