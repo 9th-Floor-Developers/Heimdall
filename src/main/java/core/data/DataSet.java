@@ -3,7 +3,19 @@ package core.data;
 
 import java.util.List;
 
-public record DataSet(List<DataPoint> trainingDataPoints, List<DataPoint> testingDataPoints) {
+public record DataSet(List<DataPoint> trainingDataPoints, List<DataPoint> testingDataPoints, int randomTrainingSize) {
+    public DataSet(List<DataPoint> trainingDataPoints, List<DataPoint> testingDataPoints){
+        this(trainingDataPoints, testingDataPoints, -1);
+    }
+
+    public void printSize(){
+        String message = "Data set being created with training size " + getTrainingSize() + " and testing size " + getTestingSize();
+        if (randomTrainingSize != -1){
+            message += "\n random training size " + randomTrainingSize;
+        }
+        System.out.println(message);
+    }
+
     public int getTrainingSize(){
         return trainingDataPoints().size();
     }

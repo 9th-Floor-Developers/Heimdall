@@ -9,6 +9,7 @@ abstract public class AbstractDataSetLoader {
     //TODO ADD DOCSTRINGS
     private int trainingSize = -1;
     private int testingSize = -1;
+    private int randomTrainingSize =  -1;
     protected int loadLimit;
     protected String src = null;
 
@@ -19,6 +20,18 @@ abstract public class AbstractDataSetLoader {
         this.trainingSize = trainingSize;
         return this;
     }
+
+    public AbstractDataSetLoader setRandomTrainingSize(int randomTrainingSize) {
+        if (randomTrainingSize <= 0){
+            throw new IllegalArgumentException("Random training size must be greater than 0");
+        }
+        if (randomTrainingSize > trainingSize){
+            throw new IllegalArgumentException("Training size must be set, Random training size must be less than training size");
+        }
+        this.randomTrainingSize = randomTrainingSize;
+        return this;
+    }
+
 
     public AbstractDataSetLoader setTestingSize(int testingSize) {
         if (testingSize <= 0){
@@ -76,11 +89,9 @@ abstract public class AbstractDataSetLoader {
 
         Collections.shuffle(dataPoints);
 
-        DataSet dataSet = new DataSet(
+        return new DataSet(
                 dataPoints.subList(0, trainingSize),
-                dataPoints.subList(trainingSize, trainingSize + testingSize));
-
-        System.out.println("Data set being created with training size " + dataSet.getTrainingSize() + " and testing size " + dataSet.getTestingSize());
-        return dataSet;
+                dataPoints.subList(trainingSize, trainingSize + testingSize),
+                randomTrainingSize);
     }
 }
