@@ -1,6 +1,8 @@
 package core.data;
 
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public record DataSet(List<DataPoint> allTrainingDataPoints, List<DataPoint> testingDataPoints, int randomTrainingSize) {
@@ -9,15 +11,32 @@ public record DataSet(List<DataPoint> allTrainingDataPoints, List<DataPoint> tes
     }
 
     public void printSize(){
-        String message = "Data set being created with all training size " + getAllTrainingSize() + " and testing size " + getTestingSize();
+        String message = "Data set being created with training size " + getTrainingSize() + " and testing size " + getTestingSize();
         if (randomTrainingSize != -1){
-            message += "\n random training size " + randomTrainingSize;
+            message += "\n from all training size " + allTrainingDataPoints.size();
         }
         System.out.println(message);
     }
 
-    public int getAllTrainingSize(){
-        return allTrainingDataPoints().size();
+    public int getTrainingSize(){
+        if (randomTrainingSize == -1){
+            return allTrainingDataPoints.size();
+        }
+        else {
+           return randomTrainingSize;
+        }
+    }
+
+    public List<DataPoint> getTrainingDataPoints(){
+        if (randomTrainingSize == -1){
+            return allTrainingDataPoints;
+        }
+        else {
+            ArrayList<DataPoint> newList = new ArrayList<>(allTrainingDataPoints);
+            Collections.shuffle(newList);
+
+            return newList.subList(0, randomTrainingSize);
+        }
     }
 
     public int getTestingSize(){

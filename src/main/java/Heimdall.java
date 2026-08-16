@@ -22,6 +22,7 @@ public class Heimdall {
 		DataSet dataSet = NumberImageLoader.createLoader()
 				.setSrc("./src/main/resources/numbers/")
 				.setAllTrainingSize(10000)
+				.setRandomTrainingSize(5)
 				.setTestingSize(500)
 				.load();
 		/*
@@ -41,7 +42,7 @@ public class Heimdall {
 				.setTestingSize(50)
 				.load();
 		 */
-
+		dataSet.printSize(); //Method just to double-check that the size is correct
 
 		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
 				// number of agents per round, more possibilities to evolve
