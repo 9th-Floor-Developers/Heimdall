@@ -5,17 +5,31 @@ import org.jetbrains.annotations.Nullable;
 import core.utils.DataLogger;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class AbstractTrainer {
     @Nullable
     protected DataLogger logger;
     protected int printPerRoundAmount = 1;
+    protected int testPerRoundAmount = 1;
+
+
 
     public AbstractTrainer setPrintPerRoundAmount(int printPerRoundAmount) {
         if (printPerRoundAmount < 1){
             throw new IllegalArgumentException("Print per round amount must be 1 or greater");
         }
         this.printPerRoundAmount = printPerRoundAmount;
+        return this;
+    }
+
+
+    public AbstractTrainer setTestPerRoundAmount(int testPerRoundAmount) {
+        if (testPerRoundAmount < 1){
+            throw new IllegalArgumentException("Test per round amount must be 1 or greater");
+        }
+        this.testPerRoundAmount = testPerRoundAmount;
         return this;
     }
 
