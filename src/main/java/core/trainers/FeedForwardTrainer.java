@@ -6,6 +6,7 @@ import core.neuralnetwork.NeuralNetwork;
 import core.utils.DataUtils;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 
 /**
  * A class representing a trainer object that contains an array of agents
@@ -33,9 +34,9 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
 	 */
-	private TrainingRoundResult trainAgentRound(DataSet dataSet, NeuralNetwork agent, int round) {
+	private int trainAgentRound(NeuralNetwork agent, DataSet dataSet, boolean isPrinted) {
 		int score = 0;
-		float errorSum = showErrorRate ? 0 : -1;
+		float errorSum = 0;
 		
 		for (DataPoint dataPoint : dataSet.getTrainingDataPoints()) {
 			float[] calcOutputs = agent.calcOutputs(dataPoint.getInputs(), focusOutput);
@@ -50,20 +51,16 @@ public class FeedForwardTrainer extends AbstractTrainer{
 			if (maxIndex == dataPoint.getTargetResult())
 				score++;
 
-			if (showErrorRate){
-				errorSum += DataUtils.getAverage(agent.backProp(dataPoint.getTargetValues()));
-			}
+			errorSum += DataUtils.getAverage(agent.backProp(dataPoint.getTargetValues()));
 		}
 		agent.applyWeightsChange(learningRate / dataSet.getTrainingSize());
 
-		float testScoreFactor = agent.testAgent(dataSet, focusOutput);
+		//System.out.println("MSE | " + Arrays.toString(MSE));
+		if (showErrorRate && isPrinted){
+			System.out.println("Error rate " + errorSum / dataSet.getTrainingSize());
+		}
 		
-		return new TrainingRoundResult(
-			round,
-			(float) score / dataSet.getTrainingSize(),
-			testScoreFactor,
-	errorSum / dataSet.getTrainingSize()
-		);
+		return score;
 	}
 
 	@Override
@@ -74,14 +71,26 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		agent.testAgent(dataSet, focusOutput);
 
 		for (int round = 1; round <= roundAmount; round++) {
-			TrainingRoundResult trainingRoundResult = trainAgentRound(dataSet, agent, round);
-			trainingRoundResults.add(trainingRoundResult);
-
-			if (logger != null){
-				logger.logRound(round, trainingRoundResult.trainingScorePercent());
+			if (round % printPerRoundAmount == 0) {
+				System.out.println("=========== Round: " + round + " =============");
 			}
 
-			printTrainingResults(round);
+			int score = trainAgentRound(agent, dataSet, round % printPerRoundAmount == 0);
+
+			if (round % printPerRoundAmount == 0){
+				float percent = (float) score / dataSet.getTrainingSize() * 100;
+				String formatted = new DecimalFormat("###.##").format(percent);
+
+				System.out.println("Training: [" + score + "/" + dataSet.getTrainingSize() + "] (" + formatted + "%)");
+
+				float testPercent = agent.testAgent(dataSet, focusOutput);
+
+				System.out.println("===================================");
+
+				if (logger != null){
+					logger.logRound(round, testPercent);
+				}
+			}
 		}
 	}
 }
