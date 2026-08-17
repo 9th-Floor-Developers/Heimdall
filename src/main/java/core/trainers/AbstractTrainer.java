@@ -14,7 +14,7 @@ public abstract class AbstractTrainer {
     protected int printPerRoundAmount = 1;
     protected int testPerRoundAmount = 1;
 
-
+    protected List<TrainingRoundResult> trainingRoundResults = new ArrayList<>();
 
     public AbstractTrainer setPrintPerRoundAmount(int printPerRoundAmount) {
         if (printPerRoundAmount < 1){
@@ -47,5 +47,12 @@ public abstract class AbstractTrainer {
         logger.initLogger();
 
         return this;
+    }
+
+
+    public void printTrainingResults(int round){
+        if (printPerRoundAmount == 1){
+            trainingRoundResults.getLast().print();
+        }
     }
 }
