@@ -56,7 +56,11 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		}
 		agent.applyWeightsChange(learningRate / dataSet.getTrainingSize());
 
-		float testScoreFactor = agent.testAgent(dataSet, focusOutput);
+
+		float testScoreFactor = -1;
+		if (round % testPerRoundAmount == 0){
+			testScoreFactor = agent.testAgent(dataSet, focusOutput);
+		}
 		
 		return new TrainingRoundResult(
 			round,

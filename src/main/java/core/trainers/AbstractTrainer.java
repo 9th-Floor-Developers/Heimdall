@@ -29,6 +29,9 @@ public abstract class AbstractTrainer {
         if (testPerRoundAmount < 1){
             throw new IllegalArgumentException("Test per round amount must be 1 or greater");
         }
+        if (testPerRoundAmount > printPerRoundAmount){
+            throw new IllegalArgumentException("Test per round must be less or equal to print per round, to make sure it is tested every time it prints");
+        }
         this.testPerRoundAmount = testPerRoundAmount;
         return this;
     }

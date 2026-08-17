@@ -17,7 +17,7 @@ public record TrainingRoundResult(int round, float trainingScorePercent, float t
 
     public void printMultiple(List<TrainingRoundResult> trainingRoundResults){
         Float[] trainingScores = trainingRoundResults.stream().map(n -> n.trainingScorePercent).toList().toArray(new Float[0]);
-        Float[] testingScores = trainingRoundResults.stream().map(n -> n.testingScorePercent).toList().toArray(new Float[0]);
+        Float[] testingScores = trainingRoundResults.stream().map(n -> n.testingScorePercent).filter(n -> n != -1).toList().toArray(new Float[0]);
         Float[] errorRates = trainingRoundResults.stream().map(n -> n.errorSum).toList().toArray(new Float[0]);
 
 
