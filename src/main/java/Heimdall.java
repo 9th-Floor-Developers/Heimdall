@@ -56,7 +56,7 @@ public class Heimdall {
 				false
 		)
 		.addLogger() //Logs the result of every training round on to a file
-		.setPrintPerRoundAmount(1); //Will print out the training results for every X round
+		.setPrintPerRoundAmount(5); //Will print out the training results for every X round
 
 		feedForwardTrainer.trainAgent(dataSet);
 	}

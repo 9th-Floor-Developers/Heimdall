@@ -70,7 +70,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 	public void trainAgent(DataSet dataSet) throws IOException {
 		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths));
 
-		System.out.println("=========== Initial testing =============");
+		//System.out.println("=========== Initial testing =============");
 		agent.testAgent(dataSet, focusOutput);
 
 		for (int round = 1; round <= roundAmount; round++) {

@@ -54,5 +54,9 @@ public abstract class AbstractTrainer {
         if (printPerRoundAmount == 1){
             trainingRoundResults.getLast().print();
         }
+        else if (round % printPerRoundAmount == 0){
+            List<TrainingRoundResult> section = trainingRoundResults.subList(trainingRoundResults.size() - printPerRoundAmount, trainingRoundResults.size());
+            trainingRoundResults.getLast().printMultiple(section);
+        }
     }
 }
