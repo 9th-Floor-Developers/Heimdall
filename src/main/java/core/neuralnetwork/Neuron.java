@@ -36,7 +36,6 @@ public class Neuron implements Serializable {
 	 * Initialize all weights and bias with random float between -1 and 1.
 	 *
 	 * @param random An instance of random, to keep neural network constants
-     *
 	 * @see Random#Random(long)
 	 */
 	public Neuron initWeights(Random random) {
@@ -141,6 +140,14 @@ public class Neuron implements Serializable {
 		return weights;
 	}
 	
+	public void setWeights(float[] weights) {
+		if (weights.length != this.weights.length)
+			throw new RuntimeException("Length of weights parameter does not match number of weights: " +
+					weights.length + " != " + this.weights.length);
+		
+		this.weights = weights;
+	}
+	
 	public int getNumWeights() {
 		return weights.length;
 	}
@@ -149,18 +156,9 @@ public class Neuron implements Serializable {
 		weights[idx] = weight;
 	}
 	
-	public void setWeights(float[] weights) {
-		if (weights.length != this.weights.length)
-			throw new RuntimeException("Length of weights parameter does not match number of weights: " +
-                                               weights.length + " != " + this.weights.length);
-		
-		this.weights = weights;
-	}
-	
 	public void addWeight(int index, float value) {
 		weights[index] += value;
 	}
-	
 	
 	public float getValue() {
 		return value;
@@ -174,7 +172,6 @@ public class Neuron implements Serializable {
 		this.value += value;
 	}
 	
-	
 	public float getBias() {
 		return bias;
 	}
@@ -186,7 +183,6 @@ public class Neuron implements Serializable {
 	public void addBias(float bias) {
 		this.bias += bias;
 	}
-	
 	
 	public float getError() {
 		return error;

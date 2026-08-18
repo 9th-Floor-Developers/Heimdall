@@ -3,7 +3,6 @@ import core.trainers.FeedForwardTrainer;
 import numberrecognizer.NumberImageLoader;
 
 
-
 public class Heimdall {
 	/**
 	 * Entry point
@@ -11,7 +10,7 @@ public class Heimdall {
 	public static void main(String[] args) throws Exception {
 		trainNumberRecognizer();
 	}
-
+	
 	public static void trainNumberRecognizer() throws Exception {
 		/*
 		To create a dataset, extend the AbstractDataSetLoader class
@@ -44,21 +43,21 @@ public class Heimdall {
 				.load();
 		 */
 		dataSet.printSize(); //Method just to double-check that the size is correct
-
+		
 		FeedForwardTrainer feedForwardTrainer = (FeedForwardTrainer) new FeedForwardTrainer(
 				new int[] {
-					30,  //Hidden layer lengths - how deep can the agent think, for higher
-					15,
+						30,  //Hidden layer lengths - how deep can the agent think, for higher
+						15,
 				},
 				5f,
 				true,
 				100,
 				false
 		)
-		.addLogger() //Logs the result of every training round on to a file
-		.setPrintPerRoundAmount(10) //Will print out the training results for every X round
-		.setTestPerRoundAmount(5); //Will test every X round, this is done to save performance
-
+				.addLogger() //Logs the result of every training round on to a file
+				.setPrintPerRoundAmount(10) //Will print out the training results for every X round
+				.setTestPerRoundAmount(5); //Will test every X round, this is done to save performance
+		
 		feedForwardTrainer.trainAgent(dataSet);
 	}
 }

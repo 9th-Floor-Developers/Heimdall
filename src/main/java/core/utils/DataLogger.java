@@ -30,6 +30,25 @@ public class DataLogger {
 	}
 	
 	/**
+	 * Loads an agent from a serialized file, {@code folder/agent.ser}.
+	 * <p>
+	 * Objects can be serialized to a file using {@link #saveAgent(NeuralNetwork, String)}.
+	 *
+	 * @param folder path of folder that serialized agent object is located in
+	 * @return {@link NeuralNetwork} object loaded from a serialized function
+	 */
+	public static NeuralNetwork loadAgent(String folder) {
+		try (FileInputStream fileIn = new FileInputStream(folder);
+		     ObjectInputStream in = new ObjectInputStream(fileIn)) {
+			NeuralNetwork agent = (NeuralNetwork) in.readObject();
+			System.out.println("Agent Loaded Successfully");
+			return agent;
+		} catch (IOException | ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	/**
 	 * Initializes data logging, to {@code selectedFolder/subFolder/training-data.csv}.
 	 * <p>
 	 * {@link #logRound(int, float)} can now be called to log training data.
@@ -75,7 +94,7 @@ public class DataLogger {
 	public void logRound(int roundNum, float scorePercent) throws IOException {
 		if (data == null)
 			throw new NullPointerException("Logger Has Not Been Initialized," +
-                                                   "put DataLogger.initLogger(), before DataLogger.log(...).");
+					"put DataLogger.initLogger(), before DataLogger.log(...).");
 		
 		FileWriter writer = new FileWriter(data, true);
 		writer.write(roundNum + "," + scorePercent);
@@ -93,28 +112,10 @@ public class DataLogger {
 	public void saveAgent(NeuralNetwork agent, String fileName) {
 		try (FileOutputStream fileOut = new FileOutputStream(path + "/" + fileName);
 		     ObjectOutputStream out = new ObjectOutputStream(fileOut)) {
+			
 			out.writeObject(agent);
 			System.out.println("Agent Saved Successfully...");
 		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	/**
-	 * Loads an agent from a serialized file, {@code folder/agent.ser}.
-	 * <p>
-	 * Objects can be serialized to a file using {@link #saveAgent(NeuralNetwork, String)}.
-	 *
-	 * @param folder path of folder that serialized agent object is located in
-	 * @return {@link NeuralNetwork} object loaded from a serialized function
-	 */
-	public static NeuralNetwork loadAgent(String folder) {
-		try (FileInputStream fileIn = new FileInputStream(folder);
-		     ObjectInputStream in = new ObjectInputStream(fileIn)) {
-			NeuralNetwork agent = (NeuralNetwork) in.readObject();
-			System.out.println("Agent Loaded Successfully");
-			return agent;
-		} catch (IOException | ClassNotFoundException e) {
 			throw new RuntimeException(e);
 		}
 	}

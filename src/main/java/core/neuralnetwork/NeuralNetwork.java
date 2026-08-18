@@ -6,7 +6,6 @@ import core.utils.DataLogger;
 import core.utils.DataUtils;
 
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
@@ -23,7 +22,7 @@ import java.util.Random;
 public class NeuralNetwork implements Serializable {
 	private final Layer[] layers;
 	private final int[] layerLengths;
-
+	
 	/**
 	 * Creates a neural network and initializes all layers, neurons, and weights within
 	 *
@@ -31,8 +30,8 @@ public class NeuralNetwork implements Serializable {
 	 *                     {@code layerLengths.length} should be total number of layers in network.k
 	 */
 	public NeuralNetwork(int[] layerLengths) {
-        Random random = new Random(DataUtils.universalSeed);
-
+		Random random = new Random(DataUtils.universalSeed);
+		
 		layers = new Layer[layerLengths.length];
 		this.layerLengths = layerLengths;
 		
@@ -62,15 +61,15 @@ public class NeuralNetwork implements Serializable {
 					neuron.setValue(inputs[j]);
 					continue;
 				}
-
+				
 				neuron.calcValue(layers[i - 1]);
 			}
-
+			
 			if (i == outputLayerIdx) {
-				if (focusOutputs){
+				if (focusOutputs) {
 					focusOutputs(neurons);
 				}
-
+				
 				for (int j = 0; j < neurons.length; j++) {
 					outputs[j] = neurons[j].getValue();
 				}
@@ -79,19 +78,18 @@ public class NeuralNetwork implements Serializable {
 		
 		return outputs;
 	}
-
-	public void focusOutputs(Neuron[] outputNeurons){
+	
+	public void focusOutputs(Neuron[] outputNeurons) {
 		Neuron maxNeron = Arrays.stream(outputNeurons).max(Comparator.comparingDouble(Neuron::getValue)).orElseThrow();
-		for (Neuron outputNeron: outputNeurons){
-            if (outputNeron == maxNeron) {
-                outputNeron.setValue(1);
-            }
-			else {
-                outputNeron.setValue(0);
-            }
-        }
+		for (Neuron outputNeron : outputNeurons) {
+			if (outputNeron == maxNeron) {
+				outputNeron.setValue(1);
+			} else {
+				outputNeron.setValue(0);
+			}
+		}
 	}
-
+	
 	/**
 	 * Apply back propagation process to neural network.
 	 * This requires the value so {@link NeuralNetwork#calcOutputs(float[], boolean)} needs to be run first
@@ -113,7 +111,7 @@ public class NeuralNetwork implements Serializable {
 				
 				Layer prevLayer = layers[i - 1];
 				prevLayer.calcErrors(neuron.getError(), neuron.getWeights());
-
+				
 				neuron.calcWeightChange(prevLayer);
 			}
 		}
@@ -133,13 +131,13 @@ public class NeuralNetwork implements Serializable {
 			for (int j = 0; j < layers[i].getNumNeurons(); j++)
 				getNeuron(i, j).applyWeightChange(learningRate);
 	}
-
-	public float testAgent(DataSet dataSet, boolean focusOutputs){
+	
+	public float testAgent(DataSet dataSet, boolean focusOutputs) {
 		int score = 0;
-
+		
 		for (DataPoint dataPoint : dataSet.testingDataPoints()) {
-			float[] calcOutputs = calcOutputs(dataPoint.getInputs(), focusOutputs);
-
+			float[] calcOutputs = calcOutputs(dataPoint.inputs(), focusOutputs);
+			
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {
 				if (calcOutputs[j] > calcOutputs[maxIndex]) {
@@ -147,13 +145,13 @@ public class NeuralNetwork implements Serializable {
 					maxIndex = j;
 				}
 			}
-			if (maxIndex == dataPoint.getTargetResult())
+			if (maxIndex == dataPoint.targetResult())
 				score++;
 		}
-
-        return (float) score / dataSet.getTestingSize();
+		
+		return (float) score / dataSet.getTestingSize();
 	}
-
+	
 	// region Getters/Setters
 	public Layer[] getLayers() {
 		return layers;
@@ -171,7 +169,6 @@ public class NeuralNetwork implements Serializable {
 		layers[idx] = layer;
 	}
 	
-	
 	public Neuron getNeuron(int layer, int number) {
 		return layers[layer].getNeuron(number);
 	}
@@ -179,7 +176,6 @@ public class NeuralNetwork implements Serializable {
 	public void setNeuron(int layer, int idx, Neuron neuron) {
 		layers[layer].setNeuron(idx, neuron);
 	}
-	
 	
 	public Neuron[][] getNeurons() {
 		Neuron[][] neurons = new Neuron[layers.length][];
@@ -193,12 +189,6 @@ public class NeuralNetwork implements Serializable {
 			layers[i].setNeurons(neurons[i]);
 	}
 	
-	
-	public void setWeights(float[][][] weights) {
-		for (int i = 1; i < layers.length; i++)
-			layers[i].setWeights(weights[i - 1]);
-	}
-	
 	public float[][][] getWeights() {
 		float[][][] weights = new float[layers.length - 1][][];
 		for (int i = 1; i < layers.length; i++)  // ignore input layer
@@ -206,10 +196,9 @@ public class NeuralNetwork implements Serializable {
 		return weights;
 	}
 	
-	
-	public void setBiases(float[][] biases) {
-		for (int i = 1; i < layerLengths.length; i++)
-			layers[i].setBiases(biases[i - 1]);
+	public void setWeights(float[][][] weights) {
+		for (int i = 1; i < layers.length; i++)
+			layers[i].setWeights(weights[i - 1]);
 	}
 	
 	public float[][] getBiases() {
@@ -219,6 +208,10 @@ public class NeuralNetwork implements Serializable {
 		return biases;
 	}
 	
+	public void setBiases(float[][] biases) {
+		for (int i = 1; i < layerLengths.length; i++)
+			layers[i].setBiases(biases[i - 1]);
+	}
 	
 	public float[][] getValues() {
 		float[][] values = new float[layers.length - 1][];
@@ -231,7 +224,6 @@ public class NeuralNetwork implements Serializable {
 		for (int i = 1; i < layerLengths.length; i++)
 			layers[i].setValues(values[i - 1]);
 	}
-	
 	
 	public float[][] getErrors() {
 		float[][] errors = new float[layers.length - 1][];

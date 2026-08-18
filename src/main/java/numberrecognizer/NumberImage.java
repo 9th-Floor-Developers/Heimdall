@@ -70,12 +70,12 @@ public record NumberImage(float[][] pixels,
 	}
 	
 	@Override
-	public float[] getInputs() {
+	public float[] inputs() {
 		return to1D();
 	}
 
 	@Override
-	public int getTargetResult() {
+	public int targetResult() {
 		return value;
 	}
 }

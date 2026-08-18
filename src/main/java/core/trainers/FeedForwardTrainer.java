@@ -14,22 +14,21 @@ import java.io.IOException;
  * @see #addLogger()
  * @see #trainAgent(DataSet)
  */
-public class FeedForwardTrainer extends AbstractTrainer{
+public class FeedForwardTrainer extends AbstractTrainer {
 	private final int[] hiddenLayerLengths;
 	private final float learningRate;
-	private final boolean showErrorRate;
+	private final boolean showErrorRate, focusOutput;
 	private final int roundAmount;
-	private final boolean focusOutput;
-
-
-	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int roundAmount, boolean focusOutput){
+	
+	
+	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int roundAmount, boolean focusOutput) {
 		this.hiddenLayerLengths = hiddenLayerLengths;
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
 		this.roundAmount = roundAmount;
 		this.focusOutput = focusOutput;
 	}
-
+	
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
 	 */
@@ -38,7 +37,7 @@ public class FeedForwardTrainer extends AbstractTrainer{
 		float errorSum = showErrorRate ? 0 : -1;
 		
 		for (DataPoint dataPoint : dataSet.getTrainingDataPoints()) {
-			float[] calcOutputs = agent.calcOutputs(dataPoint.getInputs(), focusOutput);
+			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs(), focusOutput);
 			
 			int maxIndex = 0;
 			for (int j = 0; j < calcOutputs.length; j++) {
@@ -47,44 +46,42 @@ public class FeedForwardTrainer extends AbstractTrainer{
 					maxIndex = j;
 				}
 			}
-			if (maxIndex == dataPoint.getTargetResult())
+			
+			if (maxIndex == dataPoint.targetResult())
 				score++;
-
-			if (showErrorRate){
+			
+			if (showErrorRate)
 				errorSum += DataUtils.getAverage(agent.backProp(dataPoint.getTargetValues()));
-			}
-		}
-		agent.applyWeightsChange(learningRate / dataSet.getTrainingSize());
-
-
-		float testScoreFactor = -1;
-		if (round % testPerRoundAmount == 0){
-			testScoreFactor = agent.testAgent(dataSet, focusOutput);
 		}
 		
+		agent.applyWeightsChange(learningRate / dataSet.getTrainingSize());
+		
+		float testScoreFactor = -1;
+		if (round % testPerRoundAmount == 0)
+			testScoreFactor = agent.testAgent(dataSet, focusOutput);
+		
 		return new TrainingRoundResult(
-			round,
-			(float) score / dataSet.getTrainingSize(),
-			testScoreFactor,
-	errorSum / dataSet.getTrainingSize()
+				round,
+				(float) score / dataSet.getTrainingSize(),
+				testScoreFactor,
+				errorSum / dataSet.getTrainingSize()
 		);
 	}
-
+	
 	@Override
 	public void trainAgent(DataSet dataSet) throws IOException {
 		NeuralNetwork agent = new NeuralNetwork(dataSet.getLayerLengths(hiddenLayerLengths));
-
+		
 		//System.out.println("=========== Initial testing =============");
 		agent.testAgent(dataSet, focusOutput);
-
+		
 		for (int round = 1; round <= roundAmount; round++) {
 			TrainingRoundResult trainingRoundResult = trainAgentRound(dataSet, agent, round);
 			trainingRoundResults.add(trainingRoundResult);
-
-			if (logger != null){
+			
+			if (logger != null)
 				logger.logRound(round, trainingRoundResult.trainingScorePercent());
-			}
-
+			
 			printTrainingResults(round);
 		}
 	}

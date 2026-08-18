@@ -21,7 +21,7 @@ public class Layer implements Serializable {
 	 * @param network    {@link NeuralNetwork} object that layer is located in, used to find previous layer
 	 * @param numNeurons number of {@link Neuron} objects to include in layer, output layer should
 	 *                   be number of possible answers for all input values
-	 * @param random An instance of random, to keep neural network constants
+	 * @param random     An instance of random, to keep neural network constants
 	 */
 	public Layer(int layerNum, NeuralNetwork network, int numNeurons, Random random) {
 		neurons = new Neuron[numNeurons];
@@ -41,17 +41,17 @@ public class Layer implements Serializable {
 	/**
 	 * Calculates errors in current object based on {@link Neuron} objects within.
 	 *
-	 * @param error  difference between layer value and target value;
-	 *               smaller error means better accuracy;
-	 *               calculated using {@link Neuron#getError()}
+	 * @param error   difference between layer value and target value;
+	 *                smaller error means better accuracy;
+	 *                calculated using {@link Neuron#getError()}
 	 * @param weights a singular weight value in next layer;
-	 *               calculated using {@link Neuron#getWeight(int)}
+	 *                calculated using {@link Neuron#getWeight(int)}
 	 */
 	public void calcErrors(float error, float[] weights) {
-        for (int i = 0; i < getNeurons().length; i++) {
-            Neuron neuron = getNeurons()[i];
-            neuron.addError(error * weights[i]);
-        }
+		for (int i = 0; i < getNeurons().length; i++) {
+			Neuron neuron = getNeurons()[i];
+			neuron.addError(error * weights[i]);
+		}
 	}
 	
 	// region Getters/Setters
@@ -64,11 +64,9 @@ public class Layer implements Serializable {
 			setNeuron(i, neurons[i]);
 	}
 	
-	
 	public int getNumNeurons() {
 		return neurons.length;
 	}
-	
 	
 	public Neuron getNeuron(int idx) {
 		return neurons[idx];
@@ -77,7 +75,6 @@ public class Layer implements Serializable {
 	public void setNeuron(int idx, Neuron neuron) {
 		neurons[idx] = neuron;
 	}
-	
 	
 	public float[][] getWeights() {
 		int numNeurons = getNumNeurons();
@@ -92,7 +89,6 @@ public class Layer implements Serializable {
 			getNeuron(i).setWeights(weights[i]);
 	}
 	
-	
 	public float[] getBiases() {
 		int numNeurons = getNumNeurons();
 		float[] biases = new float[numNeurons];
@@ -106,7 +102,6 @@ public class Layer implements Serializable {
 			getNeuron(i).setBias(biases[i]);
 	}
 	
-	
 	public float[] getValues() {
 		int numNeurons = getNumNeurons();
 		float[] values = new float[numNeurons];
@@ -119,7 +114,6 @@ public class Layer implements Serializable {
 		for (int i = 0; i < getNumNeurons(); i++)
 			getNeuron(i).setValue(values[i]);
 	}
-	
 	
 	public float[] getErrors() {
 		int numNeurons = getNumNeurons();
