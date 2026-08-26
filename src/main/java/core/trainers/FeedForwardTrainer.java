@@ -6,6 +6,7 @@ import core.neuralnetwork.NeuralNetwork;
 import core.utils.DataUtils;
 
 import java.io.IOException;
+import java.util.List;
 
 /**
  * A class representing a trainer object that contains an array of agents
@@ -35,8 +36,13 @@ public class FeedForwardTrainer extends AbstractTrainer {
 	private TrainingRoundResult trainAgentRound(DataSet dataSet, NeuralNetwork agent, int round) {
 		int score = 0;
 		float errorSum = showErrorRate ? 0 : -1;
+
+
+		List<DataPoint> trainingPoints
+				= trainingRoundResults.isEmpty() ? dataSet.getTrainingDataPoints(null) : dataSet.getTrainingDataPoints(trainingRoundResults.getLast());
+		int trainingSize = trainingPoints.size();
 		
-		for (DataPoint dataPoint : dataSet.getTrainingDataPoints()) {
+		for (DataPoint dataPoint : trainingPoints) {
 			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs(), focusOutput);
 			
 			int maxIndex = 0;
@@ -54,7 +60,7 @@ public class FeedForwardTrainer extends AbstractTrainer {
 				errorSum += DataUtils.getAverage(agent.backProp(dataPoint.getTargetValues()));
 		}
 		
-		agent.applyWeightsChange(learningRate / dataSet.getTrainingSize());
+		agent.applyWeightsChange(learningRate / trainingSize);
 		
 		float testScoreFactor = -1;
 		if (round % testPerRoundAmount == 0)
@@ -62,9 +68,9 @@ public class FeedForwardTrainer extends AbstractTrainer {
 		
 		return new TrainingRoundResult(
 				round,
-				(float) score / dataSet.getTrainingSize(),
+				(float) score / trainingSize,
 				testScoreFactor,
-				errorSum / dataSet.getTrainingSize()
+				errorSum / trainingSize
 		);
 	}
 	
