@@ -81,7 +81,6 @@ abstract public class AbstractDataSetLoader {
 		
 		return new DataSet(
 				dataPoints.subList(0, allTrainingSize),
-				dataPoints.subList(allTrainingSize, allTrainingSize + testingSize),
-				randomTrainingSize);
+				dataPoints.subList(allTrainingSize, allTrainingSize + testingSize));
 	}
 }
