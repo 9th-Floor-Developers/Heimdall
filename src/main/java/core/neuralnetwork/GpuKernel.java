@@ -4,7 +4,6 @@ import com.aparapi.Kernel;
 
 public class GpuKernel extends Kernel {
 	public float[] act, err, target, w, bias, wChange, bChange, gradChange, sq;
-	
 	public int op, n, batch, total, cur, prev, actCur, actPrev, wCur, bCur;
 	public float lr;
 	
@@ -25,23 +24,15 @@ public class GpuKernel extends Kernel {
 		int g = getGlobalId();
 		
 		if (g < n) {
-			if (op == 0) {
-				calcValue(g);
-			} else if (op == 1) {
-				calcError(g);
-			} else if (op == 2) {
-				calcLayerErrors(g);
-			} else if (op == 3) {
-				calcWeightChange(g);
-			} else if (op == 4) {
-				calcWeightChangeGradient(g);
-			} else if (op == 5) {
-				applyWeightChangeGradient(g);
-			} else if (op == 6) {
-				applyWeightChange(g);
-			} else if (op == 7) {
-				focusOutputs(g);
-			}
+			// GPU cannot recognize switch statement, keep ifs
+			if (op == 0) calcValue(g);
+			else if (op == 1) calcError(g);
+			else if (op == 2) calcLayerErrors(g);
+			else if (op == 3) calcWeightChange(g);
+			else if (op == 4) calcWeightChangeGradient(g);
+			else if (op == 5) applyWeightChangeGradient(g);
+			else if (op == 6) applyWeightChange(g);
+			else if (op == 7) focusOutputs(g);
 		}
 	}
 	
@@ -78,8 +69,7 @@ public class GpuKernel extends Kernel {
 	}
 	
 	private void calcWeightChange(int g) {
-		int j = g / prev;
-		int kk = g - j * prev;
+		int j = g / prev, kk = g - j * prev;
 		float s = 0;
 		
 		for (int i = 0; i < batch; i++) {
@@ -125,14 +115,12 @@ public class GpuKernel extends Kernel {
 	
 	private void focusOutputs(int g) {
 		int base = g * total + actCur, kk = 0;
+		
 		for (int j = 1; j < cur; j++)
 			if (act[base + j] > act[base + kk])
 				kk = j;
-		for (int j = 0; j < cur; j++) {
-			if (j == kk)
-				act[base + j] = 1f;
-			else
-				act[base + j] = 0f;
-		}
+		
+		for (int j = 0; j < cur; j++)
+			act[base + j] = j == kk ? 1f : 0f;
 	}
 }

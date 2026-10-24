@@ -24,7 +24,6 @@ public record DataSet(
 			message += "\n from all training size " + allTrainingDataPoints.size();
 		System.out.println(message);
 	}
-
 	
 	public List<DataPoint> getTrainingDataPoints(@Nullable TrainingRoundResult trainingRoundResult) {
 		if (trainingFilter == null)
@@ -48,7 +47,6 @@ public record DataSet(
 	public int getOutputLength() {
 		return allTrainingDataPoints.getFirst().getTargetValues().length;
 	}
-	
 	
 	public int[] getLayerLengths(int[] hiddenLayerLengths) {
 		int[] layerLengths = new int[hiddenLayerLengths.length + 2];

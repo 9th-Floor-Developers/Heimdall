@@ -3,7 +3,6 @@ package core.trainers;
 import core.data.DataPoint;
 import core.data.DataSet;
 import core.neuralnetwork.NeuralNetwork;
-import core.utils.DataUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,7 +21,8 @@ public class FeedForwardTrainer extends AbstractTrainer {
 	private final int roundAmount;
 	
 	
-	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate, boolean showErrorRate, int roundAmount, boolean focusOutput) {
+	public FeedForwardTrainer(int[] hiddenLayerLengths, float learningRate,
+	                          boolean showErrorRate, int roundAmount, boolean focusOutput) {
 		this.hiddenLayerLengths = hiddenLayerLengths;
 		this.learningRate = learningRate;
 		this.showErrorRate = showErrorRate;
@@ -33,15 +33,13 @@ public class FeedForwardTrainer extends AbstractTrainer {
 	/**
 	 * Trains a single {@link NeuralNetwork} agent using the gradient decent algorithm with back propagation.
 	 */
-	private TrainingRoundResult trainAgentRound(DataSet dataSet, NeuralNetwork agent, int round, GpuTrainer gpu) {
-		int score = 0;
+	private TrainingRoundResult trainAgentRound(DataSet dataSet, int round, GpuTrainer gpu) {
+		List<DataPoint> trainingPoints = trainingRoundResults.isEmpty()
+				? dataSet.getTrainingDataPoints(null)
+				: dataSet.getTrainingDataPoints(trainingRoundResults.getLast());
+		int trainingSize = trainingPoints.size();
 		float errorSum = showErrorRate ? 0 : -1;
 
-
-		List<DataPoint> trainingPoints
-				= trainingRoundResults.isEmpty() ? dataSet.getTrainingDataPoints(null) : dataSet.getTrainingDataPoints(trainingRoundResults.getLast());
-		int trainingSize = trainingPoints.size();
-		
 //		for (DataPoint dataPoint : trainingPoints) {
 //			float[] calcOutputs = agent.calcOutputs(dataPoint.inputs(), focusOutput);
 //
@@ -62,8 +60,8 @@ public class FeedForwardTrainer extends AbstractTrainer {
 
 //		agent.applyWeightsChange(learningRate / trainingSize);
 		
-		GpuTrainer.Stats stats = gpu.accumulate(trainingPoints, focusOutput, showErrorRate);
-		score = stats.correct();
+		Stats stats = gpu.accumulate(trainingPoints, focusOutput, showErrorRate);
+		int score = stats.correct();
 		if (showErrorRate)
 			errorSum += stats.errorSum();
 		gpu.applyWeights(learningRate / trainingSize);
@@ -87,7 +85,7 @@ public class FeedForwardTrainer extends AbstractTrainer {
 		GpuTrainer gpu = new GpuTrainer(agent, 2048);
 		
 		for (int round = 1; round <= roundAmount; round++) {
-			TrainingRoundResult trainingRoundResult = trainAgentRound(dataSet, agent, round, gpu);
+			TrainingRoundResult trainingRoundResult = trainAgentRound(dataSet, round, gpu);
 			trainingRoundResults.add(trainingRoundResult);
 			
 			if (round == 1)
