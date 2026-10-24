@@ -1,12 +1,29 @@
 package core.neuralnetwork;
 
 import com.aparapi.Kernel;
+import core.trainers.GpuTrainer;
 
+/**
+ * The GPU math for the network, written as a single Aparapi {@link Kernel}.
+ * <p>
+ * A GPU can't work with objects, so this class
+ * stores the whole network in flat {@code float[]} arrays instead.
+ * <p>
+ * Created and driven only by {@link GpuTrainer}.
+ */
 public class GpuKernel extends Kernel {
 	public float[] act, err, target, w, bias, wChange, bChange, gradChange, sq;
 	public int op, n, batch, total, cur, prev, actCur, actPrev, wCur, bCur;
 	public float lr;
 	
+	/**
+	 * Allocates all GPU buffers. Sizes come from {@link GpuTrainer}'s layout calculation.
+	 *
+	 * @param actSize    {@code maxBatch * total}, size of {@code act} and {@code err}
+	 * @param targetSize {@code maxBatch * outputLayerSize}, size of {@code target}
+	 * @param wSize      total number of weights in the network
+	 * @param bSize      total number of non-input neurons, size of the bias and per-neuron arrays
+	 */
 	public GpuKernel(int actSize, int targetSize, int wSize, int bSize) {
 		act = new float[actSize];
 		err = new float[actSize];
@@ -19,6 +36,33 @@ public class GpuKernel extends Kernel {
 		sq = new float[bSize];
 	}
 	
+	/**
+	 * Runs on the GPU, once per thread. Thread id {@code g} is the element being handled.
+	 * Which formula runs depends on {@link #op}:
+	 * <ol start="0">
+	 *     <li><b>Forward</b>, one thread per (sample, neuron): {@code sigmoid(bias + sum(prev * weight))}.
+	 *     CPU equivalent: {@code Neuron.calcValue(Layer)}.</li>
+	 *     <li><b>Output error</b>, one thread per (sample, output neuron): {@code target - value}.
+	 *     CPU equivalent: {@code Neuron.calcError(float)}.</li>
+	 *     <li><b>Error propagation</b>, one thread per (sample, previous-layer neuron): sums
+	 *     {@code error * weight} over the current layer. CPU equivalent: {@code Layer.calcErrors(float, float[])}.</li>
+	 *     <li><b>Weight changes</b>, one thread per weight: sums {@code error * sigmoidDerivative * prevValue}
+	 *     over the batch into {@link #wChange}. CPU equivalent: the weight part of {@code Neuron.calcWeightChange(Layer)}.</li>
+	 *     <li><b>Bias and gradient changes</b>, one thread per neuron: sums the gradient into {@link #gradChange}
+	 *     and the raw error into {@link #bChange}. CPU equivalent: the gradient and bias part of
+	 *     {@code Neuron.calcWeightChange(Layer)}.</li>
+	 *     <li><b>Apply bias</b>, one thread per neuron: updates {@link #sq}, adds {@code bChange * lr} to the bias,
+	 *     then clears the accumulators. CPU equivalent: the bias part of {@code Neuron.applyWeightChange(float)}.</li>
+	 *     <li><b>Apply weights</b>, one thread per weight: adds {@code wChange * lr / sqrt(sq + 1e-8)} to the weight,
+	 *     then clears {@code wChange}. CPU equivalent: the weight part of {@code Neuron.applyWeightChange(float)}.</li>
+	 *     <li><b>Focus outputs</b>, one thread per sample: sets the largest output to 1 and the rest to 0.
+	 *     CPU equivalent: {@code NeuralNetwork.focusOutputs(Neuron[])}.</li>
+	 * </ol>
+	 * Operation 6 must run after operation 5 of the same layer, because it reads the {@code sq} that operation 5 updates.
+	 * <p>
+	 * Aparapi translates this class's bytecode into OpenCL, so this method may only use primitives,
+	 * primitive arrays, {@code if/else} and loops. No {@code switch}, lambdas, objects or strings.
+	 */
 	@Override
 	public void run() {
 		int g = getGlobalId();
@@ -36,6 +80,7 @@ public class GpuKernel extends Kernel {
 		}
 	}
 	
+	// region Operations
 	private void applyWeightChange(int g) {
 		int j = g / prev;
 		
@@ -123,4 +168,5 @@ public class GpuKernel extends Kernel {
 		for (int j = 0; j < cur; j++)
 			act[base + j] = j == kk ? 1f : 0f;
 	}
+	// endregion
 }
