@@ -20,8 +20,8 @@ public class Heimdall {
 		 */
 		DataSet dataSet = NumberImageLoader.createLoader()
 				.setSrc("./src/main/resources/numbers/")
-				.setAllTrainingSize(10000)
-				.setRandomTrainingSize(100) //This is optional, you are able to make the model train on random sets of data points,
+				.setAllTrainingSize(500)
+				//.setRandomTrainingSize(100) //This is optional, you are able to make the model train on random sets of data points,
 				//This means it loads 10k datapoints for training and pick a random 100 datapoints from that to train every round
 				.setTestingSize(500)
 				.load();
@@ -51,7 +51,7 @@ public class Heimdall {
 				},
 				5f,
 				true,
-				100,
+				200,
 				false
 		)
 				.addLogger() //Logs the result of every training round on to a file
