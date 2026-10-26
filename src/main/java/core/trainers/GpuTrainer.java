@@ -33,7 +33,7 @@ public class GpuTrainer {
 	private final NeuralNetwork network;
 	private final int[] sizes, actOff, wOff, bOff;
 	private final int last, maxBatch, total;
-	private final GpuKernel k;
+	private final GpuKernel gpuKernel;
 	
 	/**
 	 * Builds the buffer layout for {@code network}, creates the {@link GpuKernel}, and uploads the network's
@@ -67,9 +67,9 @@ public class GpuTrainer {
 		}
 		total = a;
 		
-		k = new GpuKernel(maxBatch * total, maxBatch * sizes[last], wSum, bSum);
-		k.total = total;
-		k.setExplicit(true);
+		gpuKernel = new GpuKernel(maxBatch * total, maxBatch * sizes[last], wSum, bSum);
+		gpuKernel.total = total;
+		gpuKernel.setExplicit(true);
 		uploadWeights();
 	}
 	
@@ -84,17 +84,17 @@ public class GpuTrainer {
 		for (int i = 1; i <= last; i++) {
 			for (int j = 0; j < sizes[i]; j++) {
 				Neuron neuron = network.getNeuron(i, j);
-				k.bias[bOff[i] + j] = neuron.getBias();
-				System.arraycopy(neuron.getWeights(), 0, k.w,
+				gpuKernel.bias[bOff[i] + j] = neuron.getBias();
+				System.arraycopy(neuron.getWeights(), 0, gpuKernel.w,
 						wOff[i] + j * sizes[i - 1], sizes[i - 1]);
 			}
 		}
-		Arrays.fill(k.wChange, 0f);
-		Arrays.fill(k.bChange, 0f);
-		Arrays.fill(k.gradChange, 0f);
-		Arrays.fill(k.sq, 0f);
-		k.put(k.w).put(k.bias).put(k.wChange).put(k.bChange).put(k.gradChange)
-				.put(k.sq).put(k.act).put(k.err).put(k.target);
+		Arrays.fill(gpuKernel.wChange, 0f);
+		Arrays.fill(gpuKernel.bChange, 0f);
+		Arrays.fill(gpuKernel.gradChange, 0f);
+		Arrays.fill(gpuKernel.sq, 0f);
+		gpuKernel.put(gpuKernel.w).put(gpuKernel.bias).put(gpuKernel.wChange).put(gpuKernel.bChange).put(gpuKernel.gradChange)
+				.put(gpuKernel.sq).put(gpuKernel.act).put(gpuKernel.err).put(gpuKernel.target);
 	}
 	
 	/**
@@ -106,14 +106,14 @@ public class GpuTrainer {
 	 * back, since {@code Neuron} has no setter for it.
 	 */
 	public void downloadWeights() {
-		k.get(k.w).get(k.bias);
+		gpuKernel.get(gpuKernel.w).get(gpuKernel.bias);
 		
 		for (int i = 1; i <= last; i++) {
 			for (int j = 0; j < sizes[i]; j++) {
 				Neuron neuron = network.getNeuron(i, j);
-				neuron.setBias(k.bias[bOff[i] + j]);
+				neuron.setBias(gpuKernel.bias[bOff[i] + j]);
 				int from = wOff[i] + j * sizes[i - 1];
-				neuron.setWeights(Arrays.copyOfRange(k.w, from, from + sizes[i - 1]));
+				neuron.setWeights(Arrays.copyOfRange(gpuKernel.w, from, from + sizes[i - 1]));
 			}
 		}
 	}
@@ -146,10 +146,10 @@ public class GpuTrainer {
 			for (int i = 0; i < count; i++) {
 				DataPoint dp = points.get(start + i);
 				in[i] = dp.inputs();
-				System.arraycopy(dp.getTargetValues(), 0, k.target, i * outSize, outSize);
+				System.arraycopy(dp.getTargetValues(), 0, gpuKernel.target, i * outSize, outSize);
 			}
 			
-			k.put(k.target);
+			gpuKernel.put(gpuKernel.target);
 			loadInputs(in, count);
 			forward(count);
 			
@@ -158,11 +158,11 @@ public class GpuTrainer {
 				launch(7, count);
 			}
 			
-			k.get(k.act);
+			gpuKernel.get(gpuKernel.act);
 			for (int i = 0; i < count; i++) {
 				int best = 0;
 				for (int j = 1; j < outSize; j++)
-					if (k.act[i * total + actOff[last] + j] > k.act[i * total + actOff[last] + best])
+					if (gpuKernel.act[i * total + actOff[last] + j] > gpuKernel.act[i * total + actOff[last] + best])
 						best = j;
 				
 				if (best == points.get(start + i).targetResult())
@@ -182,11 +182,11 @@ public class GpuTrainer {
 			}
 			
 			if (needError) {
-				k.get(k.err);
+				gpuKernel.get(gpuKernel.err);
 				for (int i = 0; i < count; i++) {
 					float s = 0;
 					for (int j = 0; j < outSize; j++)
-						s += Math.abs(k.err[i * total + actOff[last] + j]);
+						s += Math.abs(gpuKernel.err[i * total + actOff[last] + j]);
 					errorSum += s / outSize;
 				}
 			}
@@ -203,7 +203,7 @@ public class GpuTrainer {
 	 * @param learningRate step size; {@code FeedForwardTrainer} passes {@code learningRate / trainingSize}
 	 */
 	public void applyWeights(float learningRate) {
-		k.lr = learningRate;
+		gpuKernel.lr = learningRate;
 		for (int i = 1; i <= last; i++) {
 			setLayer(i);
 			launch(5, sizes[i]);
@@ -249,7 +249,7 @@ public class GpuTrainer {
 	 * @return the device name, e.g. the GPU's name, or a Java thread pool if Aparapi fell back to the CPU
 	 */
 	public String getExecutionMode() {
-		return String.valueOf(k.getTargetDevice());
+		return String.valueOf(gpuKernel.getTargetDevice());
 	}
 	
 	/**
@@ -257,7 +257,7 @@ public class GpuTrainer {
 	 * the trainer can't be used afterward.
 	 */
 	public void dispose() {
-		k.dispose();
+		gpuKernel.dispose();
 	}
 	
 	// region internals
@@ -272,13 +272,13 @@ public class GpuTrainer {
 	private int evaluate(float[][] in, int[] labels, int count) {
 		loadInputs(in, count);
 		forward(count);
-		k.get(k.act);
+		gpuKernel.get(gpuKernel.act);
 		
 		int correct = 0;
 		for (int i = 0; i < count; i++) {
 			int best = 0;
 			for (int j = 1; j < sizes[last]; j++)
-				if (k.act[i * total + actOff[last] + j] > k.act[i * total + actOff[last] + best])
+				if (gpuKernel.act[i * total + actOff[last] + j] > gpuKernel.act[i * total + actOff[last] + best])
 					best = j;
 			
 			if (best == labels[i])
@@ -297,8 +297,8 @@ public class GpuTrainer {
 	 */
 	private void loadInputs(float[][] inputs, int count) {
 		for (int i = 0; i < count; i++)
-			System.arraycopy(inputs[i], 0, k.act, i * total, sizes[0]);
-		k.put(k.act);
+			System.arraycopy(inputs[i], 0, gpuKernel.act, i * total, sizes[0]);
+		gpuKernel.put(gpuKernel.act);
 	}
 	
 	/**
@@ -309,7 +309,7 @@ public class GpuTrainer {
 	 * @param count number of images in the current chunk
 	 */
 	private void forward(int count) {
-		k.batch = count;
+		gpuKernel.batch = count;
 		for (int i = 1; i <= last; i++) {
 			setLayer(i);
 			launch(0, count * sizes[i]);
@@ -324,12 +324,12 @@ public class GpuTrainer {
 	 * @param l layer index (1 to output layer)
 	 */
 	private void setLayer(int l) {
-		k.cur = sizes[l];
-		k.prev = sizes[l - 1];
-		k.actCur = actOff[l];
-		k.actPrev = actOff[l - 1];
-		k.wCur = wOff[l];
-		k.bCur = bOff[l];
+		gpuKernel.cur = sizes[l];
+		gpuKernel.prev = sizes[l - 1];
+		gpuKernel.actCur = actOff[l];
+		gpuKernel.actPrev = actOff[l - 1];
+		gpuKernel.wCur = wOff[l];
+		gpuKernel.bCur = bOff[l];
 	}
 	
 	/**
@@ -341,10 +341,10 @@ public class GpuTrainer {
 	 * @param n  how many elements the operation handles
 	 */
 	private void launch(int op, int n) {
-		k.op = op;
-		k.n = n;
+		gpuKernel.op = op;
+		gpuKernel.n = n;
 		int global = ((n + LOCAL - 1) / LOCAL) * LOCAL;
-		k.execute(Range.create(global, LOCAL));
+		gpuKernel.execute(Range.create(global, LOCAL));
 	}
 	// endregion
 }
